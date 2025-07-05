@@ -1,15 +1,16 @@
 import subprocess
 
 
-import   settings  
+import     settings  
 
-REPORTS_DIR = settings.REPORTS_DIR
 
+
+def build_url(report_filename):
+    return f"{ settings.HOSTNAME}/{report_filename}\n"
 
 def run_Goaccess( file_path, report_name): 
-    args=  ['goaccess', file_path, "-a", "-o", f"{REPORTS_DIR}/{report_name}", "--log-format", "COMBINED",  ]  # write to ././report.html
+    args=  ['goaccess', file_path, "-a", "-o", f"{settings.REPORTS_DIR}/{report_name}", "--log-format", "COMBINED",  ]  # write to ././report.html
     #args=  ['goaccess', file_path, "-a", "-o", "html", "--log-format", "COMBINED",  ] # write to stdout
-    
  
     result =  subprocess.run(
         args,

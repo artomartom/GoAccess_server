@@ -10,7 +10,7 @@ import shutil
 import threading
 from time import sleep
 
-from settings import ADDRESS
+from settings import LISTEN
 from settings import PORT
 
 
@@ -21,8 +21,8 @@ reportfolder =  os.path.join(os.getcwd(),'reports')
 class WebServer(threading.Thread):
     def __init__(self):
         super().__init__()
-        self.host = ADDRESS
-        self.port = PORT
+        self.host = LISTEN
+        self.port = int(PORT)
         self.ws = HTTPServer((self.host, self.port), GoAccessRequestHandler)
 
 

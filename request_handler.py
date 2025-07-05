@@ -5,13 +5,13 @@ from http import HTTPStatus
 import html
 import sys
 
-from report_generator import run_Goaccess
+from report_generator import run_Goaccess, build_url
 from inspect import currentframe, getframeinfo
 
 import datetime
 import hashlib
 
-
+import   settings  
 
 def get_report_file_name():
      
@@ -78,7 +78,16 @@ class GoAccessRequestHandler(BaseHTTPRequestHandler):
              
             return
 
-        self.send_header('Content-type', 'text/plain') 
-        self.send_response(200,"ok")
+        url = build_url(report_filename)
+
+        #self.send_header('Content-type', 'text/html')  
+        ##self.protocol_version
+        #self.send_response(200,"ok")
+        #self.end_headers()
+        self.protocol_version = 'HTTP/1.1'
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.send_header("Content-length",len(url.encode('utf-8')) )
         self.end_headers()
+        self.wfile.write(bytes(url, "utf-8"))
       
