@@ -1,1 +1,1 @@
-curl  -v   -X POST --data-binary "@half_meg.log" http://192.168.1.30:3050
+curl        -X POST --data-binary "@access.log" http://192.168.1.30:3050
