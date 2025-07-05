@@ -9,17 +9,20 @@ from report_generator import run_Goaccess
 from inspect import currentframe, getframeinfo
 
 import datetime
+import hashlib
+
+
 
 def get_report_file_name():
-    now = datetime.datetime.now()
+     
+    #formatted_date =  datetime.datetime.now().strftime("%H:%M:%S_%y%m%d") 
+    formatted_date =  datetime.datetime.now().strftime("%H%M%S%f%Y") 
 
-    formatted_date = now.strftime("%H:%M:%S_%y%m%d_report.html")
-    
-    return formatted_date
+    hash =  hashlib.sha256(formatted_date.encode()).hexdigest() 
+  
+    return   f"access_report_{str(hash[:20])}.html"
 
-    
 
-#GOACCESS_ERROR_MESSAGE = """ %(code)d %(message)s %(explain)s  """
 
 class GoAccessRequestHandler(BaseHTTPRequestHandler):
    
@@ -65,8 +68,9 @@ class GoAccessRequestHandler(BaseHTTPRequestHandler):
         with open(log_file_tmp_path, 'wb') as f:
             f.write(body)
 
-        
-        result =  run_Goaccess(log_file_tmp_path,get_report_file_name())
+        report_filename = get_report_file_name()
+        print (report_filename)
+        result =  run_Goaccess(log_file_tmp_path,report_filename)
 
         if result.returncode != 0:
             
