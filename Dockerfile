@@ -11,9 +11,9 @@ WORKDIR /app/
  
 RUN apt update && apt upgrade -y && \
 	mkdir /reports/ && \ 
+	apt install goaccess -y  && \
   	python3 -m pip install --upgrade pip && \
-  	python3 -m pip install   -r requirements.txt  && \
-	apt install goaccess -y 
+  	python3 -m pip install   -r requirements.txt  
 #	apt install locales  -y    
 #	locale-gen ru_RU.UTF-8 
 #	update-locale LANG=ru_RU.UTF-8
