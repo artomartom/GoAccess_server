@@ -69,16 +69,18 @@ class GoAccessRequestHandler(BaseHTTPRequestHandler):
             f.write(body)
 
         report_filename = get_report_file_name()
-        print (report_filename)
+        print (f"report file name {report_filename}")
         result =  run_Goaccess(log_file_tmp_path,report_filename)
-
+        
         if result.returncode != 0:
             
             self.send_go_access_error(HTTPStatus.BAD_REQUEST, "error", result.stderr )
              
             return
 
+        print (f"building url")
         url = build_url(report_filename)
+
 
         #self.send_header('Content-type', 'text/html')  
         ##self.protocol_version
