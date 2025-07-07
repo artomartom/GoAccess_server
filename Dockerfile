@@ -4,10 +4,10 @@ COPY  ./.*py  /app/
 COPY  ./*txt /app/
 COPY  ./*env  /app/
 
-WORKDIR /app/
+WORKDIR /app/ 
 
 
-
+ENV TZ="Europe/Moscow"
  
 RUN apt update && apt upgrade -y && \
 	mkdir /reports/ && \ 
@@ -33,5 +33,5 @@ RUN apt update && apt upgrade -y && \
 
 #echo "ru_RU.UTF-8 UTF-8" | tee -a /etc/locale.gen
 
-CMD ["/usr/local/bin/python3", "/app/main.py"]
+ENTRYPOINT   ["/usr/local/bin/python3", "/app/main.py"]
 #CMD ["tail", "-f", "/dev/null"]

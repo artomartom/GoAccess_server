@@ -1,6 +1,6 @@
 import subprocess
 
-
+ 
 import     settings  
 
 
@@ -14,7 +14,9 @@ def run_Goaccess( file_path, report_name):
     
    # print (f"file_path {file_path}")
     #print (f"REPORTS_DIR  {settings.REPORTS_DIR}/{report_name}")
-
+    print (f"running goaccess")
+    print (f"file path {file_path}")
+    print (f"report path  {settings.REPORTS_DIR}/{report_name}")
     result =  subprocess.run(
         args,
         capture_output=True,
