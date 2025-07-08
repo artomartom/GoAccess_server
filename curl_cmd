@@ -1,1 +1,6 @@
-curl -k  -X POST --data-binary "@access.log" https://goaccess.suschkov.ru/generate_report;
+curl   -X POST --data-binary "@access.log" https://goaccess.suschkov.ru/generate_report;
+
+
+curl -k  -X POST --data-binary "@access.log" https://goaccess.suschkov.test/generate_report;
+
+curl   -X POST --data-binary "@access.log" http://127.0.0.1:3050;
