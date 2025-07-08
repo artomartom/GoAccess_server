@@ -25,8 +25,6 @@ def get_report_file_name():
 
 
 class GoAccessRequestHandler(BaseHTTPRequestHandler):
-   
-
 
     tmp_dir = TemporaryDirectory()
 
