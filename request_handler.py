@@ -33,7 +33,7 @@ def random_string(length=12):
 
 class GoAccessRequestHandler(BaseHTTPRequestHandler):
 
-    tmp_dir = TemporaryDirectory(delete=False )
+    tmp_dir = TemporaryDirectory(  )
 
     def send_go_access_error(self, code, message=None, explain=None):
 

@@ -1,4 +1,4 @@
-FROM debian:bookworm 
+FROM debian:bookworm:12.11 
 #FROM python:3.11-slim
 
 COPY  ./.*py  /app/
