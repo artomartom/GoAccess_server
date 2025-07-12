@@ -17,16 +17,23 @@ def get_report_file_name():
      
     #formatted_date =  datetime.datetime.now().strftime("%H:%M:%S_%y%m%d") 
     formatted_date =  datetime.datetime.now().strftime("%H%M%S%f%Y") 
-
     hash =  hashlib.sha256(formatted_date.encode()).hexdigest() 
   
     return   f"access_report_{str(hash[:20])}.html"
 
 
+import secrets
+import string
+
+def random_string(length=12):
+    chars = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(chars) for _ in range(length))
+
+
 
 class GoAccessRequestHandler(BaseHTTPRequestHandler):
 
-    tmp_dir = TemporaryDirectory()
+    tmp_dir = TemporaryDirectory(delete=False )
 
     def send_go_access_error(self, code, message=None, explain=None):
 
@@ -60,7 +67,7 @@ class GoAccessRequestHandler(BaseHTTPRequestHandler):
             self.send_error(400, "Empty file")
             return
         # Create a temporary directory to store the uploaded file
-        log_file_tmp_path = os.path.join(self.tmp_dir.name, 'access.log')
+        log_file_tmp_path = os.path.join(self.tmp_dir.name, f"{random_string()}.log")
         body = self.rfile.read(content_length)
 
         with open(log_file_tmp_path, 'wb') as f:
