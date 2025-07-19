@@ -1,17 +1,25 @@
 import subprocess
 
  
-import     settings  
+import  settings  
 
 from  format_parser import Format 
 
 def build_url(report_filename):
-    return f"{ settings.HOSTNAME}/{report_filename}\n"
+    return f"{ settings.HOSTNAME}/{report_filename}"
 
+import hashlib
+import datetime
+
+def get_report_file_name():
+     
+    #formatted_date =  datetime.datetime.now().strftime("%H:%M:%S_%y%m%d") 
+    formatted_date =  datetime.datetime.now().strftime("%H%M%S%f%Y") 
+    hash =  hashlib.sha256(formatted_date.encode()).hexdigest() 
+  
+    return   f"access_report_{str(hash[:20])}.html"
 
 def run_Goaccess( file_path, report_name): 
- 
-    
     
     format : Format
     with open(file_path, 'r') as log_file:
