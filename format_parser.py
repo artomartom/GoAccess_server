@@ -2,8 +2,6 @@
 
 import re
 
-
-
 """
 [0] regex
 [1] log format
