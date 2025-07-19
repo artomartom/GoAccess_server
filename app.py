@@ -43,4 +43,6 @@ def get_square():
         }), 500
 
 if __name__ == '__main__':
+    print(DEBUG) 
+    print(bool(DEBUG))
     app.run(host=LISTEN, port=int(PORT), debug=bool(DEBUG))
