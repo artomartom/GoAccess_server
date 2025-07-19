@@ -1,5 +1,4 @@
-FROM debian:bookworm:12.11 
-#FROM python:3.11-slim
+FROM debian:bookworm
 
 COPY  ./.*py  /app/
 COPY  ./*txt /app/
@@ -20,6 +19,7 @@ RUN apt update && apt upgrade -y && \
 	apt install python3-pip -y && \
   	#python3 -m pip install --upgrade pip  && \ 
 	apt install python3-dotenv && \ 
+	apt install python3-flask && \ 
   	#python3 -m pip install   -r requirements.txt  && \ 
 	apt install locales -y && \
     echo "locales locales/default_environment_locale select ru_RU.UTF-8" | debconf-set-selections && \ 
