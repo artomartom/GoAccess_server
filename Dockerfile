@@ -20,6 +20,7 @@ RUN apt update && apt upgrade -y && \
   	#python3 -m pip install --upgrade pip  && \ 
 	apt install python3-dotenv -y && \ 
 	apt install python3-flask -y && \ 
+	apt install python3-gunicorn -y && \ 
   	#python3 -m pip install   -r requirements.txt  && \ 
 	apt install locales -y && \
     echo "locales locales/default_environment_locale select ru_RU.UTF-8" | debconf-set-selections && \ 
@@ -34,4 +35,5 @@ RUN apt update && apt upgrade -y && \
 	
  
 #ENTRYPOINT   ["bash"]
-ENTRYPOINT   ["/usr/bin/python3", "/app/app.py"]
+#ENTRYPOINT   ["/usr/bin/python3", "/app/app.py"]
+ENTRYPOINT   ["/usr/bin/python3", "-m", "gunicorn", "--bind", "0.0.0.0:3050", "--config", "gunicorn_config.py", "--access-logfile", "-", "--log-config", "logging.ini",  "wsgi:app" ]
