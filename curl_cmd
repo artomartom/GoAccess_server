@@ -10,3 +10,16 @@ ls ./access.log | awk '{print}' | xargs -I {} curl  -k -X POST --data-binary "@{
 
 
 ls ./access.log | awk '{print}' | xargs -I {} curl  -X POST --data-binary "@{}" https://goaccess.suschkov.ru/generate_report   
+
+curl  -X POST -T ./ https://goaccess.suschkov.ru/generate_report -o /pgrs && cat $_ && rm $_ 
+
+
+curl -k  -X POST -T ./ https://goaccess.suschkov.test/v1/report -o ./pgrs  && tail -n 1 $_
+
+
+
+
+
+
+https://goaccess.suschkov.test/v1/report?match=08/Jul/2025:13:28:59 
+https://goaccess.suschkov.test/v1/report?match=08/Jul/2025:1[12345] 

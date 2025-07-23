@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   py-server:
-    container_name:   goaccess-server
+    container_name:   goaccess-server_v1
     build: .  # Builds from Dockerfile in the same directory
     restart: always 
     env_file:
       - .env   
     ports:
-      - "127.0.0.1:3050:3050" 
+      - "127.0.0.1:3051:3050" 
     volumes:
       - ./:/app 
       - ./reports:/reports
