@@ -5,6 +5,8 @@ import  settings
 
 from  format_parser import Format 
 
+from utility import   logger
+
 def build_url(report_filename):
     return f"{ settings.HOSTNAME}/{report_filename}"
 
@@ -33,7 +35,7 @@ def run_Goaccess( file_path, report_name):
                 best_sample_line_num = line_num
                 best_sample_line = line
                 best_sample_count = count
-        print(f"best sample found  at line {best_sample_line_num}")
+        #print(f"best sample found  at line {best_sample_line_num}")
         format = Format(best_sample_line)
         
         
@@ -46,7 +48,7 @@ def run_Goaccess( file_path, report_name):
             f"--date-format={format.date_format}",  
             f"--time-format={format.time_format }"] 
     
-    print(f"trying format {format.name }")
+    logger(f"trying format {format.name }")
     result =  subprocess.run(
         args,
         capture_output=True,
