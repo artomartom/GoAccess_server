@@ -8,7 +8,7 @@ from  format_parser import Format
 from utility import   logger
 
 def build_url(report_filename):
-    return f"{ settings.HOSTNAME}/{report_filename}"
+    return f"{ settings.HOSTNAME}/v1/{report_filename}"
 
 import hashlib
 import datetime
