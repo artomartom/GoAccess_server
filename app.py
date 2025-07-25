@@ -1,5 +1,5 @@
 #from flask import Flask, request, abort, jsonify # type: ignore
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Query
 import uvicorn
 import json
 
@@ -35,23 +35,24 @@ def write_raw(path,data):
             f.write( data.decode("utf-8"))
 
 def write_regex(path,data,regex):
-    logger(f"parsing regex{regex}")
-    with open(path, 'wb') as f:
+    logger(f"parsing regex {regex}")
+    with open(path, 'w') as f:
         for line in data.decode("utf-8").split('\n'):
             if re.search(regex, line):
                 f.writelines(line)
 
  
-
-@app.post("/v1/report")
-async def get_report(request: Request):
-    try:
+from typing import Optional
+@app.post("/v1/report") 
+async def get_report(
+    request: Request,
+    hash: str = Query(None ),
+    regex: str = Query(None )  ): 
+    try: 
         start = time.time()
         # Get the request data (works with JSON, form data, or raw text)
         log_file_tmp_path = os.path.join(tmp_dir.name, f"{random_string()}.log")
-
-        match = request.query_params['mth']
-        logger(f"found match argument: {match}")
+        logger(f"found regex argument: {regex}")
         #logger(f"found arguments: {request.args}")
 
         report_filename = get_report_file_name()
@@ -64,10 +65,10 @@ async def get_report(request: Request):
         
         if len(data) ==  0:
             raise Exception("Empty file")
-        if match == None:
+        if regex == None or regex == "":
             write_raw(log_file_tmp_path, data)
         else:
-            write_regex(log_file_tmp_path, data, match)
+            write_regex(log_file_tmp_path, data, regex)
 
 
         result =  run_Goaccess(log_file_tmp_path,report_filename)
@@ -79,8 +80,9 @@ async def get_report(request: Request):
             'report': url ,
             'status': 'OK',
             'version': VERSION,
-            'time' :  time.time() -start
-            
+            'time' :  time.time() -start,
+            'hash': hash,
+            'regex': regex
         }
 
     except Exception as e:
