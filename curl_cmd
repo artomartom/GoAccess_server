@@ -16,10 +16,4 @@ curl  -X POST -T ./ https://goaccess.suschkov.ru/generate_report -o /pgrs && cat
 
 curl -k  -X POST -T ./ https://goaccess.suschkov.test/v1/report -o ./pgrs  && tail -n 1 $_
 
-
-
-
-
-
-https://goaccess.suschkov.test/v1/report?match=08/Jul/2025:13:28:59 
-https://goaccess.suschkov.test/v1/report?match=08/Jul/2025:1[12345] 
+s=./test.log;r="";curl -k -X POST -T $s "https://goaccess.suschkov.test/v1/report?hash=$(md5sum<$s|awk '{print $1}')&regex=$r"|jq
