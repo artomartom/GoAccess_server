@@ -12,11 +12,10 @@ import os
  
 from utility import random_string, logger
 from fastapi.responses import HTMLResponse
-from report_generator import run_goaccess, get_report_url, get_report_file_name
+from report_generator import run_goaccess, get_report_url, new_report_id
 from bench import bench
-
+from log_db import Database
  
-file_dir = "/tmp/ga_tmp/"
 
 error_page= """
     <html>
@@ -34,11 +33,16 @@ import time
 @app.get("/v1/report/{file_id}", response_class=HTMLResponse) 
 async def get_report(file_id):
     try: 
+    
         
-        file_path = os.path.join(file_dir , file_id)
-        result = run_goaccess(file_path,"unused")
-
-        return HTMLResponse(content=result.stdout, status_code=200)
+        db = Database()
+        
+        if db.id_exists(file_id) == False:
+            raise Exception(f"file {file_id} not found")
+        data = db.get_logfile(file_id).decode("utf-8")
+        result = run_goaccess(data )
+        
+        return HTMLResponse(content=result.stdout  , status_code=200)
        
     except Exception as e:
         return HTMLResponse(content=error_page.format(text = str(e) ), status_code=500)
@@ -47,22 +51,22 @@ async def get_report(file_id):
 async def get_report( request: Request): 
     try: 
         start = time.time()
-        report_filename = get_report_file_name()
+        file_id = new_report_id()
         
 
-        logger (f"report file name {report_filename}")
-        url = f"{ HOSTNAME}/v1/report/{report_filename}" 
+        logger (f"report file name {file_id}")
+        url = f"{HOSTNAME}/v1/report/{file_id}" 
+        
+        db = Database()
 
         data =  await request.body()
         
         if len(data) ==  0:
             raise Exception("Empty file")
-
+        
         logger(f"writing  data")
-        with open(f"{file_dir}/{report_filename}", 'w') as f:
-            f.write( data.decode("utf-8"))    
- 
-       
+        db.add_logfile(file_id,data)
+
         return  {
             'report': url ,
             'status': 'OK',
