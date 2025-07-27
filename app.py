@@ -1,22 +1,16 @@
-#from flask import Flask, request, abort, jsonify # type: ignore
-from fastapi import FastAPI, Request, Query
+from fastapi import FastAPI, Request, Query 
 import uvicorn
-import json
-import subprocess
-#app = Flask(__name__)
-app = FastAPI()
 
-from tempfile  import  TemporaryDirectory
 from settings import LISTEN,  DEBUG, PORT, VERSION, HOSTNAME
-import os
- 
-from utility import random_string, logger
+from utility import  logger
 from fastapi.responses import HTMLResponse
-from report_generator import run_goaccess, get_report_url, new_report_id
-from bench import bench
-from log_db import Database
- 
+from report_generator import run_goaccess,   new_report_id
+from database import Database
+import time
+import re
+import io
 
+app = FastAPI(debug=DEBUG, docs_url=None, redoc_url=None)
 error_page= """
     <html>
         <head>
@@ -28,22 +22,30 @@ error_page= """
     </html>
     """
  
-import time
  
 @app.get("/v1/report/{file_id}", response_class=HTMLResponse) 
-async def get_report(file_id):
+async def get_report(file_id,
+                    match: str = Query("")):
     try: 
-    
         
         db = Database()
+        logger(f"found match argument: {match}")
         
         if db.id_exists(file_id) == False:
             raise Exception(f"file {file_id} not found")
-        data = db.get_logfile(file_id).decode("utf-8")
-        result = run_goaccess(data )
+        data = db.get_logfile(file_id) #.decode("utf-8")
+        if match != ""  :
+            new_data="" 
+            for line in data.split('\n'):
+                if re.search(match, line):
+                    new_data+=line  
+                    new_data+='\n' 
+            data = new_data
         
-        return HTMLResponse(content=result.stdout  , status_code=200)
-       
+         
+        result =  run_goaccess(data )
+        return HTMLResponse(content=result.stdout , status_code=200)
+
     except Exception as e:
         return HTMLResponse(content=error_page.format(text = str(e) ), status_code=500)
 
@@ -81,7 +83,7 @@ async def get_report( request: Request):
             'version': VERSION
         }
 
-
+ 
 
 if __name__ == '__main__':
     uvicorn.run( 
@@ -93,4 +95,3 @@ if __name__ == '__main__':
         access_log=True,   # Enable access logs
         timeout_keep_alive=5,  
                 host=LISTEN)
-    #app.run(host=LISTEN, port=int(PORT), debug=DEBUG)
