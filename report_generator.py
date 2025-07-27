@@ -9,17 +9,19 @@ from utility import   logger
 
 def get_report_url(filename):
     return f"{ settings.HOSTNAME}/{filename}"
-
+import uuid
+ 
 import hashlib
 import datetime
 
 def new_report_id():
      
     #formatted_date =  datetime.datetime.now().strftime("%H:%M:%S_%y%m%d") 
-    formatted_date =  datetime.datetime.now().strftime("%H%M%S%f%Y") 
-    hash =  hashlib.sha256(formatted_date.encode()).hexdigest() 
+    #formatted_date =  datetime.datetime.now().strftime("%H%M%S%f%Y") 
+    #hash =  hashlib.sha256(formatted_date.encode()).hexdigest() 
   
-    return str(hash[:20])
+    #return str(hash[:20])
+    return  uuid.uuid4().hex
 
  
 def get_format(log_strings   ):
