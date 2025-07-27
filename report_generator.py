@@ -7,8 +7,8 @@ from  format_parser import Format
 
 from utility import   logger
 
-def build_url(report_filename):
-    return f"{ settings.HOSTNAME}/{report_filename}"
+def get_report_url(filename):
+    return f"{ settings.HOSTNAME}/{filename}"
 
 import hashlib
 import datetime
@@ -19,9 +19,9 @@ def get_report_file_name():
     formatted_date =  datetime.datetime.now().strftime("%H%M%S%f%Y") 
     hash =  hashlib.sha256(formatted_date.encode()).hexdigest() 
   
-    return   f"access_report_{str(hash[:20])}.html"
+    return str(hash[:20])
 
-def run_Goaccess( file_path, report_name): 
+def run_goaccess( file_path, report_name): 
     
     format : Format
     with open(file_path, 'r') as log_file:
@@ -43,7 +43,7 @@ def run_Goaccess( file_path, report_name):
         print("unknown format")
         return 
     
-    args=  ['goaccess', file_path, "-a", "-o", f"{settings.REPORTS_DIR}/{report_name}",
+    args=  ['goaccess', file_path, "-a", #"-o", f"{settings.REPORTS_DIR}/{report_name}",
             "--log-format", f'{format.log_format}',
             f"--date-format={format.date_format}",  
             f"--time-format={format.time_format }"] 
@@ -55,8 +55,10 @@ def run_Goaccess( file_path, report_name):
         encoding="utf-8",
         text=True
     )
-    if result.returncode == 0:
-        return result 
+    
+    
+    if result.returncode != 0:
+        raise Exception( result.stderr)
     
     return result 
     

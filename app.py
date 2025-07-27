@@ -2,87 +2,72 @@
 from fastapi import FastAPI, Request, Query
 import uvicorn
 import json
-
+import subprocess
 #app = Flask(__name__)
 app = FastAPI()
 
 from tempfile  import  TemporaryDirectory
-from settings import LISTEN,  DEBUG, PORT, VERSION
+from settings import LISTEN,  DEBUG, PORT, VERSION, HOSTNAME
 import os
-
+ 
 from utility import random_string, logger
-
-from report_generator import run_Goaccess, build_url, get_report_file_name
+from fastapi.responses import HTMLResponse
+from report_generator import run_goaccess, get_report_url, get_report_file_name
 from bench import bench
 
-tmp_dir = TemporaryDirectory(  )
-
-@app.route('/v1/bench', methods=['POST'])
-def get_bench():
-    res = bench(request.get_data(as_text=True))
-    print(res)
-    return jsonify({
-            'status': 'OK',
-            'time': res
-        }), 200
-
-import time
-import re
-
-def write_raw(path,data):
-    logger(f"writing raw data")
-    with open(path, 'w') as f:
-            f.write( data.decode("utf-8"))
-
-def write_regex(path,data,regex):
-    logger(f"parsing regex {regex}")
-    with open(path, 'w') as f:
-        for line in data.decode("utf-8").split('\n'):
-            if re.search(regex, line):
-                f.writelines(line)
-
  
-from typing import Optional
-@app.post("/v1/report") 
-async def get_report(
-    request: Request,
-    hash: str = Query(None ),
-    regex: str = Query(None )  ): 
+file_dir = "/tmp/ga_tmp/"
+
+error_page= """
+    <html>
+        <head>
+            <title>Some HTML in here</title>
+        </head>
+        <body>
+            <h1>{text} HTML!</h1>
+        </body>
+    </html>
+    """
+ 
+import time
+ 
+@app.get("/v1/report/{file_id}", response_class=HTMLResponse) 
+async def get_report(file_id):
+    try: 
+        
+        file_path = os.path.join(file_dir , file_id)
+        result = run_goaccess(file_path,"unused")
+
+        return HTMLResponse(content=result.stdout, status_code=200)
+       
+    except Exception as e:
+        return HTMLResponse(content=error_page.format(text = str(e) ), status_code=500)
+
+@app.post("/v1/upload") 
+async def get_report( request: Request): 
     try: 
         start = time.time()
-        # Get the request data (works with JSON, form data, or raw text)
-        log_file_tmp_path = os.path.join(tmp_dir.name, f"{random_string()}.log")
-        logger(f"found regex argument: {regex}")
-        #logger(f"found arguments: {request.args}")
-
         report_filename = get_report_file_name()
-        logger (f"report file name {report_filename}")
-        url = build_url(report_filename)
         
 
-        logger(f"sync point")
+        logger (f"report file name {report_filename}")
+        url = f"{ HOSTNAME}/v1/report/{report_filename}" 
+
         data =  await request.body()
         
         if len(data) ==  0:
             raise Exception("Empty file")
-        if regex == None or regex == "":
-            write_raw(log_file_tmp_path, data)
-        else:
-            write_regex(log_file_tmp_path, data, regex)
 
-
-        result =  run_Goaccess(log_file_tmp_path,report_filename)
-
-        if result.returncode != 0:
-            raise Exception( result.stderr)
-
+        logger(f"writing  data")
+        with open(f"{file_dir}/{report_filename}", 'w') as f:
+            f.write( data.decode("utf-8"))    
+ 
+       
         return  {
             'report': url ,
             'status': 'OK',
             'version': VERSION,
-            'time' :  time.time() -start,
-            'hash': hash,
-            'regex': regex
+            'time' :  time.time() - start 
         }
 
     except Exception as e:
@@ -91,6 +76,8 @@ async def get_report(
             'message': str(e),
             'version': VERSION
         }
+
+
 
 if __name__ == '__main__':
     uvicorn.run( 
