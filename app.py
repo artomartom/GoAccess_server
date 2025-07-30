@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Query 
+from fastapi import FastAPI, Request, Query
 import uvicorn
 
 from settings import LISTEN,  DEBUG, PORT, VERSION, HOSTNAME
@@ -23,41 +23,46 @@ error_page= """
     """
  
  
-@app.get("/v1/report/{file_id}", response_class=HTMLResponse) 
+@app.get("/v1/generate/{file_id}", response_class=HTMLResponse) 
 async def get_report(file_id: str,
                     match: str = Query("")):
-    #try: 
+    try: 
         
-    db = Database()
-    logger(f"found match argument: {match}")
+        db = Database()
+        logger(f"found match argument: {match}")
+        
+        if db.id_exists(file_id) == False:
+            raise Exception(f"file {file_id} not found")
+        data = db.get_logfile(file_id) #.decode("utf-8")
+        if match != ""  :
+            new_data="" 
+            for line in data.split('\n'):
+                if re.search(match, line):
+                    new_data+=line  
+                    new_data+='\n' 
+            data = new_data
+        
+         
+        result =  run_goaccess(data )
+        return HTMLResponse(content=result , status_code=200)
     
-    if db.id_exists(file_id) == False:
-        raise Exception(f"file {file_id} not found")
-    data = db.get_logfile(file_id) #.decode("utf-8")
-    if match != ""  :
-        new_data="" 
-        for line in data.split('\n'):
-            if re.search(match, line):
-                new_data+=line  
-                new_data+='\n' 
-        data = new_data
-    
-     
-    result =  run_goaccess(data )
-    return HTMLResponse(content=result , status_code=200)
+    except Exception as e:
+        return HTMLResponse(content=error_page.format(text = str(e) ), status_code=500)
 
-    #except Exception as e:
-    #    return HTMLResponse(content=error_page.format(text = str(e) ), status_code=500)
+@app.post("/v1/report") 
+async def get_report1( request: Request): 
+    return await  get_upload(request)
+
 
 @app.post("/v1/upload") 
-async def get_report( request: Request): 
+async def get_upload( request: Request): 
     try: 
         start = time.time()
         file_id = new_report_id()
         
 
         logger (f"report file name {file_id}")
-        url = f"{HOSTNAME}/v1/report/{file_id}" 
+        url = f"{HOSTNAME}/v1/generate/{file_id}" 
         
         db = Database()
 
