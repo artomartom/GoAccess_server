@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Query 
+from fastapi import FastAPI, Request, Query
 import uvicorn
 
 from settings import LISTEN,  DEBUG, PORT, VERSION, HOSTNAME
@@ -49,6 +49,12 @@ async def get_report(file_id: str,
     #except Exception as e:
     #    return HTMLResponse(content=error_page.format(text = str(e) ), status_code=500)
 
+
+@app.post("/v1/report") 
+async def get_report1( request: Request): 
+    return await  get_report(request)
+
+
 @app.post("/v1/upload") 
 async def get_report( request: Request): 
     try: 
@@ -73,7 +79,7 @@ async def get_report( request: Request):
             'report': url ,
             'status': 'OK',
             'version': VERSION,
-            'time' :  time.time() - start 
+            'time' :  time.time() - start
         }
 
     except Exception as e:
