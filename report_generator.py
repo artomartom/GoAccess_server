@@ -53,19 +53,22 @@ def run_goaccess(  data : str) -> str:
     
     logger(f"trying format test1")
         
-    args=  ["goaccess",    "-a", 
-            "--log-format", f'{format.log_format}',
-            f"--date-format={format.date_format}",  
-            f"--time-format={format.time_format }"] 
+    import tempfile
     
+    with tempfile.NamedTemporaryFile() as tmp:
+        tmp.write(data.encode())
+        
+        args=  ["goaccess",tmp.name,    "-a", 
+                "--log-format", f'{format.log_format}',
+                f"--date-format={format.date_format}",  
+                f"--time-format={format.time_format }"] 
      
-    result =  subprocess.run(
-        args, 
-        input=data,
-        capture_output=True,
-        encoding="utf-8",
-        text=True
-    )
+        result =  subprocess.run(
+            args, 
+            capture_output=True,
+            encoding="utf-8",
+            text=True
+        )
         
     
     
