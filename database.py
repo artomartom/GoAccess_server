@@ -2,25 +2,27 @@ import os
     
 class Database:
     
-    dir = "/tmp/ga_tmp/"
+    dir = f"{os.getcwd()}/data"
 
     def __init__(self):
         if os.path.exists(self.dir) == False:
             os.makedirs(self.dir) 
     
         
-    def add_logfile(self,filename,data):
+    def add_logfile(self,filename,data : bytes)-> None:
         with open(f"{self.dir}/{filename}" , 'wb') as file: 
             file.write(data)
         
-    def id_exists(self,id):
+    def id_exists(self,id : str )-> str:
         return os.path.isfile(f"{self.dir}/{id}")
         
-    def get_logfile(self,id ):    
+    def get_logfile(self,id : str ) -> str: 
         
         with  open(f"{self.dir}/{id}" , 'r') as file: 
-            return file.read()   
+            return  file.read()   
+            #return   '113.168.228.73 - - [08/Jul/2025:00:00:23 +0300] "GET ?orderby=price-desc&availability=in_stock&filter_automatic-winding=no-power-reserve-38-hours&query_type_automatic-winding=or&filter_movement=2414a,2414,2432-01,2431-01,2416 HTTP/1.1" 400 157 "-" "-"'
             
+      
 
 
 if __name__ == '__main__':
@@ -38,4 +40,4 @@ if __name__ == '__main__':
         if data_res  == data and db.id_exists(id):
             print("OK")
             
-        os.remove("/tmp/ga_tmp/sxgsdgdfgsdg")
+        os.remove(f"{os.getcwd()}/data/sxgsdgdfgsdg")

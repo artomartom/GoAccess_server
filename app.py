@@ -24,30 +24,30 @@ error_page= """
  
  
 @app.get("/v1/report/{file_id}", response_class=HTMLResponse) 
-async def get_report(file_id,
+async def get_report(file_id: str,
                     match: str = Query("")):
-    try: 
+    #try: 
         
-        db = Database()
-        logger(f"found match argument: {match}")
-        
-        if db.id_exists(file_id) == False:
-            raise Exception(f"file {file_id} not found")
-        data = db.get_logfile(file_id) #.decode("utf-8")
-        if match != ""  :
-            new_data="" 
-            for line in data.split('\n'):
-                if re.search(match, line):
-                    new_data+=line  
-                    new_data+='\n' 
-            data = new_data
-        
-         
-        result =  run_goaccess(data )
-        return HTMLResponse(content=result.stdout , status_code=200)
+    db = Database()
+    logger(f"found match argument: {match}")
+    
+    if db.id_exists(file_id) == False:
+        raise Exception(f"file {file_id} not found")
+    data = db.get_logfile(file_id) #.decode("utf-8")
+    if match != ""  :
+        new_data="" 
+        for line in data.split('\n'):
+            if re.search(match, line):
+                new_data+=line  
+                new_data+='\n' 
+        data = new_data
+    
+     
+    result =  run_goaccess(data )
+    return HTMLResponse(content=result , status_code=200)
 
-    except Exception as e:
-        return HTMLResponse(content=error_page.format(text = str(e) ), status_code=500)
+    #except Exception as e:
+    #    return HTMLResponse(content=error_page.format(text = str(e) ), status_code=500)
 
 @app.post("/v1/upload") 
 async def get_report( request: Request): 
@@ -88,10 +88,11 @@ async def get_report( request: Request):
 if __name__ == '__main__':
     uvicorn.run( 
         app="app:app",  # Path to your FastAPI app (module:app)
+        #port=int(PORT), 
         port=int(PORT), 
         #reload=True,     # Enable auto-reload for development
-        workers=4,       # Number of worker processes (1 for development)
+        workers=1,       # Number of worker processes (1 for development)
         log_level="info",  # Logging level
         access_log=True,   # Enable access logs
-        timeout_keep_alive=5,  
+        #timeout_keep_alive=5,  
                 host=LISTEN)
