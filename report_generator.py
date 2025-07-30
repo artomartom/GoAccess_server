@@ -1,21 +1,22 @@
+from subprocess import PIPE, Popen, CompletedProcess
 import subprocess
-
  
 import  settings  
 
 from  format_parser import Format 
 
 from utility import   logger
+import os
 
 def get_report_url(filename):
     return f"{ settings.HOSTNAME}/{filename}"
 import uuid
  
-import hashlib
-import datetime
 
-def new_report_id():
      
+def new_report_id():
+#import datetime
+#import hashlib
     #formatted_date =  datetime.datetime.now().strftime("%H:%M:%S_%y%m%d") 
     #formatted_date =  datetime.datetime.now().strftime("%H%M%S%f%Y") 
     #hash =  hashlib.sha256(formatted_date.encode()).hexdigest() 
@@ -24,7 +25,7 @@ def new_report_id():
     return  uuid.uuid4().hex
 
  
-def get_format(log_strings   ):
+def get_format(log_strings : str   ) -> Format:
      
     best_sample_line: str = ""
     best_sample_line_num: int = 0
@@ -39,35 +40,38 @@ def get_format(log_strings   ):
     #print(f"best sample found  at line {best_sample_line_num}")
     return  Format(best_sample_line)
 
-def run_goaccess(  data): 
-    
+def run_goaccess(  data : str) -> str: 
+     
     format = get_format(data.split('\n', 10))
         
         
     if format.name == "unknown format":
        raise Exception( "unknown format")
+
+    #args=  ["goaccess",  "-a",  "--log-format", "COMBINED" ] # ,  "--date-format=", "%d/%b/%Y" , "--time-format=", "%T" ] 
     
-    args=  ['goaccess',  "-a", #"-o", f"{settings.REPORTS_DIR}/{report_name}",
+    
+    logger(f"trying format test1")
+        
+    args=  ["goaccess",    "-a", 
             "--log-format", f'{format.log_format}',
             f"--date-format={format.date_format}",  
             f"--time-format={format.time_format }"] 
     
-    logger(f"trying format {format.name }")
+     
     result =  subprocess.run(
-        args,
-        input= data,
+        args, 
+        input=data,
         capture_output=True,
         encoding="utf-8",
         text=True
     )
+        
     
     
     if result.returncode != 0:
         raise Exception( result.stderr)
     
-    return result 
+    return result.stdout  #.decode()
     
-    #print (f"running goaccess")
-    #print (f"file path {file_path}")
-    #print (f"report path  {settings.REPORTS_DIR}/{report_name}")
-    
+ 
