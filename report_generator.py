@@ -53,12 +53,15 @@ def run_goaccess(  data : str) -> str:
     
     logger(f"trying format test1")
         
-    args=  ["goaccess",    "-a", 
+    args=  ["/usr/bin/goaccess",    "-a", 
             "--log-format", f'{format.log_format}',
             f"--date-format={format.date_format}",  
             f"--time-format={format.time_format }"] 
     
+
+
      
+
     result =  subprocess.run(
         args, 
         input=data,

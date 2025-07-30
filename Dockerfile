@@ -2,7 +2,7 @@ FROM debian:bookworm
  
 COPY  ./*py  /app/
 COPY  ./*txt /app/
-COPY  ./*env  /app/
+COPY  ./.env  /app/
  
  
 
