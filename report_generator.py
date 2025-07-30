@@ -69,8 +69,7 @@ def run_goaccess(  data : str) -> str:
             encoding="utf-8",
             text=True
         )
-        
-    
+ 
     
     if result.returncode != 0:
         raise Exception( result.stderr)
