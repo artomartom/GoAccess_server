@@ -1,85 +1,111 @@
-from flask import Flask, request, abort, jsonify # type: ignore
+from fastapi import FastAPI, Request, Query
+from fastapi.responses import FileResponse, HTMLResponse
+import uvicorn
 
-app = Flask(__name__)
-from tempfile  import  TemporaryDirectory
-from settings import LISTEN,  DEBUG, PORT, VERSION
-import os
-
-from utility import random_string, logger
-
-from report_generator import run_Goaccess, build_url, get_report_file_name
-from bench import bench
-
-tmp_dir = TemporaryDirectory(  )
-
-
-@app.route('/v1/bench', methods=['POST'])
-def get_bench():
-    res = bench(request.get_data(as_text=True))
-    print(res)
-    return jsonify({
-            'status': 'OK',
-            'time': res
-        }), 200
-    
+from settings import LISTEN,  DEBUG, PORT, VERSION, HOSTNAME
+from utility import  logger
+from report_generator import run_goaccess,   new_report_id
+from database import Database
 import time
 import re
+import io
 
-def write_raw(path,data):
-    logger(f"writing raw data")
-    with open(path, 'w') as f:
-            f.write(data)
-            
-def write_regex(path,data,regex):
-    logger(f"parsing regex{regex}")
-    with open(path, 'w') as f:
-        for line in data.split('\n'):
-            if re.search(regex, line):
-                f.writelines(line)  
-
-@app.route('/v1/report', methods=['POST'])
-def get_report():
-    try:
-        # Get the request data (works with JSON, form data, or raw text)
-        log_file_tmp_path = os.path.join(tmp_dir.name, f"{random_string()}.log")
+app = FastAPI(debug=DEBUG, docs_url=None, redoc_url=None)
+error_page= """
+    <html>
+        <head>
+            <title>Some HTML in here</title>
+        </head>
+        <body>
+            <h1>{text} HTML!</h1>
+        </body>
+    </html>
+    """
+ 
+ 
+ 
+@app.get("/v1/download/{file_id}", response_class=FileResponse) 
+async def get_report_download(file_id: str, match: str = Query("")):
+    res = await get_report(file_id,match)
+    if res.status_code == 200:
+        headers = {"Content-disposition": "attachment" }
+        return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
+    return res
+ 
+ 
+@app.get("/v1/generate/{file_id}", response_class=HTMLResponse) 
+async def get_report(file_id: str,
+                    match: str = Query("")):
+    try: 
         
-        match = request.args.get('mth')
-        
+        db = Database()
         logger(f"found match argument: {match}")
+        
+        if db.id_exists(file_id) == False:
+            raise Exception(f"file {file_id} not found")
+        data = db.get_logfile(file_id)  
+        if match != ""  :
+            new_data="" 
+            for line in data.split('\n'):
+                if re.search(match, line):
+                    new_data+=line  
+                    new_data+='\n' 
+            data = new_data
+        
+         
+        result =  run_goaccess(data )
+        return HTMLResponse(content=result , status_code=200)
+    
+    except Exception as e:
+        return HTMLResponse(content=error_page.format(text = str(e) ), status_code=500)
 
-        data = request.get_data(as_text=True)  # Get raw data as text
-        if len(data) ==  0: 
-            raise Exception( "Empty file")
-
+@app.post("/v1/report") 
+async def get_report1( request: Request): 
+    return await  get_upload(request)
+ 
+@app.post("/v1/upload") 
+async def get_upload( request: Request): 
+    try: 
         start = time.time()
-        if match == None:
-            write_raw(log_file_tmp_path, data)
-        else:
-            write_regex(log_file_tmp_path, data, match) 
-        end = time.time()
+        file_id = new_report_id()
         
-        logger(f"writing time {end - start}")
-            
-        report_filename = get_report_file_name()
-        logger (f"report file name {report_filename}")
-        result =  run_Goaccess(log_file_tmp_path,report_filename)
-        url = build_url(report_filename)
+
+        logger (f"report file name {file_id}")
+        url = f"{HOSTNAME}/v1/generate/{file_id}" 
         
-        if result.returncode != 0:
-            raise Exception( result.stderr)
+        db = Database()
+
+        data =  await request.body()
         
-        return jsonify({
+        if len(data) ==  0:
+            raise Exception("Empty file")
+        
+        logger(f"writing  data")
+        db.add_logfile(file_id,data)
+
+        return  {
             'report': url ,
             'status': 'OK',
-            'version': VERSION
-        }), 200
-        
+            'version': VERSION,
+            'time' :  time.time() - start
+        }
+
     except Exception as e:
-        return jsonify({
+        return  {
             'status': 'error',
             'message': str(e),
             'version': VERSION
-        }), 500
+        }
+
+ 
 
 if __name__ == '__main__':
-    app.run(host=LISTEN, port=int(PORT), debug=DEBUG)
+    uvicorn.run( 
+        app="app:app",  # Path to your FastAPI app (module:app)
+        port=int(PORT), 
+        #reload=True,     # Enable auto-reload for development
+        workers=1,       # Number of worker processes (1 for development)
+        log_level="info",  # Logging level
+        access_log=True,   # Enable access logs
+        timeout_keep_alive=5,  
+                host=LISTEN)
