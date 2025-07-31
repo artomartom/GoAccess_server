@@ -1,10 +1,7 @@
 FROM debian:bookworm
  
 COPY  ./*py  /app/
-COPY  ./*txt /app/
 COPY  ./.env  /app/
- 
- 
 
 WORKDIR /app/
 
@@ -27,12 +24,8 @@ RUN	apt install goaccess -y  && \
 	
 RUN	apt install python3-dotenv -y && \
 	apt install python3-fastapi -y && \
-	#apt install python3-debugpy -y && \ 
 	apt install python3-unicorn -y 
 	
  
-#ENTRYPOINT   ["bash"]
- 
 ENTRYPOINT   ["/usr/bin/python3", "/app/app.py"]
-#ENTRYPOINT   ["python",  "-m",  "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678", "--log-to", "/app/logs", "myscript.py", "/app/app.py"     ]
           

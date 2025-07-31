@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Request, Query
+from fastapi.responses import FileResponse, HTMLResponse
 import uvicorn
 
 from settings import LISTEN,  DEBUG, PORT, VERSION, HOSTNAME
 from utility import  logger
-from fastapi.responses import HTMLResponse
 from report_generator import run_goaccess,   new_report_id
 from database import Database
 import time
@@ -23,6 +23,16 @@ error_page= """
     """
  
  
+ 
+@app.get("/v1/download/{file_id}", response_class=FileResponse) 
+async def get_report_download(file_id: str, match: str = Query("")):
+    res = await get_report(file_id,match)
+    if res.status_code == 200:
+        headers = {"Content-disposition": "attachment" }
+        return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
+    return res
+ 
+ 
 @app.get("/v1/generate/{file_id}", response_class=HTMLResponse) 
 async def get_report(file_id: str,
                     match: str = Query("")):
@@ -33,7 +43,7 @@ async def get_report(file_id: str,
         
         if db.id_exists(file_id) == False:
             raise Exception(f"file {file_id} not found")
-        data = db.get_logfile(file_id) #.decode("utf-8")
+        data = db.get_logfile(file_id)  
         if match != ""  :
             new_data="" 
             for line in data.split('\n'):
@@ -52,14 +62,7 @@ async def get_report(file_id: str,
 @app.post("/v1/report") 
 async def get_report1( request: Request): 
     return await  get_upload(request)
-
-
-
-@app.post("/v1/report") 
-async def get_report1( request: Request): 
-    return await  get_report(request)
-
-
+ 
 @app.post("/v1/upload") 
 async def get_upload( request: Request): 
     try: 
@@ -99,11 +102,10 @@ async def get_upload( request: Request):
 if __name__ == '__main__':
     uvicorn.run( 
         app="app:app",  # Path to your FastAPI app (module:app)
-        #port=int(PORT), 
         port=int(PORT), 
         #reload=True,     # Enable auto-reload for development
         workers=1,       # Number of worker processes (1 for development)
         log_level="info",  # Logging level
         access_log=True,   # Enable access logs
-        #timeout_keep_alive=5,  
+        timeout_keep_alive=5,  
                 host=LISTEN)
