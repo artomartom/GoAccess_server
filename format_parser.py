@@ -38,8 +38,7 @@ class Format():
                 return format
             
                
-        # didnt find any matches returning combined format
-        return format_list[0]
+        return  ("unknown format","","","","unknown format")
     
      
     

@@ -29,6 +29,7 @@ def get_format(log_strings : str   ) -> Format:
             best_sample_line_num = line_num
             best_sample_line = line
             best_sample_count = count
+    logger(f"best sample line{best_sample_line}")
     return  Format(best_sample_line)
 
 def run_goaccess(  data : str) -> str: 
@@ -37,7 +38,8 @@ def run_goaccess(  data : str) -> str:
         
     if format.name == "unknown format":
        raise Exception( "unknown format")
-
+	
+    logger(f"trying format {format.name }")
     import tempfile
     
     with tempfile.NamedTemporaryFile() as tmp:
