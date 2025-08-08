@@ -3,34 +3,18 @@ import subprocess
  
 import  settings  
 
-from  format_parser import Format 
+from  format_parser import Format, get_format
 
 from utility import   logger
 import os
 import uuid
+import tempfile
 
 def get_report_url(filename):
     return f"{ settings.HOSTNAME}/{filename}"
  
-     
 def new_report_id():
     return  uuid.uuid4().hex
-
- 
-def get_format(log_strings : str   ) -> Format:
-     
-    best_sample_line: str = ""
-    best_sample_line_num: int = 0
-    best_sample_count: int  = 99
-    for line_num in range(len(log_strings)):    
-        line = log_strings[line_num]
-        count = line.count('"-"')
-        if best_sample_count > count:
-            best_sample_line_num = line_num
-            best_sample_line = line
-            best_sample_count = count
-    logger(f"best sample line{best_sample_line}")
-    return  Format(best_sample_line)
 
 def run_goaccess(  data : str) -> str: 
      
@@ -40,9 +24,8 @@ def run_goaccess(  data : str) -> str:
        raise Exception( "unknown format")
 	
     logger(f"trying format {format.name }")
-    import tempfile
     
-    with tempfile.NamedTemporaryFile() as tmp:
+    with tempfile.NamedTemporaryFile('wb') as tmp:
         tmp.write(data.encode())
         
         args=  ["goaccess",tmp.name,    "-a", 
@@ -50,13 +33,10 @@ def run_goaccess(  data : str) -> str:
                 f"--date-format={format.date_format}",  
                 f"--time-format={format.time_format }"] 
      
-        result =  subprocess.run(
+        result = subprocess.run(
             args, 
-            capture_output=True,
-            encoding="utf-8",
-            text=True
+            capture_output=True 
         )
- 
     
     if result.returncode != 0:
         raise Exception( result.stderr)
