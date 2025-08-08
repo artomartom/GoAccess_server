@@ -11,13 +11,27 @@ import re
 """
 
 format_list =  [
-    ( r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4} - - \[[0-9][0-9]\/[A-Z][a-z][a-z]\/202[0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \+0[0-9]00] \"(GET|HEAD|PUT|POST|DELETE|PATCH) \/.* HTTP\/[0123].[012689]\" [1-5][0-9][0-9] \d+ \"http(s|):\/\/.*\/*\"" , 
+    ( r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4} - (-|\w+) \[[0-9][0-9]\/[A-Z][a-z][a-z]\/202[0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \+0[0-9]00] \"(GET|HEAD|PUT|POST|DELETE|PATCH) \/.* HTTP\/[0123].[012689]\" [1-5][0-9][0-9] \d+ \"http(s|):\/\/.*\/*\"" , 
     "%h %^[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"  %^",  "%d/%b/%Y",  "%T" , "combined" ),
-     ( r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4} - - \[[0-9][0-9]\/[A-Z][a-z][a-z]\/202[0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \+0[0-9]00] \"(GET|HEAD|PUT|POST|DELETE|PATCH) \/.* HTTP\/[0123].[012689]\" [1-5][0-9][0-9] \d+ \"http(s|):\/\/.*\/*\" \"(((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}|\-|((([0-9A-Fa-f]{1,4}:){1,6}:)|(([0-9A-Fa-f]{1,4}:){7}))([0-9A-Fa-f]{1,4}))\"" , 
-    "%h %^[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"  %^",  "%d/%b/%Y",  "%T" , "combined" ),
-    (r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4} - - \[[0-9][0-9]\/[A-Z][a-z][a-z]\/202[0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \+0[0-9]00 - (\d+.\d+|\-)] [1-5][0-9][0-9] \"(GET|HEAD|PUT|POST|DELETE|PATCH) \/.* HTTP\/[0123].[012689]\" \d+ \"(http(s|)://.*\/*|\-)\" \"(.*(ozilla|indows|pple|pera|acebook|oogle|bot|BOT|Gecko|rawler|hrome|irefox).*)\" \"(((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}|\-|((([0-9A-Fa-f]{1,4}:){1,6}:)|(([0-9A-Fa-f]{1,4}:){7}))([0-9A-Fa-f]{1,4}))\"",
+    (r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4} - (-|\w+) \[[0-9][0-9]\/[A-Z][a-z][a-z]\/202[0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \+0[0-9]00 - (\d+.\d+|\-)] [1-5][0-9][0-9] \"(GET|HEAD|PUT|POST|DELETE|PATCH) \/.* HTTP\/[0123].[012689]\" \d+ \"(http(s|)://.*\/*|\-)\" \"(.*(ozilla|indows|pple|pera|acebook|oogle|bot|BOT|Gecko|rawler|hrome|irefox).*)\" \"(((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}|\-|((([0-9A-Fa-f]{1,4}:){1,6}:)|(([0-9A-Fa-f]{1,4}:){7}))([0-9A-Fa-f]{1,4}))\"",
     "%h - %^ [%d:%t - %^] %s \"%r\" %b \"%R\" \"%u\" %^","%d/%b/%Y",'%H:%M:%S',"bitrixvm main")
     ]
+
+
+def get_format(log_strings : str   ) -> Format:
+     
+    best_sample_line: str = ""
+    best_sample_line_num: int = 0
+    best_sample_count: int  = 50
+    for line_num in range(len(log_strings)):    
+        line = log_strings[line_num]
+        count = line.count('"-"')
+        if best_sample_count > count:
+            best_sample_line_num = line_num
+            best_sample_line = line
+            best_sample_count = count
+    logger(f"best sample line{best_sample_line}")
+    return  Format(best_sample_line)
 
 class Format():
     

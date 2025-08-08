@@ -10,6 +10,8 @@ import time
 import re
 import io
 
+from cache import Cache_Server
+
 app = FastAPI(debug=DEBUG, docs_url=None, redoc_url=None)
 error_page= """
     <html>
@@ -31,29 +33,42 @@ async def get_report_download(file_id: str, match: str = Query("")):
         headers = {"Content-disposition": "attachment" }
         return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
     return res
- 
+
+def match_regex(match: str, data: str):
+    if match == ""  :
+        return data
+        
+    new_data="" 
+    for line in data.split('\n'):
+        if re.search(match, line):
+            new_data+=line  
+            new_data+='\n' 
+    return  new_data
  
 @app.get("/v1/generate/{file_id}", response_class=HTMLResponse) 
 async def get_report(file_id: str,
                     match: str = Query("")):
     try: 
         
+        ca = Cache_Server()
+        cache = ca.get(f"{file_id}/{match}")
+        if cache != None:
+            logger(f"cache found for {file_id}/{match}")
+            return HTMLResponse(content=cache , status_code=200)
+
         db = Database()
         logger(f"found match argument: {match}")
-        
+
         if db.id_exists(file_id) == False:
             raise Exception(f"file {file_id} not found")
         data = db.get_logfile(file_id)  
-        if match != ""  :
-            new_data="" 
-            for line in data.split('\n'):
-                if re.search(match, line):
-                    new_data+=line  
-                    new_data+='\n' 
-            data = new_data
-        
-         
+
+        data = match_regex(match, data)
+
         result =  run_goaccess(data )
+
+        ca.set(f"{file_id}/{match}",result)
+
         return HTMLResponse(content=result , status_code=200)
     
     except Exception as e:

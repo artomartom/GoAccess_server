@@ -24,6 +24,7 @@ RUN	apt install goaccess -y  && \
 	
 RUN	apt install python3-dotenv -y && \
 	apt install python3-fastapi -y && \
+	apt install python3-redis -y && \
 	apt install python3-unicorn -y 
 	
  
