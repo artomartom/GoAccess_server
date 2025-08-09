@@ -1,6 +1,6 @@
 import redis
 
-from settings import CACHE_SRV, CACHE_PORT, DEBUG
+from settings import CACHE, CACHE_SRV, CACHE_PORT, DEBUG
 
  
 class Cache_Server:
@@ -8,14 +8,20 @@ class Cache_Server:
     redis : redis.client.Redis   
     def __init__(self):
         
+        if not CACHE:
+            return 
         
         self.redis = redis.Redis(host=CACHE_SRV, port=CACHE_PORT, db=0)
         if DEBUG:
             assert  self.redis.ping() == True
 
     def get(self,key: str):
+        if not CACHE:
+            return None
         return self.redis.get(key)
     def set(self,key: str, html : str):
+        if not CACHE:
+            return None
         return self.redis.set(key,html)
 
 if __name__ == '__main__':
