@@ -41,28 +41,21 @@ class Format():
                
         return  ("unknown format","","","","unknown format")
     
-     
-    
-    def get_format(self):
-        return 
 
+    def get_format(log_strings : str):
 
-
-
-def get_format(log_strings : str   ) -> Format:
-     
-    best_sample_line: str = ""
-    best_sample_line_num: int = 0
-    best_sample_count: int  = 50
-    for line_num in range(len(log_strings)):    
-        line = log_strings[line_num]
-        count = line.count('"-"')
-        if best_sample_count > count:
-            best_sample_line_num = line_num
-            best_sample_line = line
-            best_sample_count = count
-    logger(f"best sample line {best_sample_line}")
-    return  Format(best_sample_line)
+        best_sample_line: str = ""
+        best_sample_line_num: int = 0
+        best_sample_count: int  = 50
+        for line_num in range(len(log_strings)):    
+            line = log_strings[line_num]
+            count = line.count('"-"')
+            if best_sample_count > count:
+                best_sample_line_num = line_num
+                best_sample_line = line
+                best_sample_count = count
+        logger(f"best sample line {best_sample_line}")
+        return  Format(best_sample_line)
 
 
 if __name__ == "__main__":

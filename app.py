@@ -10,7 +10,7 @@ import time
 import re
 import io
 
-from  format_parser import  get_format
+from  format_parser import  Format
 
 from cache import Cache_Server
 
@@ -65,10 +65,9 @@ async def get_report(file_id: str,
             raise Exception(f"file {file_id} not found")
         data = db.get_logfile(file_id)  
 
-        format = get_format(data.split('\n', 10))
+        format = Format.get_format(data.split('\n', 10))
         
         data = match_regex(match, data)
-
         
         result =  run_goaccess(data ,format )
 
