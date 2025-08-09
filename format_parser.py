@@ -61,7 +61,7 @@ def get_format(log_strings : str   ) -> Format:
             best_sample_line_num = line_num
             best_sample_line = line
             best_sample_count = count
-    logger(f"best sample line{best_sample_line}")
+    logger(f"best sample line {best_sample_line}")
     return  Format(best_sample_line)
 
 
