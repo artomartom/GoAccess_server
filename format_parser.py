@@ -1,7 +1,7 @@
 
 
 import re
-
+from utility import  logger
 """
 [0] regex
 [1] log format

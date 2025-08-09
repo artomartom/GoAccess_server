@@ -3,7 +3,7 @@ import subprocess
  
 import  settings  
 
-from  format_parser import Format, get_format
+from  format_parser import Format 
 
 from utility import   logger
 import os
@@ -16,9 +16,8 @@ def get_report_url(filename):
 def new_report_id():
     return  uuid.uuid4().hex
 
-def run_goaccess(  data : str) -> str: 
+def run_goaccess(  data : str, format : Format ) -> str: 
      
-    format = get_format(data.split('\n', 10))
         
     if format.name == "unknown format":
        raise Exception( "unknown format")
