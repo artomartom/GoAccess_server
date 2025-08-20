@@ -3,7 +3,7 @@ import subprocess
  
 import  settings  
 
-from  format_parser import Format 
+from  format_parser import Format
 
 from utility import   logger
 import os
@@ -19,8 +19,9 @@ def new_report_id():
 def run_goaccess(  data : str, format : Format ) -> str: 
      
         
-    if format.name == "unknown format":
-       raise Exception( "unknown format")
+    #if format.valid_format == False:
+    #   print(f"{format.valid_format}  23")
+    #   raise Format.Exception( f"unknown format {format}")
 	
     logger(f"trying format {format.name }")
     
@@ -38,7 +39,9 @@ def run_goaccess(  data : str, format : Format ) -> str:
         )
     
     if result.returncode != 0:
-        raise Exception( result.stderr)
+        err=  result.stderr.decode()
+        logger(err)
+        raise Format.Exception(err)
     
     return result.stdout   
     
