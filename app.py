@@ -17,8 +17,10 @@ from cache import Cache_Server
 app = FastAPI(debug=DEBUG, docs_url=None, redoc_url=None)
 
 @app.get("/v1/download/{file_id}", response_class=FileResponse) 
-async def get_report_download(file_id: str, match: str = Query("")):
-    res = await get_report(file_id,match)
+async def get_report_download(file_id: str, 
+                    mth: str = Query(""),
+                    fmt: str = Query("")):
+    res = await get_report(file_id,mth,fmt)
     if res.status_code == 200:
         headers = {"Content-disposition": "attachment" }
         return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
