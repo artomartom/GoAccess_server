@@ -45,7 +45,8 @@ async def get_report(file_id: str,
     try: 
         
         ca = Cache_Server()
-        cache = ca.get(f"{file_id}/{mth}")
+        cache_key = f"{file_id}/{mth}/{fmt}"
+        cache = ca.get(cache_key)
         if cache != None:
             logger(f"cache found for {file_id}/{mth}")
             return HTMLResponse(content=cache , status_code=200)
@@ -60,7 +61,7 @@ async def get_report(file_id: str,
         data = match_regex(mth, data)
         
         result =  run_goaccess(data ,fmt )
-        ca.set(f"{file_id}/{mth}",result)
+        ca.set(cache_key,result)
         return HTMLResponse(content=result , status_code=200)
     
     except Format.Exception as e:
