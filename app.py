@@ -9,25 +9,13 @@ from database import Database
 import time
 import re
 import io
-
+import jinja2
 from  format_parser import  Format
 
 from cache import Cache_Server
 
 app = FastAPI(debug=DEBUG, docs_url=None, redoc_url=None)
-error_page= """
-    <html>
-        <head>
-            <title>Some HTML in here</title>
-        </head>
-        <body>
-            <h1>{text} HTML!</h1>
-        </body>
-    </html>
-    """
- 
- 
- 
+
 @app.get("/v1/download/{file_id}", response_class=FileResponse) 
 async def get_report_download(file_id: str, match: str = Query("")):
     res = await get_report(file_id,match)
@@ -49,34 +37,36 @@ def match_regex(match: str, data: str):
  
 @app.get("/v1/generate/{file_id}", response_class=HTMLResponse) 
 async def get_report(file_id: str,
-                    match: str = Query("")):
+                    mth: str = Query(""),
+                    fmt: str = Query("")
+                    ):
     try: 
         
         ca = Cache_Server()
-        cache = ca.get(f"{file_id}/{match}")
+        cache = ca.get(f"{file_id}/{mth}")
         if cache != None:
-            logger(f"cache found for {file_id}/{match}")
+            logger(f"cache found for {file_id}/{mth}")
             return HTMLResponse(content=cache , status_code=200)
-
         db = Database()
-        logger(f"found match argument: {match}")
-
+        logger(f"found match argument: {mth}")
         if db.id_exists(file_id) == False:
             raise Exception(f"file {file_id} not found")
         data = db.get_logfile(file_id)  
 
-        format = Format.get_format(data.split('\n', 10))
+        fmt = Format.get_format(data.split('\n', 200), name=fmt)
+    
+        data = match_regex(mth, data)
         
-        data = match_regex(match, data)
-        
-        result =  run_goaccess(data ,format )
-
-        ca.set(f"{file_id}/{match}",result)
-
+        result =  run_goaccess(data ,fmt )
+        ca.set(f"{file_id}/{mth}",result)
         return HTMLResponse(content=result , status_code=200)
     
-    except Exception as e:
-        return HTMLResponse(content=error_page.format(text = str(e) ), status_code=500)
+    except Format.Exception as e:
+        with open("error_page.html", 'r') as file:
+            html_page = file.read()
+            error_text = str(e) #.replace("\n","\n\t")
+            html_page = jinja2.Template(html_page).render(error_text = error_text)
+            return HTMLResponse(html_page, status_code=500)
 
 @app.post("/v1/report") 
 async def get_report1( request: Request): 
@@ -122,9 +112,10 @@ if __name__ == '__main__':
     uvicorn.run( 
         app="app:app",  # Path to your FastAPI app (module:app)
         port=int(PORT), 
-        #reload=True,     # Enable auto-reload for development
         workers=1,       # Number of worker processes (1 for development)
         log_level="info",  # Logging level
         access_log=True,   # Enable access logs
         timeout_keep_alive=5,  
                 host=LISTEN)
+
+ 
