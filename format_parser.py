@@ -51,10 +51,10 @@ class Format():
     def get_format(log_strings : list[str],name :str ):
         
         if name != "":
-            logger (f"tring {name} log format")
+            logger (f"trying {name} log format")
             return Format(name=name)
 
-        logger ("tring to deduce log format")
+        logger ("trying to deduce log format")
         best_sample_line: str = ""
         best_sample_line_num: int = 0
         count = len(log_strings) 

@@ -42,7 +42,9 @@ async def get_report(file_id: str,
                     mth: str = Query(""),
                     fmt: str = Query("")
                     ):
-    try: 
+    try:
+        
+        logger(f"received args \n\tmth: {mth}\n\tfmt: {fmt}") 
         
         ca = Cache_Server()
         cache_key = f"{file_id}/{mth}/{fmt}"
@@ -54,6 +56,7 @@ async def get_report(file_id: str,
         logger(f"found match argument: {mth}")
         if db.id_exists(file_id) == False:
             raise Exception(f"file {file_id} not found")
+            ##TODO FileNotFoundError expection with error page html
         data = db.get_logfile(file_id)  
 
         fmt = Format.get_format(data.split('\n', 200), name=fmt)
