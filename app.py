@@ -44,13 +44,13 @@ async def get_report(file_id: str,
                     ):
     try:
         
-        logger(f"received args \n\tmth: {mth}\n\tfmt: {fmt}") 
+        logger(f"received args \n\t\tmth: {mth}\n\t\tfmt: {fmt}") 
         
         ca = Cache_Server()
         cache_key = f"{file_id}/{mth}/{fmt}"
         cache = ca.get(cache_key)
         if cache != None:
-            logger(f"cache found for {file_id}/{mth}")
+            logger(f"cache found for {cache_key}")
             return HTMLResponse(content=cache , status_code=200)
         db = Database()
         logger(f"found match argument: {mth}")
