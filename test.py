@@ -3,6 +3,20 @@
 from  format_parser import   Format , Fields as f
 import re
 
+
+
+
+def run_test(regex :str, samples :list):
+    for sample in samples:
+            pattern = re.compile(regex)
+            value, valid = sample
+            match = pattern.fullmatch(value)
+            
+            if (match and valid) or (not match and not valid):
+                print(f"✅ {value}")     
+            else:
+                print(f"❌ {value}") 
+    print ("")   
 addresses_v4 = [
 ("77.88.9.142",True),
 ("78.178.85.171",True),
@@ -48,6 +62,7 @@ url= [
     ('''/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1&dfs3="34"''',True),
     ("/.env",True),
     ("/заз",True),
+    ("/",True),
     (".env",False),
      
     ]
@@ -78,9 +93,34 @@ timezone =[
 
 refferer =[
     ("https://baikalovostrog.ru/",True),
-    ("http://baikalovostrogCom/",False),
+    ("http://baikalovostrogCom:80/",False),
     ("https://baikalovostrog.ru/",True),
+    ("https://baikalovostrog.ru:443/",True),
     ("//baikalovostrog.ru/",False),
+    ("http://62.113.44.234",True),
+    ("http://xn--80aatrux.xn--p1ai",True),
+    ("xn--80aatrux.xn--p1ai",False),
+    ("http://s",False    ),
+    ("http://62.113.44.234:443",True),
+    ("http://fd48:9bda:1f2e:8:0:1234:5678:9abc",True),
+    ("http://fd48:9bda:1f2e:8:0:1234:5678:9abc:443",True),
+    ("http://fd48:9bda:1f2e:8:0:1234:5678:9abc:443/",True),
+    ("http://fd48:9bda:1f2e:8:0:1234:5678:9abc:80",True),
+    ("fd48:9bda:1f2e:8:0:1234:5678:9abc:443",False),
+    ("https://fd12:3456:789a::1:443",True),
+    ("https://fd12:3456:789a::1:4sd43",False),
+    ("http://62.113.44.234:44sd3",False),
+    ("http://62.113.44.234:443",True),
+    
+]
+
+x_for = [
+    
+    ("156.234.180.92",True),
+    ("fd87:d2e5:2834::feed:1",True),
+    ("2a03:2880:f800:8::, 172.71.194.251",True),
+    ("156.234.180.92, 172.71.194.251",True),
+    ("2a03:2880:f800:8::,  fd48:9bda:1f2e:8:0:1234:5678:9abc",False),
     
 ]
 
@@ -97,6 +137,12 @@ agent= [
 ("Mozilla/5.0 (Linux; arm_64; Android 12; NCO-LX1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.1823 YaApp_Android/24.120.1 YaSearchBrowser/24.120.1 BroPP/1.0 SA/3 Mobile Safari/537.36",True),
 ]
 
+log_combined_x_for =[
+('''128.71.239.165 - admin [26/Apr/2023:12:52:46 +0300] "GET / HTTP/1.1" 401 195 "https://dev.megacvet24.ru/" "Mozilla/5.0 (Windows NT 5.1; rv:9.0.1) Gecko/20100101 Firefox/9.0.1" "128.71.239.165"''',True      ),
+('''114.119.149.92 - - [25/Apr/2023:13:55:31 +0300] "GET /piony-na-vypisku/ HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/5-kust-pion-roz-miks-50-sm.html" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.149.92"''',True      ),
+('''114.119.149.92 - - [25/Apr/2023:13:55:31 +0300] "GET /piony-na-vypisku/ HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/5-kust-pion-roz-miks-50-sm.html" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "fd48:9bda:1f2e:8:0:1234:5678:9abc"''',True      ),
+    
+]
 
 log_combined =[
 ('''66.249.73.233 - - [08/Jul/2025:13:28:59 +0300] "GET /product/vostok-dial-030934/ HTTP/1.1" 500 2443 "-" "Mozilla/5.0 Safari/537.36 (compatible; Googlebot/2.1; )"''',True      ),
@@ -131,50 +177,77 @@ log_combined =[
 ('''178.125.103.51 - - [12/Aug/2025:06:27:32 +0300] "GET /wp-content/cache/thumb/54/de1a226cd148054_360x181.png HTTP/1.1" 200 123396 "https://fashion-likes.ru/beauty/3-parfyuma-kotorye-paxnut-franciej-ili-kak-pochuvstvovat-sebya-parizhankoj/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36"''', True),
 ('''95.108.213.199 - - [13/Aug/2025:01:05:02 +0300] "GET /wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 HTTP/1.1" 200 5355 "https://baikalovostrog.ru/" "Mozilla/5.0 (compatible; YandexRenderResourcesBot/1.0; +http://yandex.com/bots) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0"''', True),
 ('''109.173.96.51 - regru [20/Aug/2025:19:15:40 +0300] "GET /wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 HTTP/1.1" 200 4894 "https://paltokm.ru/wp-admin/install.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0"''', True),
+('''46.149.67.20 - - [13/Aug/2025:00:00:40 +0300] "GET / HTTP/1.0" 200 40200 "http://baikalovostrog.ru/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"''', True),
+('''91.122.53.173 - - [13/Aug/2025:00:56:18 +0300] "GET /.env HTTP/1.0" 404 135796 "-" "Python-urllib/3.13"''', True),
+('''46.149.67.20 - - [13/Aug/2025:04:28:44 +0300] "GET / HTTP/1.0" 200 40206 "http://baikalovostrog.ru/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"''', True),
+('''89.113.144.165 - - [11/Aug/2025:00:03:10 +0300] "GET / HTTP/1.1" 200 8526 "https://yandex.ru/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/28.0 Chrome/130.0.0.0 Mobile Safari/537.36"''', True),
+('''114.119.144.88 - - [08/Jul/2025:13:28:59 +0300] "GET /product-category/komandirskie-classic/?filter_movement=2432,2416b,2432-01,2415,2426-12 HTTP/1.1" 500 2443 "http://vostok.watch/product-category/komandirskie-classic/?filter_movement=2432%2C2416b%2C2432-01%2C2431%2C2415%2C2426-12" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)"''', True),
+('''188.75.207.150 - - [12/Aug/2025:06:25:16 +0300] "GET /wp-content/uploads/2025/01/689x919-0xunt6cm1s-5028848775689678210-siuznr.jpg HTTP/1.1" 200 59001 "https://fashion-likes.ru/beauty/modnye-strizhki-2025-varianty-dlya-lyuboj-dliny-kotorye-zaxochetsya-povtorit/" "Mozilla/5.0 (Linux; Android 12; FOA-LX9 Build/HUAWEIFOA-LX9; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/114.0.5735.196 Mobile Safari/537.36 [Pinterest/Android]"''', True),
+('''178.125.103.51 - - [12/Aug/2025:06:27:32 +0300] "GET /wp-content/cache/thumb/54/de1a226cd148054_360x181.png HTTP/1.1" 200 123396 "https://fashion-likes.ru/beauty/3-parfyuma-kotorye-paxnut-franciej-ili-kak-pochuvstvovat-sebya-parizhankoj/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36"''', True),
+('''5.255.231.124 - - [15/Aug/2025:13:00:53 +0300] "GET /wp-includes/js/jquery/jquery.min.js?ver=3.7.1 HTTP/1.1" 200 30646 "https://barnaul.tentium.ru/brezent/brezentovye-tenty/" "Mozilla/5.0 (compatible; YandexRenderResourcesBot/1.0; +http://yandex.com/bots) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0"''', True),
+('''95.108.213.199 - - [13/Aug/2025:01:05:02 +0300] "GET /wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 HTTP/1.1" 200 5355 "https://baikalovostrog.ru/" "Mozilla/5.0 (compatible; YandexRenderResourcesBot/1.0; +http://yandex.com/bots) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0"''', True),
+('''46.149.67.20 - - [13/Aug/2025:00:59:09 +0300] "POST /wp-cron.php?doing_wp_cron=1755035948.6907539367675781250000 HTTP/1.1" 200 0 "-" "WordPress/6.8.2; https://baikalovostrog.ru"''', True),
+('''94.138.132.183 - - [12/Aug/2025:06:25:11 +0300] "GET /wp-content/cache/thumb/43/fc359bb7befa443_370x0.png HTTP/1.1" 200 110823 "https://mama-likes.ru/dizajn-interera/13-samyh-neudachnyh-reshenij-dlya-kuhni.html" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 YaBrowser/25.6.0.0 Safari/537.36"''', True),
+('''43.157.172.39 - - [22/Jul/2025:03:02:23 +0000] "GET / HTTP/1.1" 404 711 "http://62.113.44.234:443" "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1"''', True),
+('''114.119.157.56 - - [08/Jul/2025:13:29:28 +0300] "GET /product-category/amphibian-classic/?orderby=rating&filter_automatic-winding=no,yes&query_type_automatic-winding=or&filter_movement=2409,2431,2416,2431-12 HTTP/1.1" 499 0 "https://vostok.watch/product-category/amphibian-classic/?orderby=rating&filter_movement=2409%2C2431%2C2416&filter_automatic-winding=no%2Cyes&query_type_automatic-winding=or" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)"''', True),
+('''109.173.96.51 - regru [20/Aug/2025:19:15:40 +0300] "GET /wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1 HTTP/1.1" 200 4894 "https://paltokm.ru/wp-admin/install.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0"''', True),
+#('''''', True),
 ]
 
-#a_v4
-#a_v6
-#mthd
-#rfr
-#url
-#http
-#x_for
-#sts
-#byt
-#agnt
-#datim
-#timzn
-#upstrm
-#usr
+log_bitrixvm =[
+    
+('''89.111.133.192 - - [18/Aug/2025:04:13:10 +0300 - -] 301 "GET /opinion/ HTTP/1.1" 162 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" "185.242.122.4"''', True),
+('''85.192.11.9 - - [18/Aug/2025:03:51:01 +0300 - 0.031] 200 "GET /details/rss/ HTTP/1.0" 168459 "http://dvinatoday.ru/details/rss/" "Mozilla/5.0 (compatible; Linux; x64; en-us) KHTML/4.3.5 (like Gecko) Chrome/32.3.187.919 Safari/544.81" "-"''', True),
+('''65.21.193.198 - - [17/Jul/2025:16:17:51 +0300 - 0.000] 502 "GET / HTTP/2.0" 1135 "https://nasha-set.ru" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" "65.21.193.198"''', True),
+('''188.170.76.115 - - [14/Aug/2025:00:02:45 +0300 - 0.062] 200 "GET / HTTP/2.0" 23615 "https://ru.m.wikipedia.org/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36" "-"''', True),
+('''188.170.76.115 - - [14/Aug/2025:00:02:47 +0300 - -] 200 "GET /upload/iblock/6fe/87359048.jpg HTTP/2.0" 4440 "https://kmr10.ru/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36" "-"''', True),
+('''188.170.76.115 - - [14/Aug/2025:00:02:47 +0300 - -] 200 "GET /upload/iblock/6fe/87359048.jpg HTTP/2.0" 4440 "https://kmr10.ru/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36" "fd48:9bda:1f2e:8:0:1234:5678:9abc"''', True),
+('''2.57.23.215 - - [11/Aug/2025:00:00:19 +0300 - 0.038] 404 "GET /bitrix/redirect.php?goto=https://kb.smds.us/index.php/User:Conservatory-repair-cost1837 HTTP/1.1" 582 "https://xn--h1algfd.xn--p1ai/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" "-"''', True),
+('''185.40.4.92 - - [18/Aug/2025:03:50:12 +0300 - -] 304 "GET /service-worker.js HTTP/2.0" 0 "https://dvinatoday.ru/service-worker.js" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" "-"''', True),
 
-def run_test(regex :str, samples :list):
-    for sample in samples:
-            pattern = re.compile(regex)
-            value, valid = sample
-            match = pattern.fullmatch(value)
-            
-            if (match and valid) or (not match and not valid):
-                print(f"✅ {value}")     
-            else:
-                print(f"❌ {value}") 
-    print ("")   
+#('''''', True),
+
+]
+
+log_hestia = [
+('''185.111.218.118 - - [17/Aug/2025:00:39:12 +0300] GET / HTTP/1.1 "301" 162 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko, WEBO Pulsar) Chrome/15.0.874.106 Safari/535.2" "-"''', True),
+('''42.236.12.229 - - [17/Aug/2025:09:31:53 +0300] GET / HTTP/1.1 "301" 162 "http://serginnetti.ru/" "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 6P Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.83 Mobile Safari/537.36; 360Spider" "-"''', True),
+('''65.109.19.160 - - [17/Aug/2025:11:21:55 +0300] GET /upload/iblock/808/igyz3r4jljq04ceyhjgwx2ys1gaxvz5r.jpg HTTP/1.0 "301" 162 "-" "meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler)" "2a03:2880:f800:8::, 172.71.194.251"''', True),
+('''143.92.32.30 - - [19/Aug/2025:13:29:29 +0300] GET /api/pages/login HTTP/1.1 "301" 162 "http://serginnetti.ru" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" "117.66.150.77"''', True),  
+('''65.109.19.160 - - [20/Aug/2025:21:47:38 +0300] GET /upload/iblock/b8c/b8ccfece7e0fa167f85e5d7ec47e0aa8.jpg HTTP/1.0 "301" 162 "-" "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot) Chrome/119.0.6045.214 Safari/537.36" "54.225.98.148, 172.71.127.125"''', True),
+('''24.83.200.235 - - [17/Aug/2025:01:21:38 +0300] HEAD /site HTTP/1.1 "301" 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36" "-"''', True),       
+('''1.169.98.245 - - [17/Aug/2025:01:23:20 +0300] GET / HTTP/1.0 "301" 162 "http://serginnetti.ru/" "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" "-"''', True),  
+]
+
     
 if __name__ == '__main__':
     
-        combined = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"{f.agnt}\"'''
+
         run_test(regex=f.mthd, samples=method)  
         run_test(regex=f.a_v4, samples=addresses_v4)    
         run_test(regex=f.a_v6, samples=addresses_v6)    
+        run_test(regex=f.ip, samples=addresses_v4)    
+        run_test(regex=f.ip, samples=addresses_v6)    
         run_test(regex=f.http, samples=http)    
         run_test(regex=f.url, samples=url)    
         run_test(regex=f.rfr, samples=refferer)    
         run_test(regex=f.timzn, samples=timezone)    
         run_test(regex=f.agnt, samples=agent)    
         run_test(regex=f.datim, samples=time)  
+        run_test(regex=f.x_for, samples=x_for)  
+ 
+        
+        combined = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"{f.agnt}\"'''
+        bitrixvm = fr'''({f.ip}|{f.ip}) - {f.usr} \[{f.datim} {f.timzn} - ({f.upstrm}|-)\] {f.sts} \"{f.mthd} {f.url} {f.http}\" {f.byt} \"({f.rfr}|-)\" \"{f.agnt}\" \"({f.x_for}|-)\"'''
+        combined_x_for = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"{f.agnt}\" \"({f.x_for}|-)\"'''
+        hestia = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] {f.mthd} {f.url} {f.http} \"{f.sts}\" {f.byt} \"({f.rfr}|-)\" \"{f.agnt}\" \"({f.x_for}|-)\"'''
+        
         
         #print(combined)  
         run_test(regex=combined, samples=log_combined)    
+        run_test(regex=bitrixvm, samples=log_bitrixvm)    
+        run_test(regex=combined_x_for, samples=log_combined_x_for)    
+        run_test(regex=hestia, samples=log_hestia)    
         
      
 
