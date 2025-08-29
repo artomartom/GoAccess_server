@@ -16,7 +16,7 @@
             align-items: center;
             height: 100vh;
         }
-        .error-container {
+        .page-container {
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -25,24 +25,24 @@
             width: 90%;
             text-align: center;
         }
-        .error-header {
+        .page-header {
             color: #e74c3c;
             margin-bottom: 1.5rem;
         }
-        .error-icon {
+        .page-icon {
             font-size: 4rem;
             margin-bottom: 1rem;
         }
-        .error-title {
+        .page-title {
             font-size: 1.8rem;
             margin-bottom: 0.5rem;
         }
-        .error-description {
+        .page-description {
             font-size: 1.1rem;
             margin-bottom: 1.5rem;
             line-height: 1.6;
         }
-        .error-details {
+        .details {
             background-color: #f9f9f9;
             border-left: 4px solid #e74c3c;
             padding: 1rem;
@@ -53,7 +53,7 @@
             font-size: 0.9rem;
             border-radius: 0 4px 4px 0;
         }
-        .error-actions {
+        .page-actions {
             margin-top: 1.5rem;
         }
         .btn {
@@ -78,24 +78,23 @@
     </style>
 </head>
 <body>
-    <div class="error-container">
-        <div class="error-header">
-            <div class="error-icon">⚠️</div>
-            <h1 class="error-title">Unknown Format Error</h1>
+    <div class="page-container">
+        <div class="page-header">
+            <div class="page-icon">{{icon}}</div>
+            <h1 class="page-title">{{heading}}</h1>
         </div>
         
-        <p class="error-description">
-            The server encountered an unknown or unsupported format in your request.
-            Please check the format specification and try again.
+        <p class="page-description">
+{{description}}
         </p>
         
-        <div class="error-details">
-{{error_text}}
+        <div class="details">
+{{text}}
         </div>
         
-        <div class="error-actions">
-            <a href="/" class="btn">Return to Homepage</a>
-            <a href="mailto:support@example.com" class="btn btn-secondary">Contact Support</a>
+        <div class="page-actions">
+            <a href="/v1/help" class="btn">Help</a>
+           <!-- <a href="mailto:support@example.com" class="btn btn-secondary">Contact Support</a> -->
         </div>
     </div>
 </body>
