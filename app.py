@@ -39,7 +39,7 @@ def match_regex(match: str, data: str):
  
 @app.get("/v1/help", response_class=HTMLResponse) 
 async def get_report():
-    with open("assets/message_page.html", 'r') as file:
+    with open("./assets/message_page.html", 'r') as file:
         html_page = file.read()
         heading ='''Help'''
         html_page = jinja2.Template(html_page).render(icon = "❔❔❔",heading=heading, text = "help help help help")
@@ -75,7 +75,7 @@ async def get_report(file_id: str,
         return HTMLResponse(content=result , status_code=200)
     
     except FileNotFoundError as e:
-        with open("assets/message_page.html", 'r') as file:
+        with open("./assets/message_page.html", 'r') as file:
             html_page = file.read()
             heading ='''File Not Found'''
             error_text = str(e)  
@@ -83,7 +83,7 @@ async def get_report(file_id: str,
             return HTMLResponse(html_page, status_code=500)
          
     except Format.Exception as e:
-        with open("assets/message_page.html", 'r') as file:
+        with open("./assets/message_page.html", 'r') as file:
             html_page = file.read()
             heading ='''Unknown Format Error'''
             description = '''The server encountered an unknown or unsupported format in your request.
