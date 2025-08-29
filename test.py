@@ -1,6 +1,6 @@
 
 
-from  format_parser import   Format , Fields as f
+from  format_parser import    Fields as f
 import re
 
 
@@ -13,10 +13,11 @@ def run_test(regex :str, samples :list):
             match = pattern.fullmatch(value)
             
             if (match and valid) or (not match and not valid):
-                print(f"✅ {value}")     
+                #print(f"✅ {value}")     
+                0
             else:
                 print(f"❌ {value}") 
-    print ("")   
+#    print ("")   
 addresses_v4 = [
 ("77.88.9.142",True),
 ("78.178.85.171",True),
@@ -52,17 +53,23 @@ http= [
 ("HTTP/1.1",True),
 ("HTTP/1.2",True),
 ("HTTP/2.0",True),
-("HTTP/3.0",True),
+("HTTP/3.0s",False),
 ("HTTP/3.1",True),
 ("HTTP/65.1",False),
 ]
 
 url= [
     ("/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",True),
-    ('''/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1&dfs3="34"''',True),
+    ('''/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1&dfs3="34"''',False),
+    ('''/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1&dfs3="''',False),
+    ('''/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1&dfs3=%2234%22''',True),
     ("/.env",True),
-    ("/заз",True),
+    ("/?availability=in_stock&filter_automatic-winding=no-power-reserve-38-hours&filter_movement=2414a%2C2403%2C2431-01%2C2415%2C2431&orderby=price-desc&query_type_automatic-winding=or",True),
+    ("/заз",False),
     ("/",True),
+    ("/product-tag/vostok-amphibia/?filter_movement=2432,2426-12,2431,2416b,2416,2431-12,2415-01,2426-02",True),
+    ("/product-category/amphibian-classic/?orderby=date&filter_automatic-winding=no%2Cyes&query_type_automatic-winding=or&filter_movement=2416,2415-01,2416b,2431-12,2415,2409",True),
+    ("/?availability=in_stock&filter_movement=2414a%2C2403%2C2431-01%2C2426-12%2C2432-01%2C2415%2C2431-12&orderby=price-des",True),
     (".env",False),
      
     ]
@@ -95,9 +102,11 @@ refferer =[
     ("https://baikalovostrog.ru/",True),
     ("http://baikalovostrogCom:80/",False),
     ("https://baikalovostrog.ru/",True),
+    ("https://dev.megacvet24.ru/rozy/sirenevye/",True),
     ("https://baikalovostrog.ru:443/",True),
     ("//baikalovostrog.ru/",False),
     ("http://62.113.44.234",True),
+    ("http://185.42.14.195:80/apply.cgi",True),
     ("http://xn--80aatrux.xn--p1ai",True),
     ("xn--80aatrux.xn--p1ai",False),
     ("http://s",False    ),
@@ -130,8 +139,13 @@ agent= [
 ("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0",True),
 ("Mozilla/5.0AppleWebKit/537.36(KHTML,likeGecko;compatible",True),
 ("Opera/8.79.(X11;Linuxx86_64;et-EE)Presto/2.9.172Version/12.00",True),
+('''Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.132.248''',False),
+('''Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.132.248"''',False),
+('''Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0" "154.209.125.63"''',False),
+('''Opera/8.79".(X11;Linuxx86_64;et-EE)Presto/2.9.172Version/12.00''',False),
+('''188.170.76.115 - - [14/Aug/2025:00:02:47 +0300 - -] 200 "GET /upload/iblock/6fe/87359048.jpg HTTP/2.0" 4440 "https://kmr10.ru/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36" "-"''', False),
 ("Python-urllib/3.13",True),
-("Mozilla/5.0 (compatible; YandexRenderResourcesBot/1.0; +http://yandex.com/bots) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0",True),
+('''Mozilla/5.0 (compatibl"e; YandexRenderResourcesBot/1.0; +http://yandex.com/bots) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0''',False),
 ("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0",True),
 ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",True),
 ("Mozilla/5.0 (Linux; arm_64; Android 12; NCO-LX1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.1823 YaApp_Android/24.120.1 YaSearchBrowser/24.120.1 BroPP/1.0 SA/3 Mobile Safari/537.36",True),
@@ -139,6 +153,9 @@ agent= [
 
 log_combined_x_for =[
 ('''128.71.239.165 - admin [26/Apr/2023:12:52:46 +0300] "GET / HTTP/1.1" 401 195 "https://dev.megacvet24.ru/" "Mozilla/5.0 (Windows NT 5.1; rv:9.0.1) Gecko/20100101 Firefox/9.0.1" "128.71.239.165"''',True      ),
+('''177.107.179.208 - - [08/Jul/2025:13:28:59 +0300] "GET /?availability=in_stock&filter_automatic-winding=no-power-reserve-38-hours&filter_movement=2414a%2C2403%2C2431-01%2C2415%2C2431&orderby=price-desc&query_type_automatic-winding=or HTTP/1.1" 500 2443 "-" "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0)"''',False      ),
+('''188.170.76.115 - - [14/Aug/2025:00:02:47 +0300 - -] 200 "GET /upload/iblock/6fe/87359048.jpg HTTP/2.0" 4440 "https://kmr10.ru/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36" "-"''', False),
+('''114.119.132.248 - - [25/Apr/2023:04:09:10 +0300] "GET /image/cache/catalog/7-sirenevyh-roz-60-sm-1-277x277.jpg HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/sirenevye/" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.132.248"''',True   ),
 ('''114.119.149.92 - - [25/Apr/2023:13:55:31 +0300] "GET /piony-na-vypisku/ HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/5-kust-pion-roz-miks-50-sm.html" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.149.92"''',True      ),
 ('''114.119.149.92 - - [25/Apr/2023:13:55:31 +0300] "GET /piony-na-vypisku/ HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/5-kust-pion-roz-miks-50-sm.html" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "fd48:9bda:1f2e:8:0:1234:5678:9abc"''',True      ),
     
@@ -146,6 +163,9 @@ log_combined_x_for =[
 
 log_combined =[
 ('''66.249.73.233 - - [08/Jul/2025:13:28:59 +0300] "GET /product/vostok-dial-030934/ HTTP/1.1" 500 2443 "-" "Mozilla/5.0 Safari/537.36 (compatible; Googlebot/2.1; )"''',True      ),
+('''114.119.132.248 - - [25/Apr/2023:04:09:10 +0300] "GET /image/cache/catalog/7-sirenevyh-roz-60-sm-1-277x277.jpg HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/sirenevye/" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.132.248"''',False      ),
+('''154.209.125.63 - - [25/Apr/2023:04:47:18 +0300] "GET / HTTP/1.1" 401 195 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0" "154.209.125.63"''',False      ),
+('''149.50.96.5 - ffadmin [25/Jul/2025:00:09:58 +0300] "POST /bapply.cgi HTTP/1.1" 499 0 "http://185.42.14.195:80/apply.cgi" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.6668.71 Safari/537.36"''',True      ),
 ('''177.107.179.208 - - [08/Jul/2025:13:28:59 +0300] "GET /?availability=in_stock&filter_automatic-winding=no-power-reserve-38-hours&filter_movement=2414a%2C2403%2C2431-01%2C2415%2C2431&orderby=price-desc&query_type_automatic-winding=or HTTP/1.1" 500 2443 "-" "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0)"''',True      ),
 ('''103.161.105.25 - - [08/Jul/2025:13:28:59 +0300] "GET /?filter_automatic-winding=no-power-reserve-38-hours&filter_movement=2416b%2Cseiko-vk-73%2C2431%2C2432%2C2414&orderby=rating&query_type_automatic-winding=or HTTP/1.1" 500 2443 "-" "Mozilla/5.0 (iPod; U; CPU iPhone OS 4_0 like Mac OS X; it-IT) AppleWebKit/535.50.4 (KHTML, like Gecko) Version/4.0.5 Mobile/8B116 Safari/6535.50.4"''',True      ),
 ('''18.235.158.19 - - [08/Jul/2025:13:28:59 +0300] "GET /product-tag/vostok-amphibia/?filter_movement=2432,2426-12,2431,2416b,2416,2431-12,2415-01,2426-02 HTTP/1.1" 500 2443 "-" "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot) Chrome/119.0.6045.214 Safari/537.36"''',True      ),
@@ -172,6 +192,7 @@ log_combined =[
 ('''207.46.13.127 - - [08/Jul/2025:13:28:59 +0300] "GET /?filter_movement=2426-02,2414,2414a,2415,2431-12 HTTP/2.0" 500 2431 "-" "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/116.0.1938.76 Safari/537.36"''', True),
 ('''91.122.53.173 - - [13/Aug/2025:00:56:18 +0300] "GET /.env HTTP/1.0" 404 135796 "-" "Python-urllib/3.13"''', True),
 ('''4.217.254.58 - - [13/Aug/2025:01:29:36 +0300] "GET /file17.php HTTP/1.0" 404 135740 "-" "-"''', True),
+('''188.170.76.115 - - [14/Aug/2025:00:02:47 +0300 - -] 200 "GET /upload/iblock/6fe/87359048.jpg HTTP/2.0" 4440 "https://kmr10.ru/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36" "-"''', False),
 ('''46.149.67.20 - - [13/Aug/2025:04:28:44 +0300] "GET / HTTP/1.0" 200 40206 "http://baikalovostrog.ru/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"''', True),
 ('''188.75.207.150 - - [12/Aug/2025:06:25:16 +0300] "GET /wp-content/uploads/2025/01/689x919-0xunt6cm1s-5028848775689678210-siuznr.jpg HTTP/1.1" 200 59001 "https://fashion-likes.ru/beauty/modnye-strizhki-2025-varianty-dlya-lyuboj-dliny-kotorye-zaxochetsya-povtorit/" "Mozilla/5.0 (Linux; Android 12; FOA-LX9 Build/HUAWEIFOA-LX9; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/114.0.5735.196 Mobile Safari/537.36 [Pinterest/Android]"''', True),
 ('''178.125.103.51 - - [12/Aug/2025:06:27:32 +0300] "GET /wp-content/cache/thumb/54/de1a226cd148054_360x181.png HTTP/1.1" 200 123396 "https://fashion-likes.ru/beauty/3-parfyuma-kotorye-paxnut-franciej-ili-kak-pochuvstvovat-sebya-parizhankoj/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36"''', True),
@@ -194,9 +215,10 @@ log_combined =[
 #('''''', True),
 ]
 
-log_bitrixvm =[
+log_bitrixvm_main =[
     
 ('''89.111.133.192 - - [18/Aug/2025:04:13:10 +0300 - -] 301 "GET /opinion/ HTTP/1.1" 162 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" "185.242.122.4"''', True),
+('''89.111.133.192 - - [18/Aug/2025:04:13:10 +0300 - -] 301 "GET /opinion/ HTTP/1.1" 162 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"''', False),
 ('''85.192.11.9 - - [18/Aug/2025:03:51:01 +0300 - 0.031] 200 "GET /details/rss/ HTTP/1.0" 168459 "http://dvinatoday.ru/details/rss/" "Mozilla/5.0 (compatible; Linux; x64; en-us) KHTML/4.3.5 (like Gecko) Chrome/32.3.187.919 Safari/544.81" "-"''', True),
 ('''65.21.193.198 - - [17/Jul/2025:16:17:51 +0300 - 0.000] 502 "GET / HTTP/2.0" 1135 "https://nasha-set.ru" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" "65.21.193.198"''', True),
 ('''188.170.76.115 - - [14/Aug/2025:00:02:45 +0300 - 0.062] 200 "GET / HTTP/2.0" 23615 "https://ru.m.wikipedia.org/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36" "-"''', True),
@@ -219,10 +241,32 @@ log_hestia = [
 ('''1.169.98.245 - - [17/Aug/2025:01:23:20 +0300] GET / HTTP/1.0 "301" 162 "http://serginnetti.ru/" "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" "-"''', True),  
 ]
 
+  
+bitrixvm_main = fr'''({f.ip}|{f.ip}) - {f.usr} \[{f.datim} {f.timzn} - ({f.upstrm}|-)\] {f.sts} \"{f.mthd} {f.url} {f.http}\" {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\" \"({f.x_for}|-)\"'''
+combined = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\"'''
+combined_x_for = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\" \"({f.x_for}|-)\"'''
+hestia = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] {f.mthd} {f.url} {f.http} \"{f.sts}\" {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\" \"({f.x_for}|-)\"'''
+
+format_list =  [
+    ( combined  , "combined" ),
+    (bitrixvm_main,"bitrixvm_main")
+    ]
+
+def match_line(sample_line):
+        
+        for format in format_list:
+            pattern = re.compile(format[0])
+            
+            match = pattern.fullmatch(sample_line)
+            
+            if match:
+                return format
+               
+        raise Format.Exception(f"unknown format line: {sample_line}")  
     
-if __name__ == '__main__':
     
 
+if __name__ == '__main__':
         run_test(regex=f.mthd, samples=method)  
         run_test(regex=f.a_v4, samples=addresses_v4)    
         run_test(regex=f.a_v6, samples=addresses_v6)    
@@ -235,20 +279,22 @@ if __name__ == '__main__':
         run_test(regex=f.agnt, samples=agent)    
         run_test(regex=f.datim, samples=time)  
         run_test(regex=f.x_for, samples=x_for)  
- 
-        
-        combined = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"{f.agnt}\"'''
-        bitrixvm = fr'''({f.ip}|{f.ip}) - {f.usr} \[{f.datim} {f.timzn} - ({f.upstrm}|-)\] {f.sts} \"{f.mthd} {f.url} {f.http}\" {f.byt} \"({f.rfr}|-)\" \"{f.agnt}\" \"({f.x_for}|-)\"'''
-        combined_x_for = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"{f.agnt}\" \"({f.x_for}|-)\"'''
-        hestia = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] {f.mthd} {f.url} {f.http} \"{f.sts}\" {f.byt} \"({f.rfr}|-)\" \"{f.agnt}\" \"({f.x_for}|-)\"'''
-        
-        
+
+        #regex, name = match_line(log_combined[0][0])
+        #if name == "combined" :
+        #    print(f"✅")     
+        #else:
+        #    print(f"❌") 
+                
+        #match_line(log_bitrixvm_main[0])
+
         #print(combined)  
         run_test(regex=combined, samples=log_combined)    
-        run_test(regex=bitrixvm, samples=log_bitrixvm)    
+        run_test(regex=bitrixvm_main, samples=log_bitrixvm_main)    
         run_test(regex=combined_x_for, samples=log_combined_x_for)    
         run_test(regex=hestia, samples=log_hestia)    
         
      
-
+    
+     
  
