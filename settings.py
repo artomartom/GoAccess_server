@@ -1,7 +1,6 @@
 
 
 from dotenv import dotenv_values 
-import os 
 
 config = dotenv_values(".env")   
 
@@ -9,7 +8,6 @@ HOSTNAME =  config["HOSTNAME"]
 LISTEN =  config["LISTEN"]  
 PORT = config["PORT"]  
 VERSION = config["VERSION"]  
-WORKDIR =  = os.getcwd()
 
 CACHE_SRV = None
 CACHE_PORT  = None
