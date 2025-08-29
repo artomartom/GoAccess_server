@@ -18,11 +18,6 @@ def new_report_id():
 
 def run_goaccess(  data : str, format : Format ) -> str: 
      
-        
-    #if format.valid_format == False:
-    #   print(f"{format.valid_format}  23")
-    #   raise Format.Exception( f"unknown format {format}")
-	
     logger(f"trying format {format.name }")
     
     with tempfile.NamedTemporaryFile('wb') as tmp:

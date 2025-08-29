@@ -37,6 +37,14 @@ def match_regex(match: str, data: str):
             new_data+='\n' 
     return  new_data
  
+@app.get("/v1/help", response_class=HTMLResponse) 
+async def get_report():
+    with open("message_page.html", 'r') as file:
+        html_page = file.read()
+        heading ='''Help'''
+        html_page = jinja2.Template(html_page).render(icon = "❔❔❔",heading=heading, text = "help help help help")
+        return HTMLResponse(html_page, status_code=500)
+                     
 @app.get("/v1/generate/{file_id}", response_class=HTMLResponse) 
 async def get_report(file_id: str,
                     mth: str = Query(""),
@@ -55,8 +63,7 @@ async def get_report(file_id: str,
         db = Database()
         logger(f"found match argument: {mth}")
         if db.id_exists(file_id) == False:
-            raise Exception(f"file {file_id} not found")
-            ##TODO FileNotFoundError expection with error page html
+            raise FileNotFoundError(f"file '{file_id}' not found")
         data = db.get_logfile(file_id)  
 
         fmt = Format.get_format(data.split('\n', 200), name=fmt)
@@ -67,12 +74,25 @@ async def get_report(file_id: str,
         ca.set(cache_key,result)
         return HTMLResponse(content=result , status_code=200)
     
-    except Format.Exception as e:
-        with open("error_page.html", 'r') as file:
+    except FileNotFoundError as e:
+        with open("message_page.html", 'r') as file:
             html_page = file.read()
-            error_text = str(e) #.replace("\n","\n\t")
-            html_page = jinja2.Template(html_page).render(error_text = error_text)
+            heading ='''File Not Found'''
+            error_text = str(e)  
+            html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading, text = error_text)
             return HTMLResponse(html_page, status_code=500)
+         
+    except Format.Exception as e:
+        with open("message_page.html", 'r') as file:
+            html_page = file.read()
+            heading ='''Unknown Format Error'''
+            description = '''The server encountered an unknown or unsupported format in your request.
+                        Please check the format specification and try again.'''
+            error_text = str(e) #.replace("\n","\n\t")
+            
+            html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading,description=description,text = error_text)
+            return HTMLResponse(html_page, status_code=500)
+        
 
 @app.post("/v1/report") 
 async def get_report1( request: Request): 

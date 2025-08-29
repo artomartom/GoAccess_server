@@ -14,8 +14,6 @@ class Fields:
     a_v4 = r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}"
     a_v6 = r"([0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4}){7}|::|:(?::[0-9a-fA-F]{1,4}){1,6}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,5}|(?:[0-9a-fA-F]{1,4}:){2}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){3}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){4}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){5}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,6}:)"
     mthd = r"(GET|HEAD|PUT|POST|DELETE|PATCH)"
-    #rfr = r"(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)"
-    #url = r"\/.*(?=\")?"
     url = r"\/([a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\\;\/\,\?\:\@\=\&\%]+)?"
     rfr = r"(?:http[s]?:\/\/.)((?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)(|:\d)|((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}|([0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4}){7}|::|:(?::[0-9a-fA-F]{1,4}){1,6}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,5}|(?:[0-9a-fA-F]{1,4}:){2}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){3}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){4}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){5}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,6}:))(:(\d+\/?))?" + fr"({url})?"
     http = r"HTTP\/[0123].[012689]"
@@ -23,10 +21,6 @@ class Fields:
     x_for = rf"{ip}(, {ip})?"
     sts = r"[1-5][0-9][0-9]"
     byt = r"\d+"
-    #agnt = r".*"
-    #agnt = r".*[^\"].*"
-    #agnt = r'''.*(?!\")'''
-    #agnt = r'''^.+?(?=\")'''
     agnt = r'''(?:(?!\").)*'''
     datim = r"[0-9][0-9]\/[A-Z][a-z][a-z]\/202[0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"
     timzn = r"(\+|\-)0[0-9]00"
@@ -37,14 +31,6 @@ class Fields:
     combined_x_for = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"'''
     hestia = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] {mthd} {url} {http} \"{sts}\" {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"'''
  
-
-#format_list =  [
-#    ( r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4} - (-|\w+) \[[0-9][0-9]\/[A-Z][a-z][a-z]\/202[0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \+0[0-9]00] \"(GET|HEAD|PUT|POST|DELETE|PATCH) \/.* HTTP\/[0123].[012689]\" [1-5][0-9][0-9] \d+ \"http(s|):\/\/.*\/*\"" , 
-#    "%h %^[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"  %^",  "%d/%b/%Y",  "%T" , "combined" ),
-#    (r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4} - (-|\w+) \[[0-9][0-9]\/[A-Z][a-z][a-z]\/202[0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9] \+0[0-9]00 - (\d+.\d+|\-)] [1-5][0-9][0-9] \"(GET|HEAD|PUT|POST|DELETE|PATCH) \/.* HTTP\/[0123].[012689]\" \d+ \"(http(s|)://.*\/*|\-)\" \"(.*(ozilla|indows|pple|pera|acebook|oogle|bot|BOT|Gecko|rawler|hrome|irefox).*)\" \"(((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}|\-|((([0-9A-Fa-f]{1,4}:){1,6}:)|(([0-9A-Fa-f]{1,4}:){7}))([0-9A-Fa-f]{1,4}))\"",
-#    "%h - %^ [%d:%t - %^] %s \"%r\" %b \"%R\" \"%u\" %^","%d/%b/%Y",'%H:%M:%S',"bitrixvm_main")
-#    ]
-
 format_list =  [
     (Fields.combined, 
     "%h %e[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"",  "%d/%b/%Y",  "%T" , "combined" ),
@@ -106,9 +92,3 @@ class Format():
                 best_sample_count = count
         logger(f"best sample line {best_sample_line}")
         return  Format(sample_line=best_sample_line)
-
-
-if __name__ == "__main__":
-    format = Format()
-    line = ('78.178.85.171 - - [02/Jul/2025:00:02:25 +0300] "GET /image/catalog/import/peregorodki-i-steny-iz-sehndvich-panelej-30me-2588.webp HTTP/1.1" 200 512156 "https://ryazan.mpaneli.ru/" "Mozilla/5.0 (Linux; arm_64; Android 12; NCO-LX1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.1823 YaApp_Android/24.120.1 YaSearchBrowser/24.120.1 BroPP/1.0 SA/3 Mobile Safari/537.36"')
-    print(Format.match_line(line))
