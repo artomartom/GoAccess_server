@@ -30,6 +30,7 @@ class Fields:
     bitrixvm_main = fr'''({ip}|{ip}) - {usr} \[{datim} {timzn} - ({upstrm}|-)\] {sts} \"{mthd} {url} {http}\" {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"'''
     combined_x_for = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"'''
     hestia = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] {mthd} {url} {http} \"{sts}\" {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"'''
+    litespeed = fr'''\"({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\"\"'''
  
 format_list =  [
     (Fields.combined, 
@@ -40,6 +41,8 @@ format_list =  [
     "%h %e[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"  \"%^\"","%d/%b/%Y",'%H:%M:%S',"combined_x_for"),
     (Fields.hestia,
     "%h - %e [%d:%t - %^] %m %U %H \"%s\" %b \"%R\" \"%u\" \"%^\"","%d/%b/%Y",'%H:%M:%S',"hestia"),
+    (Fields.litespeed,
+    "\"%h %e[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"\"",  "%d/%b/%Y",  "%T" , "litespeed" ),
     ]
 
 class Format():
