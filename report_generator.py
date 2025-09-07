@@ -1,64 +1,43 @@
+from subprocess import PIPE, Popen, CompletedProcess
 import subprocess
-
  
 import  settings  
 
-from  format_parser import Format 
+from  format_parser import Format
 
-def build_url(report_filename):
-    return f"{ settings.HOSTNAME}/{report_filename}"
+from utility import   logger
+import os
+import uuid
+import tempfile
 
-import hashlib
-import datetime
+def get_report_url(filename):
+    return f"{ settings.HOSTNAME}/{filename}"
+ 
+def new_report_id():
+    return  uuid.uuid4().hex
 
-def get_report_file_name():
+def run_goaccess(  data : str, format : Format ) -> str: 
      
-    #formatted_date =  datetime.datetime.now().strftime("%H:%M:%S_%y%m%d") 
-    formatted_date =  datetime.datetime.now().strftime("%H%M%S%f%Y") 
-    hash =  hashlib.sha256(formatted_date.encode()).hexdigest() 
-  
-    return   f"access_report_{str(hash[:20])}.html"
-
-def run_Goaccess( file_path, report_name): 
+    logger(f"trying format {format.name }")
     
-    format : Format
-    with open(file_path, 'r') as log_file:
-        best_sample_line: str = ""
-        best_sample_line_num: int = 0
-        best_sample_count: int  = 99
-        for line_num in range(10):    
-            line = log_file.readline()
-            count = line.count('"-"')
-            if best_sample_count > count:
-                best_sample_line_num = line_num
-                best_sample_line = line
-                best_sample_count = count
-        print(f"best sample found  at line {best_sample_line_num}")
-        format = Format(best_sample_line)
+    with tempfile.NamedTemporaryFile('wb') as tmp:
+        tmp.write(data.encode())
         
-        
-    if format.name == "unknown format":
-        print("unknown format")
-        return 
+        args=  ["goaccess",tmp.name,    "-a", 
+                "--log-format", f'{format.log_format}',
+                f"--date-format={format.date_format}",  
+                f"--time-format={format.time_format }"] 
+     
+        result = subprocess.run(
+            args, 
+            capture_output=True 
+        )
     
-    args=  ['goaccess', file_path, "-a", "-o", f"{settings.REPORTS_DIR}/{report_name}",
-            "--log-format", f'{format.log_format}',
-            f"--date-format={format.date_format}",  
-            f"--time-format={format.time_format }"] 
+    if result.returncode != 0:
+        err=  result.stderr.decode()
+        logger(err)
+        raise Format.Exception(err)
     
-    print(f"trying format {format.name }")
-    result =  subprocess.run(
-        args,
-        capture_output=True,
-        encoding="utf-8",
-        text=True
-    )
-    if result.returncode == 0:
-        return result 
+    return result.stdout   
     
-    return result 
-    
-    #print (f"running goaccess")
-    #print (f"file path {file_path}")
-    #print (f"report path  {settings.REPORTS_DIR}/{report_name}")
-    
+ 
