@@ -6,20 +6,24 @@ services:
     image: redis:6.2-alpine
     restart: always
     command: redis-server --save 20 1 --loglevel notice
-    volumes: 
+    volumes:
       - redis-cache:/data
 
   py-server:
     container_name:   goaccess-server_v1
-    build: .  
-    restart: always 
-    env_file:
-      - .env   
+    image: goaccess_server:latest
+    restart: always
     ports:
-      - "127.0.0.1:3050:3050" 
+      - "127.0.0.1:3050:3050"
     volumes:
-      - ./:/app 
+      - ./.env:/app/.env
+      - data:/app
 
 volumes:
   redis-cache:
     driver: local
+  data:
+    driver: local
+
+
+
