@@ -11,7 +11,7 @@ build-job:       # This job runs in the build stage, which runs first.
     - echo "CACHE" >> .env    
     - echo "CACHE_SRV='redis-cache'" >> .env    
     - echo "CACHE_PORT=6379" >> .env     
-    - docker build -t goaccess_server  .
+    - docker build -t goaccess_server:test  .
     
     
     
