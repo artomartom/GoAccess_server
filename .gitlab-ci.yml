@@ -4,7 +4,6 @@ stages:          # List of stages for jobs, and their order of execution
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
   script:
-    - pwd
     - echo "HOSTNAME='https://goaccess.local'" >> .env    
     - echo "LISTEN='0.0.0.0'" >> .env    
     - echo "PORT=3050" >> .env    
@@ -12,6 +11,12 @@ build-job:       # This job runs in the build stage, which runs first.
     - echo "CACHE" >> .env    
     - echo "CACHE_SRV='redis-cache'" >> .env    
     - echo "CACHE_PORT=6379" >> .env     
+    - docker build -t goaccess_server  .
+    
+    
+    
+    
+    #- docker compose up  -f docker-compose.yaml -d 
  
 
 
