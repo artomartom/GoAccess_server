@@ -22,7 +22,7 @@ stages:          # List of stages for jobs, and their order of execution
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
   script:
-    - git clone  --depth 1 git@github.com:artomartom/GoAccess_server.git ~/goaccess/.env
+    - git clone  --depth 1 git@github.com:artomartom/GoAccess_server.git ~/goaccess/
     - echo "HOSTNAME='https://goaccess.local'" >> ~/goaccess/.env    
     - echo "LISTEN='0.0.0.0'"   >> ~/goaccess/.env    
     - echo "PORT=3050"   >> ~/goaccess/.env    
