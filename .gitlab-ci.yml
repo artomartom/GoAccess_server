@@ -31,8 +31,7 @@ build-job:       # This job runs in the build stage, which runs first.
     - echo "CACHE_SRV='redis-cache'"   >> ~/goaccess/.env    
     - echo "CACHE_PORT=6379"   >> ~/goaccess/.env     
     #- rm -rf  ~/goaccess/.env
-
-
+ 
 
 
 
