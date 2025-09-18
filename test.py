@@ -2,22 +2,9 @@
 
 from  format_parser import    Fields as f
 import re
+from argparse import ArgumentParser
 
 
-
-
-def run_test(regex :str, samples :list):
-    for sample in samples:
-            pattern = re.compile(regex)
-            value, valid = sample
-            match = pattern.fullmatch(value)
-            
-            if (match and valid) or (not match and not valid):
-                #print(f"✅ {value}")     
-                0
-            else:
-                print(f"❌ {value}") 
-#    print ("")   
 addresses_v4 = [
 ("77.88.9.142",True),
 ("78.178.85.171",True),
@@ -241,6 +228,20 @@ log_hestia = [
 ('''1.169.98.245 - - [17/Aug/2025:01:23:20 +0300] GET / HTTP/1.0 "301" 162 "http://serginnetti.ru/" "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" "-"''', True),  
 ]
 
+def run_test(regex :str, samples :list):
+    for sample in samples:
+            pattern = re.compile(regex)
+            value, valid = sample
+            match = pattern.fullmatch(value)
+            
+            if AUTOMATED:
+                assert  (match and valid) or (not match and not valid),  f"❌ {value}" 
+            else: 
+                if (match and valid) or (not match and not valid):
+                    print(f"✅ {value}")     
+                else:
+                    print(f"❌ {value}") 
+                    
   
 bitrixvm_main = fr'''({f.ip}|{f.ip}) - {f.usr} \[{f.datim} {f.timzn} - ({f.upstrm}|-)\] {f.sts} \"{f.mthd} {f.url} {f.http}\" {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\" \"({f.x_for}|-)\"'''
 combined = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\"'''
@@ -249,52 +250,39 @@ hestia = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] {f.mthd} {f.
 
 format_list =  [
     ( combined  , "combined" ),
-    (bitrixvm_main,"bitrixvm_main")
+    (bitrixvm_main,"bitrixvm_main"),
+    (combined_x_for,"combined_x_for"),
+    (hestia,"hestia"),
     ]
 
-def match_line(sample_line):
+    
+def run_all():
+    # tokens
+    run_test(regex=f.mthd, samples=method)  
+    run_test(regex=f.a_v4, samples=addresses_v4)    
+    run_test(regex=f.a_v6, samples=addresses_v6)    
+    run_test(regex=f.ip, samples=addresses_v4)    
+    run_test(regex=f.ip, samples=addresses_v6)    
+    run_test(regex=f.http, samples=http)    
+    run_test(regex=f.url, samples=url)    
+    run_test(regex=f.rfr, samples=refferer)    
+    run_test(regex=f.timzn, samples=timezone)    
+    run_test(regex=f.agnt, samples=agent)    
+    run_test(regex=f.datim, samples=time)  
+    run_test(regex=f.x_for, samples=x_for)  
+    #formats
+    run_test(regex=combined, samples=log_combined)    
+    run_test(regex=bitrixvm_main, samples=log_bitrixvm_main)    
+    run_test(regex=combined_x_for, samples=log_combined_x_for)    
+    run_test(regex=hestia, samples=log_hestia)    
         
-        for format in format_list:
-            pattern = re.compile(format[0])
-            
-            match = pattern.fullmatch(sample_line)
-            
-            if match:
-                return format
-               
-        raise Format.Exception(f"unknown format line: {sample_line}")  
-    
-    
+     
+AUTOMATED=False
 
 if __name__ == '__main__':
-        run_test(regex=f.mthd, samples=method)  
-        run_test(regex=f.a_v4, samples=addresses_v4)    
-        run_test(regex=f.a_v6, samples=addresses_v6)    
-        run_test(regex=f.ip, samples=addresses_v4)    
-        run_test(regex=f.ip, samples=addresses_v6)    
-        run_test(regex=f.http, samples=http)    
-        run_test(regex=f.url, samples=url)    
-        run_test(regex=f.rfr, samples=refferer)    
-        run_test(regex=f.timzn, samples=timezone)    
-        run_test(regex=f.agnt, samples=agent)    
-        run_test(regex=f.datim, samples=time)  
-        run_test(regex=f.x_for, samples=x_for)  
 
-        #regex, name = match_line(log_combined[0][0])
-        #if name == "combined" :
-        #    print(f"✅")     
-        #else:
-        #    print(f"❌") 
-                
-        #match_line(log_bitrixvm_main[0])
-
-        #print(combined)  
-        run_test(regex=combined, samples=log_combined)    
-        run_test(regex=bitrixvm_main, samples=log_bitrixvm_main)    
-        run_test(regex=combined_x_for, samples=log_combined_x_for)    
-        run_test(regex=hestia, samples=log_hestia)    
-        
-     
-    
-     
- 
+    parser = ArgumentParser("test_args")
+    parser.add_argument("-a","--automated",action="store_true",help="use asserts instead of console logs")
+    args = parser.parse_args() 
+    AUTOMATED = args.automated
+    run_all()
