@@ -43,7 +43,7 @@ async def get_report():
         html_page = file.read()
         heading ='''Help'''
         html_page = jinja2.Template(html_page).render(icon = "❔❔❔",heading=heading, text = "help help help help")
-        return HTMLResponse(html_page, status_code=500)
+        return HTMLResponse(html_page, status_code=200)
                      
 @app.get("/v1/generate/{file_id}", response_class=HTMLResponse) 
 async def get_report(file_id: str,
@@ -80,7 +80,7 @@ async def get_report(file_id: str,
             heading ='''File Not Found'''
             error_text = str(e)  
             html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading, text = error_text)
-            return HTMLResponse(html_page, status_code=500)
+            return HTMLResponse(html_page, status_code=404)
          
     except Format.Exception as e:
         with open(f"assets/message_page.html", 'r') as file:
@@ -91,7 +91,7 @@ async def get_report(file_id: str,
             error_text = str(e) #.replace("\n","\n\t")
             
             html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading,description=description,text = error_text)
-            return HTMLResponse(html_page, status_code=500)
+            return HTMLResponse(html_page, status_code=400)
         
 
 @app.post("/v1/report") 
