@@ -8,6 +8,7 @@ build-job:       # This job runs in the build stage, which runs first.
   script:
     - echo $WORKING_DIR
     - if [ -d "$WORKING_DIR" ]; then rm -Rf $WORKING_DIR; fi
+    - touch file
     - git clone  --depth 1 git@github.com:artomartom/GoAccess_server.git $WORKING_DIR
     - echo "HOSTNAME='https://goaccess.local'" >> ~/goaccess/.env    
     - echo "LISTEN='0.0.0.0'"   >> ~/goaccess/.env    
@@ -16,7 +17,7 @@ build-job:       # This job runs in the build stage, which runs first.
     - echo "CACHE"   >> ~/goaccess/.env    
     - echo "CACHE_SRV='redis-cache'"   >> ~/goaccess/.env    
     - echo "CACHE_PORT=6379"   >> ~/goaccess/.env     
-    #- rm -rf  ~/goaccess/.env
+    - 
  
 
 
