@@ -11,7 +11,7 @@ services:
 
   py-server:
     container_name:   goaccess-server_v1
-    image: goaccess_server:latest
+    image: goaccess_server
     restart: always
     ports:
       - "127.0.0.1:3050:3050"
