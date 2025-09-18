@@ -6,6 +6,7 @@ build-job:       # This job runs in the build stage, which runs first.
   variables:
     WORKING_DIR: "~/goaccess"
   script:
+    - echo $WORKING_DIR
     - if [ -d "$WORKING_DIR" ]; then rm -Rf $WORKING_DIR; fi
     - git clone  --depth 1 git@github.com:artomartom/GoAccess_server.git $WORKING_DIR
     - echo "HOSTNAME='https://goaccess.local'" >> ~/goaccess/.env    
