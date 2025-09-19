@@ -29,3 +29,5 @@ deploy-job:
     - rsync -azvhP  --info=progress2 ./goaccess_server.tar orange:/home/orange/
     - ssh orange -t docker image load -i goaccess_server.tar
     - ssh orange -t docker compose -f /opt/goAccess_server/docker-compose.yaml up -d --no-deps
+    - rm ./goaccess_server.tar
+    - ssh orange -t rm /home/orange/goaccess_server.tar
