@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   redis-cache:
     container_name: redis-cache
@@ -17,7 +15,7 @@ services:
       - "127.0.0.1:3050:3050"
     volumes:
       - ./.env:/app/.env
-      - data:/app
+      - data:/app/data
 
 volumes:
   redis-cache:
