@@ -2,6 +2,11 @@ FROM debian:bookworm
  
 WORKDIR /app/
 
+COPY  ./*py  /app/
+COPY  ./assets  /app/assets
+
+
+
 ENV TZ="Europe/Moscow"
 ENV LANG=ru_RU.UTF-8
 ENV LANGUAGE=ru_RU.UTF-8
@@ -24,8 +29,6 @@ apt install python3-fastapi -y && \
 apt install python3-redis -y && \
 apt install python3-unicorn -y 
 
-COPY  ./*py  /app/
-COPY  ./assets  /app/assets
 
 ENTRYPOINT   ["/usr/bin/python3", "/app/app.py"]
           

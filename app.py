@@ -42,7 +42,7 @@ async def get_report():
     with open(f"assets/message_page.html", 'r') as file:
         html_page = file.read()
         heading ='''Help'''
-        html_page = jinja2.Template(html_page).render(icon = "❔❔❔",heading=heading, text = "this is a help page")
+        html_page = jinja2.Template(html_page).render(icon = "❔❔❔",heading=heading, text = "this is a help page1")
         return HTMLResponse(html_page, status_code=200)
                      
 @app.get("/v1/generate/{file_id}", response_class=HTMLResponse) 
