@@ -1,5 +1,8 @@
 import os 
-    
+
+
+from fastapi import FastAPI, Request, Query
+import aiofiles    
 class Database:
     
     dir = f"{os.getcwd()}/data"
@@ -8,15 +11,20 @@ class Database:
         if os.path.exists(self.dir) == False:
             os.makedirs(self.dir) 
     
+    async def add_logfile_async(self,filename:str,request:Request)-> None:
+        async with aiofiles.open(f"{self.dir}/{filename}", 'wb') as file:
+            async for chunk in request.stream():
+                await file.write(chunk)
         
-    def add_logfile(self,filename,data : bytes)-> None:
+        
+    def add_logfile(self,filename:str,data:bytes)-> None:
         with open(f"{self.dir}/{filename}" , 'wb') as file: 
             file.write(data)
         
-    def id_exists(self,id : str )-> str:
+    def id_exists(self,id:str )-> str:
         return os.path.isfile(f"{self.dir}/{id}")
         
-    def get_logfile(self,id : str ) -> str: 
+    def get_logfile(self,id:str ) -> str: 
         
         with  open(f"{self.dir}/{id}" , 'r') as file: 
             return  file.read()   

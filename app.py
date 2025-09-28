@@ -105,18 +105,22 @@ async def get_upload( request: Request):
         file_id = new_report_id()
         
 
+        #logger (f"receiving { request.headers['filename']}")
         logger (f"report file name {file_id}")
         url = f"{HOSTNAME}/v1/generate/{file_id}" 
         
         db = Database()
 
-        data =  await request.body()
+        #data =  await request.body()
+        _, contentlength = request._headers._list[5]
         
-        if len(data) ==  0:
+        
+        
+        if contentlength.decode() ==  '0':
             raise Exception("Empty file")
         
-        logger(f"writing  data")
-        db.add_logfile(file_id,data)
+        logger(f"writing data")
+        await db.add_logfile_async(file_id,request)
 
         return  {
             'report': url ,
@@ -126,6 +130,7 @@ async def get_upload( request: Request):
         }
 
     except Exception as e:
+        logger(repr(e))
         return  {
             'status': 'error',
             'message': str(e),

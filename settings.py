@@ -22,3 +22,7 @@ if "CACHE" in config:
 DEBUG = False
 if "DEBUG" in config:
 	DEBUG = True
+
+if "HUNTER" in config:
+	import hunter
+	hunter.trace(module_in=['database','app','cache','report_generator','format_parser'])
