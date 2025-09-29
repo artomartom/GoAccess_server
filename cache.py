@@ -10,10 +10,13 @@ class Cache_Server:
         
         if not CACHE:
             return 
+        try:
+            
+            self.redis = redis.Redis(host=CACHE_SRV, port=CACHE_PORT, db=0)
+        except Exception as e:
+            CACHE = False
+            return
         
-        self.redis = redis.Redis(host=CACHE_SRV, port=CACHE_PORT, db=0)
-        if DEBUG:
-            assert  self.redis.ping() == True
 
     def get(self,key: str):
         if not CACHE:
