@@ -29,9 +29,9 @@ def run_goaccess(  filename : str, format : Format ) -> str:
     )
     
     if result.returncode != 0:
-        err=  result.stderr.decode()
+        err = result.stderr.decode()
         log.error(err)
-        raise Format.Exception(err)
+        raise Format.Exception('')
     return result.stdout   
     
  
