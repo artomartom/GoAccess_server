@@ -2,5 +2,15 @@ import string
 import secrets
 
 
-def logger(text):
-    print (f"               {text}")
+
+class Logger():
+    @staticmethod
+    def verbose(text):
+        print (f"               {text}")
+
+    @staticmethod
+    def info(text):
+        print (f"               {text}")
+    @staticmethod
+    def error(text):
+        print (f"               {text}")

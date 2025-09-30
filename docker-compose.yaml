@@ -6,11 +6,9 @@ services:
     command: redis-server --save 20 1 --loglevel notice
     volumes:
       - redis-cache:/data
-    profiles:
-    - prod
 
   py-server:
-    container_name:   goaccess-server_v1
+    container_name:   goaccess-server 
     image: goaccess_server
     restart: always
     ports:
@@ -26,7 +24,7 @@ services:
           memory: 500M
         reservations:
           memory: 200M
-
+          
 volumes:
   redis-cache:
     driver: local
