@@ -18,6 +18,14 @@ services:
     volumes:
       - ./.env:/app/.env
       - data:/app/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 500M
+        reservations:
+          memory: 200M
 
 volumes:
   redis-cache:
