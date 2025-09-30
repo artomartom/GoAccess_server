@@ -6,13 +6,13 @@ stages:          # List of stages for jobs, and their order of execution
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
   script:
-    - echo "HOSTNAME='https://goaccess.orange.local'" >> .env    
-    - echo "LISTEN='0.0.0.0'" >> .env    
-    - echo "PORT=3050" >> .env    
-    - echo "VERSION='1.0'" >> .env    
-    - echo "CACHE" >> .env    
-    - echo "CACHE_SRV='redis-cache'" >> .env    
-    - echo "CACHE_PORT=6379" >> .env     
+    - echo "HOSTNAME='https://goaccess.orange.local'" >> .env
+    - echo "LISTEN='0.0.0.0'" >> .env
+    - echo "PORT=3050" >> .env
+    - echo "VERSION='1.0'" >> .env
+    - echo "CACHE" >> .env
+    - echo "CACHE_SRV='redis-cache'" >> .env
+    - echo "CACHE_PORT=6379" >> .env
     - docker build --no-cache -t goaccess_server:latest .
 
 test-job:
@@ -20,14 +20,16 @@ test-job:
   script:
     - python3 ./test.py -a
     - docker compose -f ./docker-compose.yaml  up -d
-    - docker compose -f ./docker-compose.yaml down 
+    - docker compose -f ./docker-compose.yaml down
+    - docker system prune
 
 deploy-job:
-  stage: deploy 
+  stage: deploy
   script:
     - docker save goaccess_server:latest > ./goaccess_server.tar
     - rsync -azvhP  --info=progress2 ./goaccess_server.tar orange:/home/orange/
     - ssh orange -t docker image load -i goaccess_server.tar
     - ssh orange -t docker compose -f  /opt/goAccess_server/docker-compose.yaml  --profile prod up -d --no-deps
     - rm ./goaccess_server.tar
+    - docker system prune
     - ssh orange -t rm /home/orange/goaccess_server.tar
