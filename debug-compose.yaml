@@ -1,0 +1,23 @@
+services:
+  py-server-debug:
+    container_name:  goaccess-server-debug
+    image: goaccess_server-debug
+    restart: always
+    ports:
+      - "3050:3050"
+      - "5678:5678"
+    volumes:
+      - ./.env:/app/.env
+      - data:/app/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 500M
+        reservations:
+          memory: 200M        
+
+volumes:
+  data:
+    driver: local
