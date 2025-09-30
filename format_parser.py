@@ -1,7 +1,7 @@
 
 
 import re
-from utility import  logger
+from utility import  Logger as log
 """
 [0] regex
 [1] log format
@@ -52,11 +52,11 @@ class Format():
     
     def __init__(self,sample_line=None,name="combined"):
         if sample_line:
-            logger("Format with sample_line")
+            log.verbose("Format with sample_line")
             _, self.log_format,self.date_format,self.time_format,self.name = Format.match_line(sample_line)
             return 
         if name:
-            logger("Format with name")
+            log.verbose("Format with name")
             for format in format_list:
                 if format[4] == name :
                     _, self.log_format,self.date_format,self.time_format,self.name = format
@@ -78,10 +78,10 @@ class Format():
     def get_format(log_strings:list[str],name :str ):
         
         if name != "":
-            logger (f"trying {name} log format")
+            log.verbose(f"trying {name} log format")
             return Format(name=name)
 
-        logger ("trying to deduce log format")
+        log.verbose("trying to deduce log format")
         best_sample_line: str = ""
         best_sample_line_num: int = 0
         count = len(log_strings) 
@@ -93,5 +93,5 @@ class Format():
                 best_sample_line_num = line_num
                 best_sample_line = line
                 best_sample_count = count
-        logger(f"best sample line {best_sample_line_num+1} {best_sample_line}")
+        log.verbose(f"best sample line {best_sample_line_num+1} {best_sample_line}")
         return  Format(sample_line=best_sample_line)

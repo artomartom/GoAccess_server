@@ -5,7 +5,7 @@ import  settings
 
 from  format_parser import Format
 
-from utility import   logger
+from utility import Logger as log
 import os
 import uuid
 import tempfile
@@ -18,7 +18,7 @@ def new_report_id():
 
 def run_goaccess(  filename : str, format : Format ) -> str: 
      
-    logger(f"trying format {format.name }")
+    log.verbose(f"trying format {format.name }")
     args=  ["goaccess",filename,    "-a", 
             "--log-format", f'{format.log_format}',
             f"--date-format={format.date_format}",  
@@ -30,9 +30,8 @@ def run_goaccess(  filename : str, format : Format ) -> str:
     
     if result.returncode != 0:
         err=  result.stderr.decode()
-        logger(err)
+        log.error(err)
         raise Format.Exception(err)
-    
     return result.stdout   
     
  

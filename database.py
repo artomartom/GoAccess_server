@@ -6,33 +6,32 @@ import aiofiles
 import re
 
 
-def match_regex(match: str, data: list[str])-> str:
-        
-    new_data:str="" 
-    for line in data:
-        if re.search(match, line):
-            new_data+=line  
-            new_data+='\n' 
-    return  new_data
- 
  
 def filter_file_in_batches(input_file_handle, output_file_handle: str, regex: str, batch_size: int = 10000) -> None:
    
+    lines:int=0
+    batchs:int=0
+    matches:int=0
     while True:
-        batch = []
+        batch_empty:bool=False
+        filtered_data:str=''
         for _ in range(batch_size):
             line = input_file_handle.readline()
-            if not line:   
+            lines+= 1
+            if not line:  
+                batch_empty =True 
                 break
-            batch.append(line)
-        
-        if not batch:
-            break
-        
-        filtered_data = match_regex(regex, batch)
+            if re.search(regex, line):
+                filtered_data += line
+                matches+=1
+                
+        batchs+=1
         
         if filtered_data:
             output_file_handle.write(filtered_data) 
+            
+        if batch_empty:
+            break
                 
 class Database:
     
@@ -62,16 +61,21 @@ class Database:
 if __name__ == '__main__':
     
     #with open("/home/kiwi/logs/nasha-set_access.log-20250718", 'r') as f:
-    with open("/home/kiwi/logs/test.log", 'r') as f:
-        db = Database()
-        id = "sxgsdgdfgsdg"[0:20]
-        assert db.id_exists(id) == False
-        data = f.read()
-        db.add_logfile(id,data)
-        assert db.id_exists(id) == True
-        data_res = db.get_logfile(id)
-        
-        if data_res  == data and db.id_exists(id):
-            print("OK")
-            
-        os.remove(f"{os.getcwd()}/data/sxgsdgdfgsdg")
+    #with open("/home/kiwi/logs/test.log", 'r') as f:
+    #    db = Database()
+    #    id = "sxgsdgdfgsdg"[0:20]
+    #    assert db.id_exists(id) == False
+    #    data = f.read()
+    #    db.add_logfile(id,data)
+    #    assert db.id_exists(id) == True
+    #    data_res = db.get_logfile(id)
+    #    
+    #    if data_res  == data and db.id_exists(id):
+    #        print("OK")
+    #        
+    #    os.remove(f"{os.getcwd()}/data/sxgsdgdfgsdg")
+    
+    inpt = open("/opt/goAccess_server/log", 'r')
+    outpt = open("/opt/goAccess_server/filter", 'w')
+    
+    filter_file_in_batches(inpt, outpt,'8.217.208.28',100 )

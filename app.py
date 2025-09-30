@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Query
 from fastapi.responses import FileResponse, HTMLResponse
 import uvicorn
 from settings import LISTEN,  DEBUG, PORT, VERSION, HOSTNAME
-from utility import  logger
+from utility import Logger as log
 from report_generator import run_goaccess,   new_report_id
 from database import Database, filter_file_in_batches
 import time
@@ -40,23 +40,22 @@ async def get_report(file_id: str,
                     fmt: str = Query("")
                     ):
     try:
-        
-        logger(f"received args \n\t\tmth: {mth}\n\t\tfmt: {fmt}") 
+        log.info(f"received args \n\t\tmth: {mth}\n\t\tfmt: {fmt}") 
         
         ca = Cache_Server()
         cache_key = f"{file_id}/{mth}/{fmt}"
         cache = ca.get(cache_key)
         if cache != None:
-            logger(f"cache found for {cache_key}")
+            log.info(f"cache found for {cache_key}")
             return HTMLResponse(content=cache , status_code=200)
         db = Database()
-        logger(f"found match argument: {mth}")
+        log.verbose(f"found match argument: {mth}")
         if db.id_exists(file_id) == False:
             raise FileNotFoundError(f"file '{file_id}' not found")
         
         
         with db.get_logfile(file_id) as data:
-            test_chunk = data.readlines(200)
+            test_chunk = data.readlines(200)# reads chars. CHANGE TO 200 LINES
             data.seek(0)
             
             fmt = Format.get_format(test_chunk, name=fmt)
@@ -103,7 +102,7 @@ async def get_upload( request: Request):
         file_id = new_report_id()
         
 
-        logger (f"report file name {file_id}")
+        log.verbose (f"report file name {file_id}")
         url = f"{HOSTNAME}/v1/generate/{file_id}" 
         
         db = Database()
@@ -113,7 +112,7 @@ async def get_upload( request: Request):
         if contentlength.decode() ==  '0':
             raise Exception("Empty file")
         
-        logger(f"writing data")
+        log.verbose(f"writing data")
         await db.add_logfile_async(file_id,request)
 
         return  {
@@ -124,7 +123,7 @@ async def get_upload( request: Request):
         }
 
     except Exception as e:
-        logger(repr(e))
+        verbose(repr(e))
         return  {
             'status': 'error',
             'message': str(e),
