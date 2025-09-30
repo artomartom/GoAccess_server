@@ -26,11 +26,11 @@ class Fields:
     timzn = r"(\+|\-)0[0-9]00"
     upstrm = r"(\d+.\d+|\-)"
     usr = r"(-|\w+)"
-    combined = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\"'''
-    bitrixvm_main = fr'''({ip}|{ip}) - {usr} \[{datim} {timzn} - ({upstrm}|-)\] {sts} \"{mthd} {url} {http}\" {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"'''
-    combined_x_for = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"'''
-    hestia = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] {mthd} {url} {http} \"{sts}\" {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"'''
-    litespeed = fr'''\"({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\"\"'''
+    combined = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\"\n?'''
+    bitrixvm_main = fr'''({ip}|{ip}) - {usr} \[{datim} {timzn} - ({upstrm}|-)\] {sts} \"{mthd} {url} {http}\" {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"\n?'''
+    combined_x_for = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"\n?'''
+    hestia = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] {mthd} {url} {http} \"{sts}\" {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"\n?'''
+    litespeed = fr'''\"({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\"\"\n?'''
  
 format_list =  [
     (Fields.combined, 
@@ -75,7 +75,7 @@ class Format():
                
         raise Format.Exception(f"unknown format line: {sample_line}")
     
-    def get_format(log_strings : list[str],name :str ):
+    def get_format(log_strings:list[str],name :str ):
         
         if name != "":
             logger (f"trying {name} log format")
@@ -93,5 +93,5 @@ class Format():
                 best_sample_line_num = line_num
                 best_sample_line = line
                 best_sample_count = count
-        logger(f"best sample line {best_sample_line}")
+        logger(f"best sample line {best_sample_line_num+1} {best_sample_line}")
         return  Format(sample_line=best_sample_line)
