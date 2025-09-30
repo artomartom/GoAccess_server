@@ -1,11 +1,15 @@
 FROM debian:bookworm
  
-WORKDIR /app/
+ENV WORKDIR=/app
+WORKDIR $WORKDIR
+
 
 ENV TZ="Europe/Moscow"
 ENV LANG=ru_RU.UTF-8
 ENV LANGUAGE=ru_RU.UTF-8
 ENV LC_ALL=ru_RU.UTF-8
+ENV VIRTUAL_ENV=$WORKDIR/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN apt update && apt upgrade -y && \
 apt install locales -y && \
@@ -22,18 +26,19 @@ apt install python3-pip -y && \
 apt install python3-venv -y  && \
 apt clean 
 
-COPY  ./requirements.txt  /app/
+COPY  ./requirements.txt $WORKDIR
+RUN python3 -m venv $VIRTUAL_ENV && python3 -m pip install -r $WORKDIR/requirements.txt
+
+COPY  ./*py  $WORKDIR
+COPY  ./assets  $WORKDIR/assets
+
+ARG debbuger
+RUN if [[ -z "$debbuger" ]] ; then python3 -m pip install debugpy; fi  && \
+    if [[ -z "$debbuger" ]] ; then DEBUG="-m debugpy --listen 0.0.0.0:5678"; fi
+#docker build   -t goaccess_server-debug .
 
 
-ENV VIRTUAL_ENV=/app/venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-RUN python3 -m venv $VIRTUAL_ENV && python3 -m pip install -r /app/requirements.txt
-
-COPY  ./*py  /app/
-COPY  ./assets  /app/assets
-
-
-RUN echo "#!/bin/bash \n $VIRTUAL_ENV/bin/python3 /app/app.py" > ./entrypoint.sh && chmod +x ./entrypoint.sh
+RUN echo "#!/bin/sh" >> $WORKDIR/entrypoint.sh && chmod +x $WORKDIR/entrypoint.sh
+RUN echo "$VIRTUAL_ENV/bin/python3 $DEBUG $WORKDIR/app.py" >> ./entrypoint.sh 
 ENTRYPOINT ["./entrypoint.sh"]
 
