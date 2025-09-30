@@ -8,6 +8,7 @@ HOSTNAME =  config["HOSTNAME"]
 LISTEN =  config["LISTEN"]  
 PORT = config["PORT"]  
 VERSION = config["VERSION"]  
+LOGLEVEL = config["LOGLEVEL"]  
 
 CACHE_SRV = None
 CACHE_PORT  = None
@@ -23,6 +24,11 @@ DEBUG = False
 if "DEBUG" in config:
 	DEBUG = True
 
-if "HUNTER" in config:
+try:
+#	if "HUNTER" in config:
 	import hunter
 	hunter.trace(module_in=['database','app','cache','report_generator','format_parser'])
+except:
+    print('hunter not imported')
+else:
+	pass

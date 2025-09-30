@@ -40,7 +40,7 @@ async def get_report(file_id: str,
                     fmt: str = Query("")
                     ):
     try:
-        log.info(f"received args \n\t\tmth: {mth}\n\t\tfmt: {fmt}") 
+        log.verbose(f"received args \n\t\tmth: {mth}\n\t\tfmt: {fmt}") 
         
         ca = Cache_Server()
         cache_key = f"{file_id}/{mth}/{fmt}"
