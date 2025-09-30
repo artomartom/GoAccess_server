@@ -123,7 +123,7 @@ async def get_upload( request: Request):
         }
 
     except Exception as e:
-        verbose(repr(e))
+        log.error(repr(e))
         return  {
             'status': 'error',
             'message': str(e),
