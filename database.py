@@ -3,6 +3,37 @@ import os
 
 from fastapi import FastAPI, Request, Query
 import aiofiles    
+import re
+
+
+def match_regex(match: str, data: list[str])-> str:
+        
+    new_data:str="" 
+    for line in data:
+        if re.search(match, line):
+            new_data+=line  
+            new_data+='\n' 
+    return  new_data
+ 
+ 
+def filter_file_in_batches(input_file_handle, output_file_handle: str, regex: str, batch_size: int = 10000) -> None:
+   
+    while True:
+        batch = []
+        for _ in range(batch_size):
+            line = input_file_handle.readline()
+            if not line:   
+                break
+            batch.append(line)
+        
+        if not batch:
+            break
+        
+        filtered_data = match_regex(regex, batch)
+        
+        if filtered_data:
+            output_file_handle.write(filtered_data) 
+                
 class Database:
     
     dir = f"{os.getcwd()}/data"
@@ -25,13 +56,8 @@ class Database:
         return os.path.isfile(f"{self.dir}/{id}")
         
     def get_logfile(self,id:str ) -> str: 
+        return  open(f"{self.dir}/{id}" , 'r')  
         
-        with  open(f"{self.dir}/{id}" , 'r') as file: 
-            return  file.read()   
-            #return   '113.168.228.73 - - [08/Jul/2025:00:00:23 +0300] "GET ?orderby=price-desc&availability=in_stock&filter_automatic-winding=no-power-reserve-38-hours&query_type_automatic-winding=or&filter_movement=2414a,2414,2432-01,2431-01,2416 HTTP/1.1" 400 157 "-" "-"'
-            
-      
-
 
 if __name__ == '__main__':
     

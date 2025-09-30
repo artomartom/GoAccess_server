@@ -1,16 +1,15 @@
 from fastapi import FastAPI, Request, Query
 from fastapi.responses import FileResponse, HTMLResponse
 import uvicorn
-
 from settings import LISTEN,  DEBUG, PORT, VERSION, HOSTNAME
 from utility import  logger
 from report_generator import run_goaccess,   new_report_id
-from database import Database
+from database import Database, filter_file_in_batches
 import time
-import re
 import io
 import jinja2
 from  format_parser import  Format
+import tempfile
 
 from cache import Cache_Server
 
@@ -26,16 +25,6 @@ async def get_report_download(file_id: str,
         return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
     return res
 
-def match_regex(match: str, data: str):
-    if match == ""  :
-        return data
-        
-    new_data="" 
-    for line in data.split('\n'):
-        if re.search(match, line):
-            new_data+=line  
-            new_data+='\n' 
-    return  new_data
  
 @app.get("/v1/help", response_class=HTMLResponse) 
 async def get_report():
@@ -64,15 +53,24 @@ async def get_report(file_id: str,
         logger(f"found match argument: {mth}")
         if db.id_exists(file_id) == False:
             raise FileNotFoundError(f"file '{file_id}' not found")
-        data = db.get_logfile(file_id)  
-
-        fmt = Format.get_format(data.split('\n', 200), name=fmt)
-    
-        data = match_regex(mth, data)
         
-        result =  run_goaccess(data ,fmt )
-        ca.set(cache_key,result)
-        return HTMLResponse(content=result , status_code=200)
+        
+        with db.get_logfile(file_id) as data:
+            test_chunk = data.readlines(200)
+            data.seek(0)
+            
+            fmt = Format.get_format(test_chunk, name=fmt)
+            data.seek(0)
+            if mth != "":
+                with tempfile.NamedTemporaryFile('w') as parsed_log:
+                    filter_file_in_batches(data,parsed_log,mth)
+                    result =  run_goaccess(parsed_log.name,fmt )
+                    ca.set(cache_key,result)
+                    return HTMLResponse(content=result , status_code=200)
+
+            result =  run_goaccess(data.name ,fmt )
+            ca.set(cache_key,result)
+            return HTMLResponse(content=result , status_code=200)
     
     except FileNotFoundError as e:
         with open(f"assets/message_page.html", 'r') as file:
@@ -88,7 +86,7 @@ async def get_report(file_id: str,
             heading ='''Unknown Format Error'''
             description = '''The server encountered an unknown or unsupported format in your request.
                         Please check the format specification and try again.'''
-            error_text = str(e) #.replace("\n","\n\t")
+            error_text = str(e)  
             
             html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading,description=description,text = error_text)
             return HTMLResponse(html_page, status_code=400)
@@ -105,16 +103,12 @@ async def get_upload( request: Request):
         file_id = new_report_id()
         
 
-        #logger (f"receiving { request.headers['filename']}")
         logger (f"report file name {file_id}")
         url = f"{HOSTNAME}/v1/generate/{file_id}" 
         
         db = Database()
 
-        #data =  await request.body()
         _, contentlength = request._headers._list[5]
-        
-        
         
         if contentlength.decode() ==  '0':
             raise Exception("Empty file")
