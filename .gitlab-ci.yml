@@ -13,6 +13,7 @@ build-job:       # This job runs in the build stage, which runs first.
     - echo "CACHE" >> .env
     - echo "CACHE_SRV='redis-cache'" >> .env
     - echo "CACHE_PORT=6379" >> .env
+    - echo "LOGLEVEL=info" >> .env
     - docker build --no-cache -t goaccess_server:latest .
 
 test-job:
