@@ -20,7 +20,7 @@ test-job:
     - echo "CACHE_PORT=6379" >> .env
     - echo "LOGLEVEL=info" >> .env
     - python3 ./test.py -a
-    - docker compose -f ./docker-compose.yaml up
+    - docker compose -f ./docker-compose.yaml up -d
     - docker compose -f ./docker-compose.yaml down
     - docker system prune --force
 
