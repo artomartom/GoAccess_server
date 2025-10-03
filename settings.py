@@ -18,7 +18,7 @@ class Model(BaseModel):
 	loglevel: Optional[str] = 'info'
 	cache: Optional[bool] = 'off'
 	cache_srv: Optional[str] = 'redis-cache'
-	cache_port: Optional[str] = '6379'
+	cache_port: Optional[int] = '6379'
 	debug: Optional[bool] = 'off'
 	hunter: Optional[bool] = 'off'
 

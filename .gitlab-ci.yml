@@ -8,20 +8,6 @@ build-job:       # This job runs in the build stage, which runs first.
   script:
     - docker build --no-cache -t goaccess_server:latest .
 
-config:
-  script: echo "hostname: https://goaccess.kiwi.local
-listen: 0.0.0.0
-port: 3050
-version: \"1.0\"
-loglevel: info
-debug: off
-hunter: off
-cache: off
-cache_srv: redis-cache
-cache_port: \"6379\"" | yq -y    > config.yaml
-  artifacts:
-    paths:
-      - config.yaml
 
 
 test-job:
