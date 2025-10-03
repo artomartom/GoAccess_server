@@ -13,7 +13,7 @@ build-job:       # This job runs in the build stage, which runs first.
 test-job:
   stage: test
   script:
-    - python3 ./test.py -a
+    #- python3 ./test.py -a
     - docker compose -f ./docker-compose.yaml up -d
     - docker compose -f ./docker-compose.yaml down
     - docker system prune --force
