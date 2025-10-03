@@ -16,7 +16,7 @@ services:
     ports:
       - "127.0.0.1:3050:3050"
     volumes:
-      - ./.env:/app/.env
+      - ./config.yaml:/app/config.yaml
       - data:/app/data
     deploy:
       restart_policy:
