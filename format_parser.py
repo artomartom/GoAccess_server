@@ -50,7 +50,7 @@ class Format():
     class  Exception(Exception):
             pass 
     
-    def __init__(self,sample_line=None,name="combined"):
+    def __init__(self,sample_line:str=None,name:str="combined"):
         if sample_line:
             log.verbose("Format with sample_line")
             _, self.log_format,self.date_format,self.time_format,self.name = Format.match_line(sample_line)
@@ -63,7 +63,7 @@ class Format():
                     return 
             raise Format.Exception(f"unknown format name: {name}")
         
-    def match_line(sample_line):
+    def match_line(sample_line:str):
         
         for format in format_list:
             pattern = re.compile(format[0])
@@ -75,7 +75,7 @@ class Format():
                
         raise Format.Exception(f"unknown format line: {sample_line}")
     
-    def get_format(log_strings:list[str],name :str ):
+    def get_format(log_strings:list[str],name:str ):
         
         if name != "":
             log.verbose(f"trying {name} log format")

@@ -1,5 +1,6 @@
 import os 
 
+from io import TextIOWrapper as file_handle
 
 from fastapi import FastAPI, Request, Query
 import aiofiles    
@@ -7,7 +8,7 @@ import re
 
 
  
-def filter_file_in_batches(input_file_handle, output_file_handle: str, regex: str, batch_size: int = 10000) -> None:
+def filter_file_in_batches(input_file_handle:file_handle , output_file_handle:file_handle, regex: str, batch_size: int = 10000) -> None:
    
     lines:int=0
     batchs:int=0

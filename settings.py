@@ -1,34 +1,36 @@
 
 
-from dotenv import dotenv_values 
 
-config = dotenv_values(".env")   
+import yaml
+from yaml import Loader 
 
-HOSTNAME =  config["HOSTNAME"]
-LISTEN =  config["LISTEN"]  
-PORT = config["PORT"]  
-VERSION = config["VERSION"]  
-LOGLEVEL = config["LOGLEVEL"]  
 
-CACHE_SRV = None
-CACHE_PORT  = None
-CACHE = False
+	
+from pydantic import BaseModel
+from typing import Optional
+ 
+    
+class Model(BaseModel):
+	hostname: Optional[str] = 'http://localhost'
+	listen: Optional[str] = '127.0.0.1'
+	port: Optional[int] = '3050'
+	version: Optional[str] = '1.0'
+	loglevel: Optional[str] = 'info'
+	cache: Optional[bool] = 'off'
+	cache_srv: Optional[str] = 'redis-cache'
+	cache_port: Optional[str] = '6379'
+	debug: Optional[bool] = 'off'
+	hunter: Optional[bool] = 'off'
 
-if "CACHE" in config:
-	CACHE = True
-	CACHE_SRV = config["CACHE_SRV"]  
-	CACHE_PORT = config["CACHE_PORT"]
+class Settings:
+	
+	model:Model = None
+    
+	def __init__(self):
+		with open("config.yaml", "r") as f:
+			config = yaml.load(f,Loader=Loader)
+			self.model = Model(**config)
    
-
-DEBUG = False
-if "DEBUG" in config:
-	DEBUG = True
-
-try:
-#	if "HUNTER" in config:
-	import hunter
-	hunter.trace(module_in=['database','app','cache','report_generator','format_parser'])
-except:
-    print('hunter not imported')
-else:
-	pass
+   
+Settings = Settings().model
+ 

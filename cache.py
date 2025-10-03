@@ -1,6 +1,6 @@
 import redis
 
-from settings import  CACHE, CACHE_SRV, CACHE_PORT, DEBUG
+from settings import  Settings
 
  
 class Cache_Server:
@@ -9,22 +9,22 @@ class Cache_Server:
     
     def __init__(self):
         
-        if not CACHE:
+        if not Settings.cache:
             return 
         
         try:
-            self.redis = redis.Redis(host=CACHE_SRV, port=CACHE_PORT, db=0)
+            self.redis = redis.Redis(host=Settings.cache_srv, port=Settings.cache_port, db=0)
         except Exception as e:
-            settings.CACHE = False
+            Settings.cache = False
             pass  
         
 
     def get(self,key: str):
-        if not CACHE:
+        if not Settings.cache:
             return None
         return self.redis.get(key)
     def set(self,key: str, html : str):
-        if not CACHE:
+        if not Settings.cache:
             return None
         return self.redis.set(key,html)
 

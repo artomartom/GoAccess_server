@@ -1,7 +1,8 @@
 from subprocess import PIPE, Popen, CompletedProcess
 import subprocess
  
-import  settings  
+from settings import  Settings
+
 
 from  format_parser import Format
 
@@ -10,13 +11,13 @@ import os
 import uuid
 import tempfile
 
-def get_report_url(filename):
-    return f"{ settings.HOSTNAME}/{filename}"
+def get_report_url(filename:str):
+    return f"{ Settings.hostname}/{filename}"
  
 def new_report_id():
     return  uuid.uuid4().hex
 
-def run_goaccess(  filename : str, format : Format ) -> str: 
+def run_goaccess( filename:str, format:Format ) -> str: 
      
     log.verbose(f"trying format {format.name }")
     args=  ["goaccess",filename,    "-a", 
