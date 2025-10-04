@@ -12,7 +12,11 @@ class Logger():
             
     @staticmethod
     def info(text:str):
-        if Settings.loglevel in ['info','verbose']:
+        if Settings.loglevel in ['info','verbose','warn']:
+            print (f"               {text}")
+    @staticmethod
+    def warn(text:str):
+        if Settings.loglevel in ['info','verbose','warn']:
             print (f"               {text}")
     @staticmethod
     def error(text:str):

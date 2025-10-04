@@ -1,0 +1,38 @@
+services:
+  redis:
+    container_name: redis
+    image: redis:6.2-alpine
+    restart: always
+    command: redis-server --save 20 1 --loglevel notice
+    volumes:
+      - redis-cache:/data
+    networks:
+      - nginx_nginx_goaccess
+
+  goaccess:
+    container_name: goaccess
+    image: goaccess_server
+    restart: always
+    networks:
+      - nginx_nginx_goaccess
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - data:/app/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 500M
+        reservations:
+          memory: 200M
+
+volumes:
+  redis-cache:
+    driver: local
+  data:
+    driver: local
+
+networks:
+  nginx_nginx_goaccess:
+    external: true

@@ -1,37 +1,19 @@
 services:
-  redis-cache:
-    container_name: redis-cache
-    image: redis:6.2-alpine
-    restart: always
-    command: redis-server --save 20 1 --loglevel notice
-    volumes:
-      - redis-cache:/data
-    profiles:
-      - prod
-
-  py-server:
-    container_name:   goaccess-server 
-    image: goaccess_server
+  goaccess-debug:
+    container_name: goaccess-server-debug
+    build:
+      context: .
+      args: 
+        debbuger: true
+    image: goaccess_server-debug
     restart: always
     ports:
-      - "127.0.0.1:3050:3050"
+      - "3050:3050"
+      - "5678:5678"
     volumes:
-      - ./config.yaml:/app/config.yaml
+      - ./config.yaml:/app/config.yaml 
       - data:/app/data
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 500M
-        reservations:
-          memory: 200M
-          
+    
 volumes:
-  redis-cache:
-    driver: local
   data:
     driver: local
-
-
-

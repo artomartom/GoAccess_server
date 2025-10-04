@@ -1,12 +1,13 @@
 import redis
 
 from settings import  Settings
+from utility import Logger as log
 
  
 class Cache_Server:
     
-    redis:redis.client.Redis   
     
+    redis:redis.client.Redis   
     def __init__(self):
         
         if not Settings.cache:
@@ -14,7 +15,10 @@ class Cache_Server:
         
         try:
             self.redis = redis.Redis(host=Settings.cache_srv, port=Settings.cache_port, db=0)
+            self.set('test','testtest')
+            _:str = self.get('test')
         except Exception as e:
+            log.warn(f"unable to connect to ${Settings.cache_srv}:${Settings.cache_port}.\nCaching diabled")
             Settings.cache = False
             pass  
         
