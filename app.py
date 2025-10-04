@@ -136,7 +136,7 @@ if __name__ == '__main__':
     uvicorn.run( 
         app="app:app",  # Path to your FastAPI app (module:app)
         port=Settings.port, 
-        workers=4,       # Number of worker processes (1 for development)
+        workers= 1 if Settings.debug  else Settings.worker ,     
         log_level="info",  # Logging level
         access_log=True,   # Enable access logs
         timeout_keep_alive=5,  

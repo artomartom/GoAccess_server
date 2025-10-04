@@ -3,8 +3,6 @@
 
 import yaml
 from yaml import Loader 
-
-
 	
 from pydantic  import BaseModel
 from typing import Optional
@@ -15,10 +13,11 @@ class Model(BaseModel):
 	listen: Optional[str] = '127.0.0.1'
 	port: Optional[int] = '3050'
 	version: Optional[str] = '1.0'
+	worker: Optional[int] = 4
 	loglevel: Optional[str] = 'info'
 	cache: Optional[bool] = 'off'
 	cache_srv: Optional[str] = 'redis-cache'
-	cache_port: Optional[int] = '6379'
+	cache_port: Optional[int] = 6379
 	debug: Optional[bool] = 'off'
 	hunter: Optional[bool] = 'off'
 
