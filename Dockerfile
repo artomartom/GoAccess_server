@@ -19,7 +19,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN python3 -m venv $VIRTUAL_ENV && python3 -m pip install -r $WORKDIR/requirements.txt
 
 
-RUN if [[ -z "$debbuger" ]] ; then   DEBUG="-m debugpy --listen 0.0.0.0:5678"; fi    
+#RUN if [[ -z "$debbuger" ]] ; then   DEBUG="-m debugpy --listen 0.0.0.0:5678"; fi    
 RUN echo "$VIRTUAL_ENV/bin/python3 $DEBUG $WORKDIR/app.py" >> /entrypoint.sh 
 
 COPY  ./*py  $WORKDIR
