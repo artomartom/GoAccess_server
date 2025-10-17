@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Query
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse,  RedirectResponse
 import uvicorn
 from settings import Settings
 from utility import Logger as log
@@ -15,7 +15,7 @@ from cache import Cache_Server
 
 app = FastAPI(debug=Settings.debug, docs_url=None, redoc_url=None)
 
-@app.get("/v1/download/{file_id}", response_class=FileResponse) 
+@app.get("/download/{file_id}", response_class=FileResponse) 
 async def download(file_id: str, 
                     mth: str = Query(""),
                     fmt: str = Query("")):
@@ -25,8 +25,11 @@ async def download(file_id: str,
         return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
     return res
 
- 
-@app.get("/v1/help", response_class=HTMLResponse) 
+@app.get("/")
+async def redirect_home():
+    return RedirectResponse(f"{Settings.external_url}/help")
+
+@app.get("/help", response_class=HTMLResponse) 
 async def get_help():
     with open(f"assets/message_page.html", 'r') as file:
         html_page = file.read()
@@ -34,7 +37,7 @@ async def get_help():
         html_page = jinja2.Template(html_page).render(icon = "❔❔❔",heading=heading, text = "This is a help page")
         return HTMLResponse(html_page, status_code=200)
                      
-@app.get("/v1/generate/{file_id}", response_class=HTMLResponse) 
+@app.get("/generate/{file_id}", response_class=HTMLResponse) 
 async def generate(file_id: str,
                     mth: str = Query(""),
                     fmt: str = Query("")
@@ -91,11 +94,11 @@ async def generate(file_id: str,
             return HTMLResponse(html_page, status_code=400)
         
 
-@app.post("/v1/report") 
+@app.post("/report") 
 async def get_report( request: Request): 
     return await  upload(request)
  
-@app.post("/v1/upload") 
+@app.post("/upload") 
 async def upload( request: Request): 
     try: 
         start = time.time()
@@ -103,7 +106,7 @@ async def upload( request: Request):
         
 
         log.verbose (f"report file name {file_id}")
-        url = f"{Settings.hostname}/v1/generate/{file_id}" 
+        url = f"{Settings.external_url}/generate/{file_id}" 
         
         db = Database()
 
@@ -134,11 +137,11 @@ async def upload( request: Request):
 
 if __name__ == '__main__':
     uvicorn.run( 
-        app="app:app",  # Path to your FastAPI app (module:app)
+        app="app:app",   
         port=Settings.port, 
         workers= 1 if Settings.debug  else Settings.worker ,     
-        log_level="info",  # Logging level
-        access_log=True,   # Enable access logs
+        log_level="info",   
+        access_log=True,   
         timeout_keep_alive=5,  
                 host=Settings.listen)
 
