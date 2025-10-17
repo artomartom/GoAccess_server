@@ -6,8 +6,7 @@ stages:
 build-job:
   stage: build
   script:
-    - docker build -t goaccess_server:latest .
-
+    - docker build --no-cache -t goaccess_server:latest .
 
 
 test-job:
