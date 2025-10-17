@@ -12,7 +12,7 @@ import uuid
 import tempfile
 
 def get_report_url(filename:str):
-    return f"{ Settings.hostname}/{filename}"
+    return f"{ Settings.external_url}/{filename}"
  
 def new_report_id():
     return  uuid.uuid4().hex
