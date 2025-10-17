@@ -11,7 +11,7 @@ from typing import Optional
 class Model(BaseModel):
 	external_url: Optional[str] = 'http://localhost'
 	listen: Optional[str] = '0.0.0.0'
-	port: Optional[int] = '3050'
+	port: Optional[int] = 3050
 	version: Optional[str] = '1.0'
 	worker: Optional[int] = 4
 	loglevel: Optional[str] = 'info'
