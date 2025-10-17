@@ -26,7 +26,7 @@ services:
           memory: 500M
         reservations:
           memory: 200M
-
+#ping
 volumes:
   redis-cache:
     driver: local
