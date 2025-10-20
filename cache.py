@@ -6,11 +6,13 @@ from utility import Logger as log
  
 class Cache_Server:
     
+    active:bool=True
     
     redis:redis.client.Redis   
     def __init__(self):
         
         if not Settings.cache:
+            self.active:bool =False
             return 
         
         try:
@@ -19,16 +21,15 @@ class Cache_Server:
             _:str = self.get('test')
         except Exception as e:
             log.warn(f"unable to connect to ${Settings.cache_srv}:${Settings.cache_port}.\nCaching diabled")
-            Settings.cache = False
+            self.active = False
             pass  
-        
 
     def get(self,key: str):
-        if not Settings.cache:
+        if not self.active:
             return None
         return self.redis.get(key)
     def set(self,key: str, html : str):
-        if not Settings.cache:
+        if not self.active:
             return None
         return self.redis.set(key,html)
 
