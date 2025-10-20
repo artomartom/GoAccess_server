@@ -1,16 +1,16 @@
 services:
   goaccess-debug:
-    command: /app/app.py
+    command: /app/tests/test.py
     build:
       context: .
       args: 
         debbuger: true
     image: goaccess-debug
-    restart: always
     ports:
       - "3050:3050"
       - "5678:5678"
     volumes:
+      - ./tests:/app/tests 
       - ./config.yaml:/app/config.yaml 
       - data:/app/data
     
