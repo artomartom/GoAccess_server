@@ -121,7 +121,6 @@ async def upload( request: Request):
         return  {
             'report': url ,
             'status': 'OK',
-            'version': Settings.version,
             'time' :  time.time() - start
         }
 
@@ -129,8 +128,7 @@ async def upload( request: Request):
         log.error(repr(e))
         return  {
             'status': 'error',
-            'message': str(e),
-            'version': Settings.version
+            'message': str(e)
         }
 
  
