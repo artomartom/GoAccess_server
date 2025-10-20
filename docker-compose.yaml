@@ -13,6 +13,7 @@ services:
     volumes:
       - ./config.yaml:/app/config.yaml 
       - data:/app/data
+      - ./geodb:/app/geodb
     
 volumes:
   data:
