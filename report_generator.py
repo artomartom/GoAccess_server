@@ -24,6 +24,11 @@ def run_goaccess( filename:str, format:Format ) -> str:
             "--log-format", f'{format.log_format}',
             f"--date-format={format.date_format}",  
             f"--time-format={format.time_format }"] 
+    
+    if Settings.geoip_db:
+        args.extend([ "--geoip-database",Settings.geoip_db ])
+
+    
     result = subprocess.run(
         args, 
         capture_output=True 
