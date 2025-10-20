@@ -15,6 +15,7 @@ class Model(BaseModel):
 	version: Optional[str] = '1.0'
 	worker: Optional[int] = 4
 	loglevel: Optional[str] = 'info'
+	geoip_db: Optional[str] = None
 	cache: Optional[bool] = 'off'
 	cache_srv: Optional[str] = 'redis'
 	cache_port: Optional[int] = 6379
