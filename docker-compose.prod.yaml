@@ -1,6 +1,7 @@
 services:
   redis:
     image: redis:6.2-alpine
+    container_name: redis
     restart: always
     command: redis-server --save 20 1 --loglevel notice
     volumes:
@@ -10,6 +11,7 @@ services:
 
   goaccess:
     image: goaccess_server
+    container_name: goaccess
     restart: always
     command: >
       /app/app.py --external-url=https://goaccess.papaya.local
