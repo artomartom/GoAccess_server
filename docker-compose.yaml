@@ -1,6 +1,8 @@
 services:
   goaccess-debug:
-    command: /app/app.py
+    command: >
+      /app/app.py --external-url=https://goaccess.papaya.local
+       --geoip-db=/app/geodb/dbip-city-lite-latest.mmdb
     build:
       context: .
       args: 
@@ -11,9 +13,8 @@ services:
       - "3050:3050"
       - "5678:5678"
     volumes:
-      - ./config.yaml:/app/config.yaml 
       - data:/app/data
-      - /var/geodb:/app/geodb
+      - /var/geodb/:/app/geodb
     
 volumes:
   data:

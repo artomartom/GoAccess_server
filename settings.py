@@ -1,36 +1,43 @@
 
 
 
-import yaml
-from yaml import Loader 
-	
-from pydantic  import BaseModel
-from typing import Optional
+from  argparse import ArgumentParser,ArgumentDefaultsHelpFormatter	
  
     
-class Model(BaseModel):
-	external_url: Optional[str] = 'http://localhost'
-	listen: Optional[str] = '0.0.0.0'
-	port: Optional[int] = 3050
-	version: Optional[str] = '1.0'
-	worker: Optional[int] = 4
-	loglevel: Optional[str] = 'info'
-	geoip_db: Optional[str] = None
-	cache: Optional[bool] = 'off'
-	cache_srv: Optional[str] = 'redis'
-	cache_port: Optional[int] = 6379
-	debug: Optional[bool] = 'off'
-	hunter: Optional[bool] = 'off'
-
-class Settings:
-	
-	model:Model = None
+def parse_args():
+    """Parse command line arguments using argparse"""
     
-	def __init__(self):
-		with open("config.yaml", "r") as f:
-			config = yaml.load(f,Loader=Loader)
-			self.model = Model(**config)
+    parser = ArgumentParser(
+        description='Application configuration parameters',
+        formatter_class= ArgumentDefaultsHelpFormatter
+    )
+    
+    parser.add_argument( '--external-url', type=str, default='http://localhost',help='External URL for the application')
+    
+    parser.add_argument( '-l','--listen', type=str, default='0.0.0.0',help='IP address to listen on')
+    
+    parser.add_argument( '-p','--port', type=int, default=3050,help='Port to listen on')
+    
+    parser.add_argument( '-w', '--worker', type=int, default=4,help='Number of worker processes')
+    
+    parser.add_argument( '--loglevel', type=str, default='info',choices=['debug', 'info', 'warning', 'error', 'critical'],
+        help='Logging level')
+    
+    parser.add_argument( '--geoip-db', type=str, default=None,help='Path to GeoIP database file')
+    
+    parser.add_argument( '--cache', action='store_true', help='Enable or disable caching')
+    
+    parser.add_argument( '--cache-srv', type=str, default='redis',help='Cache server type' )
+    
+    parser.add_argument( '--cache-port', type=int, default=6379,help='Cache server port' )
+    
+    parser.add_argument( '--debug', action='store_true', help='Enable or disable debug mode')
+    
+    parser.add_argument( '--hunter', action='store_true', help='Enable or disable hunter mode')
+    
+    return parser.parse_args()
    
    
-Settings = Settings().model
+Settings = parse_args()
+
  
