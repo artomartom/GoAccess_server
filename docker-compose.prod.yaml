@@ -14,7 +14,7 @@ services:
     container_name: goaccess
     restart: always
     command: >
-      /app/app.py --external-url=https://goaccess.papaya.local
+      /app/app.py --external-url=https://goaccess.suschkov.ru
        --geoip-db=/app/geodb/dbip-city-lite-latest.mmdb/
     networks:
       - nginx_nginx_goaccess
