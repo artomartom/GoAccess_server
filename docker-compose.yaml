@@ -3,7 +3,7 @@ services:
     container_name: goaccess
     command: >
       /app/app.py --external-url=https://goaccess.papaya.local
-       --geoip-db=/app/geodb/dbip-country-lite-latest.mmdb
+       --geoip-db=/app/geodb/dbip-lite-latest.mmdb
     build:
       context: .
       args:
