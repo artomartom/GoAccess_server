@@ -1,6 +1,7 @@
-stages:   
+stages:
   - build
   - test
+  - deploy
 
 build-job:
   stage: build
@@ -11,5 +12,19 @@ build-job:
 test-job:
   stage: test
   script:
-    - docker compose -f ./docker-compose.yaml up -d
+    #- python3 ./test.py -a
+#    - docker compose -f ./docker-compose.yaml up -d
+#    - docker compose -f ./docker-compose.yaml down
+#    - docker system prune --force
+    - echo "test"
 
+deploy-job:
+  stage: deploy
+  script:
+    - docker save goaccess_server:latest > ./goaccess_server.tar
+    - rsync -azvhP  --info=progress2 ./goaccess_server.tar  orange:/home/orange/
+    - rsync -azvhP  --info=progress2 ./{assets,docker-compose.prod.yaml} orange:/opt/goAccess_server
+    - ssh orange -t docker image load -i goaccess_server.tar
+    - ssh orange -t docker compose -f  /opt/goAccess_server/docker-compose.prod.yaml  up -d --no-deps
+    - ssh orange -t rm /home/orange/goaccess_server.tar
+    - rm ./goaccess_server.tar
