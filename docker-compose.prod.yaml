@@ -15,7 +15,7 @@ services:
     restart: always
     command: >
       /app/app.py --external-url=https://goaccess.suschkov.ru
-       --geoip-db=/app/geodb/dbip-country-lite-latest.mmdb --cache
+       --geoip-db=/app/geodb/dbip-lite-latest.mmdb --cache
     networks:
       - nginx_nginx_goaccess
     volumes:
