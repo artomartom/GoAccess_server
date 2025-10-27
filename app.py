@@ -15,8 +15,8 @@ from cache import Cache_Server
 
 app = FastAPI(debug=Settings.debug, docs_url=None, redoc_url=None)
 
-@app.get("/download/{file_id}", response_class=FileResponse) 
-async def download(file_id: str, 
+@app.get("/download/{file_id}", response_class=FileResponse)
+async def download(file_id: str,
                     mth: str = Query(""),
                     fmt: str = Query("")):
     res = await generate(file_id,mth,fmt)
@@ -29,22 +29,22 @@ async def download(file_id: str,
 async def redirect_home():
     return RedirectResponse(f"{Settings.external_url}/help")
 
-@app.get("/help", response_class=HTMLResponse) 
+@app.get("/help", response_class=HTMLResponse)
 async def get_help():
     with open(f"assets/message_page.html", 'r') as file:
         html_page = file.read()
         heading ='''Help'''
         html_page = jinja2.Template(html_page).render(icon = "❔❔❔",heading=heading, text = "This is a help page")
         return HTMLResponse(html_page, status_code=200)
-                     
-@app.get("/generate/{file_id}", response_class=HTMLResponse) 
+
+@app.get("/generate/{file_id}", response_class=HTMLResponse)
 async def generate(file_id: str,
                     mth: str = Query(""),
                     fmt: str = Query("")
                     ):
     try:
-        log.verbose(f"received args \n\t\tmth: {mth}\n\t\tfmt: {fmt}") 
-        
+        log.verbose(f"received args \n\t\tmth: {mth}\n\t\tfmt: {fmt}")
+
         ca = Cache_Server()
         cache_key = f"{file_id}/{mth}/{fmt}"
         cache = ca.get(cache_key)
@@ -55,12 +55,12 @@ async def generate(file_id: str,
         log.verbose(f"found match argument: {mth}")
         if db.id_exists(file_id) == False:
             raise FileNotFoundError(f"file '{file_id}' not found")
-        
-        
+
+
         with db.get_logfile(file_id) as data:
             test_chunk = data.readlines(200)# reads chars. CHANGE TO 200 LINES
             data.seek(0)
-            
+
             fmt = Format.get_format(test_chunk, name=fmt)
             data.seek(0)
             if mth != "":
@@ -73,48 +73,48 @@ async def generate(file_id: str,
             result =  run_goaccess(data.name ,fmt )
             ca.set(cache_key,result)
             return HTMLResponse(content=result , status_code=200)
-    
+
     except FileNotFoundError as e:
         with open(f"assets/message_page.html", 'r') as file:
             html_page = file.read()
             heading ='''File Not Found'''
-            error_text = str(e)  
+            error_text = str(e)
             html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading, text = error_text)
             return HTMLResponse(html_page, status_code=404)
-         
+
     except Format.Exception as e:
         with open(f"assets/message_page.html", 'r') as file:
             html_page = file.read()
             heading ='''Unknown Format Error'''
             description = '''The server encountered an unknown or unsupported format in your request.
                         Please check the format specification and try again.'''
-            error_text = str(e)  
-            
+            error_text = str(e)
+
             html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading,description=description,text = error_text)
             return HTMLResponse(html_page, status_code=400)
-        
 
-@app.post("/report") 
-async def get_report( request: Request): 
+
+@app.post("/report")
+async def get_report( request: Request):
     return await  upload(request)
- 
-@app.post("/upload") 
-async def upload( request: Request): 
-    try: 
+
+@app.post("/upload")
+async def upload( request: Request):
+    try:
         start = time.time()
         file_id = new_report_id()
-        
+
 
         log.verbose (f"report file name {file_id}")
-        url = f"{Settings.external_url}/generate/{file_id}" 
-        
+        url = f"{Settings.external_url}/generate/{file_id}"
+
         db = Database()
 
         _, contentlength = request._headers._list[5]
-        
+
         if contentlength.decode() ==  '0':
             raise Exception("Empty file")
-        
+
         log.verbose(f"writing data")
         await db.add_logfile_async(file_id,request)
 
@@ -131,17 +131,17 @@ async def upload( request: Request):
             'message': str(e)
         }
 
- 
+
 
 if __name__ == '__main__':
-    uvicorn.run( 
-        app="app:app",   
-        port=Settings.port, 
-        workers= 1 if Settings.debug  else Settings.worker ,     
-        log_level="info",   
-        access_log=True,   
-        timeout_keep_alive=5,  
+    uvicorn.run(
+        app="app:app",
+        port=Settings.port,
+        workers= 1 if Settings.debug  else Settings.worker ,
+        log_level="info",
+        access_log=True,
+        timeout_keep_alive=5,
         host=Settings.listen)
 
- 
+
 

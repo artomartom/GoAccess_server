@@ -25,7 +25,7 @@ addresses_v6 = [
 ("fd44:2072:6d31:dead:beef:affe:1d:50da",True),
 ("fd48:9bda:1f2e:8:0:1234:5678:9abc",True),
 ("fd40:ec19:3c71:93e1:55aa:fc39:8711:492b",True),
-]    
+]
 
 time=[
 ("17/Jul/2025:03:29:00", True),
@@ -58,7 +58,7 @@ url= [
     ("/product-category/amphibian-classic/?orderby=date&filter_automatic-winding=no%2Cyes&query_type_automatic-winding=or&filter_movement=2416,2415-01,2416b,2431-12,2415,2409",True),
     ("/?availability=in_stock&filter_movement=2414a%2C2403%2C2431-01%2C2426-12%2C2432-01%2C2415%2C2431-12&orderby=price-des",True),
     (".env",False),
-     
+
     ]
 
 method=[
@@ -72,10 +72,10 @@ method=[
     ("sd",False),
     ("451",False),
     ("_FSD",False),
-    
+
 ]
 timezone =[
-    
+
 ("+0300", True),
 ("-0300", True),
 ("+0000", True),
@@ -107,17 +107,17 @@ refferer =[
     ("https://fd12:3456:789a::1:4sd43",False),
     ("http://62.113.44.234:44sd3",False),
     ("http://62.113.44.234:443",True),
-    
+
 ]
 
 x_for = [
-    
+
     ("156.234.180.92",True),
     ("fd87:d2e5:2834::feed:1",True),
     ("2a03:2880:f800:8::, 172.71.194.251",True),
     ("156.234.180.92, 172.71.194.251",True),
     ("2a03:2880:f800:8::,  fd48:9bda:1f2e:8:0:1234:5678:9abc",False),
-    
+
 ]
 
 agent= [
@@ -145,7 +145,7 @@ log_combined_x_for =[
 ('''114.119.132.248 - - [25/Apr/2023:04:09:10 +0300] "GET /image/cache/catalog/7-sirenevyh-roz-60-sm-1-277x277.jpg HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/sirenevye/" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.132.248"''',True   ),
 ('''114.119.149.92 - - [25/Apr/2023:13:55:31 +0300] "GET /piony-na-vypisku/ HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/5-kust-pion-roz-miks-50-sm.html" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.149.92"''',True      ),
 ('''114.119.149.92 - - [25/Apr/2023:13:55:31 +0300] "GET /piony-na-vypisku/ HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/5-kust-pion-roz-miks-50-sm.html" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "fd48:9bda:1f2e:8:0:1234:5678:9abc"''',True      ),
-    
+
 ]
 
 log_combined =[
@@ -203,7 +203,7 @@ log_combined =[
 ]
 
 log_bitrixvm_main =[
-    
+
 ('''89.111.133.192 - - [18/Aug/2025:04:13:10 +0300 - -] 301 "GET /opinion/ HTTP/1.1" 162 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" "185.242.122.4"''', True),
 ('''89.111.133.192 - - [18/Aug/2025:04:13:10 +0300 - -] 301 "GET /opinion/ HTTP/1.1" 162 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"''', False),
 ('''85.192.11.9 - - [18/Aug/2025:03:51:01 +0300 - 0.031] 200 "GET /details/rss/ HTTP/1.0" 168459 "http://dvinatoday.ru/details/rss/" "Mozilla/5.0 (compatible; Linux; x64; en-us) KHTML/4.3.5 (like Gecko) Chrome/32.3.187.919 Safari/544.81" "-"''', True),
@@ -222,10 +222,10 @@ log_hestia = [
 ('''185.111.218.118 - - [17/Aug/2025:00:39:12 +0300] GET / HTTP/1.1 "301" 162 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko, WEBO Pulsar) Chrome/15.0.874.106 Safari/535.2" "-"''', True),
 ('''42.236.12.229 - - [17/Aug/2025:09:31:53 +0300] GET / HTTP/1.1 "301" 162 "http://serginnetti.ru/" "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 6P Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.83 Mobile Safari/537.36; 360Spider" "-"''', True),
 ('''65.109.19.160 - - [17/Aug/2025:11:21:55 +0300] GET /upload/iblock/808/igyz3r4jljq04ceyhjgwx2ys1gaxvz5r.jpg HTTP/1.0 "301" 162 "-" "meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler)" "2a03:2880:f800:8::, 172.71.194.251"''', True),
-('''143.92.32.30 - - [19/Aug/2025:13:29:29 +0300] GET /api/pages/login HTTP/1.1 "301" 162 "http://serginnetti.ru" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" "117.66.150.77"''', True),  
+('''143.92.32.30 - - [19/Aug/2025:13:29:29 +0300] GET /api/pages/login HTTP/1.1 "301" 162 "http://serginnetti.ru" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" "117.66.150.77"''', True),
 ('''65.109.19.160 - - [20/Aug/2025:21:47:38 +0300] GET /upload/iblock/b8c/b8ccfece7e0fa167f85e5d7ec47e0aa8.jpg HTTP/1.0 "301" 162 "-" "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot) Chrome/119.0.6045.214 Safari/537.36" "54.225.98.148, 172.71.127.125"''', True),
-('''24.83.200.235 - - [17/Aug/2025:01:21:38 +0300] HEAD /site HTTP/1.1 "301" 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36" "-"''', True),       
-('''1.169.98.245 - - [17/Aug/2025:01:23:20 +0300] GET / HTTP/1.0 "301" 162 "http://serginnetti.ru/" "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" "-"''', True),  
+('''24.83.200.235 - - [17/Aug/2025:01:21:38 +0300] HEAD /site HTTP/1.1 "301" 0 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36" "-"''', True),
+('''1.169.98.245 - - [17/Aug/2025:01:23:20 +0300] GET / HTTP/1.0 "301" 162 "http://serginnetti.ru/" "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" "-"''', True),
 ]
 
 def run_test(regex :str, samples :list):
@@ -233,16 +233,16 @@ def run_test(regex :str, samples :list):
             pattern = re.compile(regex)
             value, valid = sample
             match = pattern.fullmatch(value)
-            
+
             if AUTOMATED:
-                assert  (match and valid) or (not match and not valid),  f"❌ {value}" 
-            else: 
+                assert  (match and valid) or (not match and not valid),  f"❌ {value}"
+            else:
                 if (match and valid) or (not match and not valid):
-                    print(f"✅ {value}")     
+                    print(f"✅ {value}")
                 else:
-                    print(f"❌ {value}") 
-                    
-  
+                    print(f"❌ {value}")
+
+
 bitrixvm_main = fr'''({f.ip}|{f.ip}) - {f.usr} \[{f.datim} {f.timzn} - ({f.upstrm}|-)\] {f.sts} \"{f.mthd} {f.url} {f.http}\" {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\" \"({f.x_for}|-)\"'''
 combined = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\"'''
 combined_x_for = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\" \"({f.x_for}|-)\"'''
@@ -255,34 +255,34 @@ format_list =  [
     (hestia,"hestia"),
     ]
 
-    
+
 def run_all():
     # tokens
-    run_test(regex=f.mthd, samples=method)  
-    run_test(regex=f.a_v4, samples=addresses_v4)    
-    run_test(regex=f.a_v6, samples=addresses_v6)    
-    run_test(regex=f.ip, samples=addresses_v4)    
-    run_test(regex=f.ip, samples=addresses_v6)    
-    run_test(regex=f.http, samples=http)    
-    run_test(regex=f.url, samples=url)    
-    run_test(regex=f.rfr, samples=refferer)    
-    run_test(regex=f.timzn, samples=timezone)    
-    run_test(regex=f.agnt, samples=agent)    
-    run_test(regex=f.datim, samples=time)  
-    run_test(regex=f.x_for, samples=x_for)  
+    run_test(regex=f.mthd, samples=method)
+    run_test(regex=f.a_v4, samples=addresses_v4)
+    run_test(regex=f.a_v6, samples=addresses_v6)
+    run_test(regex=f.ip, samples=addresses_v4)
+    run_test(regex=f.ip, samples=addresses_v6)
+    run_test(regex=f.http, samples=http)
+    run_test(regex=f.url, samples=url)
+    run_test(regex=f.rfr, samples=refferer)
+    run_test(regex=f.timzn, samples=timezone)
+    run_test(regex=f.agnt, samples=agent)
+    run_test(regex=f.datim, samples=time)
+    run_test(regex=f.x_for, samples=x_for)
     #formats
-    run_test(regex=combined, samples=log_combined)    
-    run_test(regex=bitrixvm_main, samples=log_bitrixvm_main)    
-    run_test(regex=combined_x_for, samples=log_combined_x_for)    
-    run_test(regex=hestia, samples=log_hestia)    
-        
-     
+    run_test(regex=combined, samples=log_combined)
+    run_test(regex=bitrixvm_main, samples=log_bitrixvm_main)
+    run_test(regex=combined_x_for, samples=log_combined_x_for)
+    run_test(regex=hestia, samples=log_hestia)
+
+
 AUTOMATED=False
 
 if __name__ == '__main__':
 
     parser = ArgumentParser("test_args")
     parser.add_argument("-a","--automated",action="store_true",help="use asserts instead of console logs")
-    args = parser.parse_args() 
+    args = parser.parse_args()
     AUTOMATED = args.automated
     run_all()

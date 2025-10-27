@@ -1,6 +1,6 @@
 from subprocess import PIPE, Popen, CompletedProcess
 import subprocess
- 
+
 from settings import  Settings
 
 
@@ -13,31 +13,31 @@ import tempfile
 
 def get_report_url(filename:str):
     return f"{ Settings.external_url}/{filename}"
- 
+
 def new_report_id():
     return  uuid.uuid4().hex
 
-def run_goaccess( filename:str, format:Format ) -> str: 
-     
+def run_goaccess( filename:str, format:Format ) -> str:
+
     log.verbose(f"trying format {format.name }")
-    args=  ["goaccess",filename,    "-a", 
+    args=  ["goaccess",filename,    "-a",
             "--log-format", f'{format.log_format}',
-            f"--date-format={format.date_format}",  
-            f"--time-format={format.time_format }"] 
-    
+            f"--date-format={format.date_format}",
+            f"--time-format={format.time_format }"]
+
     if Settings.geoip_db:
         args.extend([ "--geoip-database",Settings.geoip_db ])
 
-    
+
     result = subprocess.run(
-        args, 
-        capture_output=True 
+        args,
+        capture_output=True
     )
-    
+
     if result.returncode != 0:
         err = result.stderr.decode()
         log.error(err)
         raise Format.Exception('')
-    return result.stdout   
-    
- 
+    return result.stdout
+
+
