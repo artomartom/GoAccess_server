@@ -1,15 +1,15 @@
+import time
+import tempfile
+import jinja2
 from fastapi import FastAPI, Request, Query
 from fastapi.responses import FileResponse, HTMLResponse,  RedirectResponse
 import uvicorn
+
 from settings import Settings
 from utility import Logger as log
 from report_generator import run_goaccess,   new_report_id
 from database import Database, filter_file_in_batches
-import time
-import io
-import jinja2
-from  format_parser import  Format
-import tempfile
+from format_parser import  Format
 
 from cache import Cache_Server
 
@@ -31,7 +31,7 @@ async def redirect_home():
 
 @app.get("/help", response_class=HTMLResponse)
 async def get_help():
-    with open(f"assets/message_page.html", 'r') as file:
+    with open("assets/message_page.html", 'r',encoding='utf-8') as file:
         html_page = file.read()
         heading ='''Help'''
         html_page = jinja2.Template(html_page).render(icon = "❔❔❔",heading=heading, text = "This is a help page")
@@ -48,12 +48,12 @@ async def generate(file_id: str,
         ca = Cache_Server()
         cache_key = f"{file_id}/{mth}/{fmt}"
         cache = ca.get(cache_key)
-        if cache != None:
+        if cache is not  None:
             log.info(f"cache found for {cache_key}")
             return HTMLResponse(content=cache , status_code=200)
         db = Database()
         log.verbose(f"found match argument: {mth}")
-        if db.id_exists(file_id) == False:
+        if db.id_exists(file_id) is False:
             raise FileNotFoundError(f"file '{file_id}' not found")
 
 
@@ -75,7 +75,7 @@ async def generate(file_id: str,
             return HTMLResponse(content=result , status_code=200)
 
     except FileNotFoundError as e:
-        with open(f"assets/message_page.html", 'r') as file:
+        with open("assets/message_page.html", 'r',encoding='utf-8') as file:
             html_page = file.read()
             heading ='''File Not Found'''
             error_text = str(e)
@@ -83,7 +83,7 @@ async def generate(file_id: str,
             return HTMLResponse(html_page, status_code=404)
 
     except Format.Exception as e:
-        with open(f"assets/message_page.html", 'r') as file:
+        with open("assets/message_page.html", 'r',encoding='utf-8') as file:
             html_page = file.read()
             heading ='''Unknown Format Error'''
             description = '''The server encountered an unknown or unsupported format in your request.
@@ -113,9 +113,9 @@ async def upload( request: Request):
         _, contentlength = request._headers._list[5]
 
         if contentlength.decode() ==  '0':
-            raise Exception("Empty file")
+            raise EOFError("Empty file")
 
-        log.verbose(f"writing data")
+        log.verbose("writing data")
         await db.add_logfile_async(file_id,request)
 
         return  {
@@ -142,6 +142,3 @@ if __name__ == '__main__':
         access_log=True,
         timeout_keep_alive=5,
         host=Settings.listen)
-
-
-

@@ -1,9 +1,8 @@
 
-
-from  format_parser import    Fields as f
 import re
 from argparse import ArgumentParser
 
+from  format_parser import    Fields as f
 
 addresses_v4 = [
 ("77.88.9.142",True),
@@ -230,17 +229,17 @@ log_hestia = [
 
 def run_test(regex :str, samples :list):
     for sample in samples:
-            pattern = re.compile(regex)
-            value, valid = sample
-            match = pattern.fullmatch(value)
+        pattern = re.compile(regex)
+        value, valid = sample
+        match = pattern.fullmatch(value)
 
-            if AUTOMATED:
-                assert  (match and valid) or (not match and not valid),  f"❌ {value}"
+        if AUTOMATED:
+            assert  (match and valid) or (not match and not valid),  f"❌ {value}"
+        else:
+            if (match and valid) or (not match and not valid):
+                print(f"✅ {value}")
             else:
-                if (match and valid) or (not match and not valid):
-                    print(f"✅ {value}")
-                else:
-                    print(f"❌ {value}")
+                print(f"❌ {value}")
 
 
 bitrixvm_main = fr'''({f.ip}|{f.ip}) - {f.usr} \[{f.datim} {f.timzn} - ({f.upstrm}|-)\] {f.sts} \"{f.mthd} {f.url} {f.http}\" {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\" \"({f.x_for}|-)\"'''
@@ -286,3 +285,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     AUTOMATED = args.automated
     run_all()
+    

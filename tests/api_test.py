@@ -23,7 +23,7 @@ headers = {
 
 def send_log(log_name:str):
 
-    file =   open(f"{log_dir}/{log_name}", 'rb').read()
+    file =   open(f"{log_dir}/{log_name}", 'rb',encoding='utf-8').read()
     requests.post(url, headers=headers, data=file)
 
     res = json.loads(response.text)

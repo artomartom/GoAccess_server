@@ -2,13 +2,7 @@
 
 import re
 from utility import  Logger as log
-"""
-[0] regex
-[1] log format
-[2] date format
-[3] time format
-[4] name
-"""
+
 
 class Fields:
     a_v4 = r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}"
@@ -46,9 +40,16 @@ format_list =  [
     ]
 
 class Format():
+    """
+    [0] regex
+    [1] log format
+    [2] date format
+    [3] time format
+    [4] name
+    """
 
     class  Exception(Exception):
-            pass
+        pass
 
     def __init__(self,sample_line:str=None,name:str="combined"):
         if sample_line:
@@ -57,24 +58,25 @@ class Format():
             return
         if name:
             log.verbose("Format with name")
-            for format in format_list:
-                if format[4] == name :
-                    _, self.log_format,self.date_format,self.time_format,self.name = format
+            for  format_type in format_list:
+                if format_type[4] == name :
+                    _, self.log_format,self.date_format,self.time_format,self.name = format_type
                     return
             raise Format.Exception(f"unknown format name: {name}")
-
+    @staticmethod
     def match_line(sample_line:str):
 
-        for format in format_list:
-            pattern = re.compile(format[0])
+        for format_type in format_list:
+            pattern = re.compile(format_type[0])
 
             match = pattern.fullmatch(sample_line)
 
             if match:
-                return format
+                return format_type
 
         raise Format.Exception(f"unknown format line: {sample_line}")
 
+    @staticmethod
     def get_format(log_strings:list[str],name:str ):
 
         if name != "":
