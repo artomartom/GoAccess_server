@@ -14,9 +14,8 @@ from format_parser import  Format
 from cache import Cache_Server
 
 app = FastAPI(debug=Settings.debug, docs_url=None, redoc_url=None)
-routes = APIRouter()
 
-@routes.get("/download/{file_id}", response_class=FileResponse)
+@app.get("/download/{file_id}", response_class=FileResponse)
 async def download(file_id: str,
                     mth: str = Query(""),
                     fmt: str = Query("")):
@@ -26,11 +25,11 @@ async def download(file_id: str,
         return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
     return res
 
-@routes.get("/")
+@app.get("/")
 async def redirect_home():
     return RedirectResponse(f"{Settings.external_url}/help")
 
-@routes.get("/help", response_class=HTMLResponse)
+@app.get("/help", response_class=HTMLResponse)
 async def get_help():
     with open("assets/message_page.html", 'r',encoding='utf-8') as file:
         html_page = file.read()
@@ -38,7 +37,7 @@ async def get_help():
         html_page = jinja2.Template(html_page).render(icon = "❔❔❔",heading=heading, text = "This is a help page")
         return HTMLResponse(html_page, status_code=200)
 
-@routes.get("/generate/{file_id}", response_class=HTMLResponse)
+@app.get("/generate/{file_id}", response_class=HTMLResponse)
 async def generate(file_id: str,
                     mth: str = Query(""),
                     fmt: str = Query("")
@@ -95,11 +94,11 @@ async def generate(file_id: str,
             return HTMLResponse(html_page, status_code=400)
 
 
-@routes.post("/report")
+@app.post("/report")
 async def get_report( request: Request):
     return await  upload(request)
 
-@routes.post("/upload")
+@app.post("/upload")
 async def upload( request: Request):
     try:
         start = time.time()
@@ -132,7 +131,6 @@ async def upload( request: Request):
             'message': str(e)
         }
 
-app.include_router(routes)
 
 if __name__ == '__main__':
     uvicorn.run(
