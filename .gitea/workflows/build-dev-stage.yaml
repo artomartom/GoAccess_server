@@ -2,8 +2,8 @@ name: Build and Stage
 on:
   push:
     branches: [dev]
-    tags:
-     - 'run-stage'
+      tags:
+       - 'run-stage'
 
 
 jobs:
