@@ -21,7 +21,7 @@ def run_goaccess( filename:str, format_t:Format ) -> str:
 
     if Settings.geoip_db:
         args.extend([ "--geoip-database",Settings.geoip_db ])
-
+    # TODO check if exists Settings.geoip_db and disable 
 
     result = subprocess.run(
         args,

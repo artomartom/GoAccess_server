@@ -1,8 +1,17 @@
 
 import re
+import os
+import sys
+
 from argparse import ArgumentParser
 
-from  format_parser import    Fields as f
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+sys.path.append(parent_dir)
+
+from format_parser import    Fields as f
+
+ 
 
 addresses_v4 = [
 ("77.88.9.142",True),
@@ -276,7 +285,7 @@ def run_all():
     run_test(regex=hestia, samples=log_hestia)
 
 
-AUTOMATED=False
+AUTOMATED=True
 
 if __name__ == '__main__':
 
