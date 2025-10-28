@@ -15,5 +15,6 @@ jobs:
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository
         run: |
-          ls ${{ gitea.workspace }}
+          ls ${{ gitea.workspace }} && 
+          pwd && sleep 5
       - run: echo "🍏 This job's status is ${{ job.status }}."
