@@ -25,8 +25,8 @@ jobs:
 
     steps:
     - name: test_modules
-      run : docker run --rm -it  -v ~/goaccess_server:/app py_tester:latest  /app/tests/test.py
+      run : docker run --rm -it  -v ./:/app py_tester:latest  /app/tests/test.py
 
     - name: test_api
-      run : docker run --rm -it  -v ~/goaccess_server:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py
+      run : docker run --rm -it  -v ./:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py
       
