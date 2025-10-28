@@ -1,8 +1,7 @@
 name: Build and Stage
-on: workflow_dispatch
-#on:
-#  push:
-#    branches: [dev] 
+on:
+  push:
+    branches: [dev] 
 
 
 jobs:
@@ -19,3 +18,11 @@ jobs:
 
     - name: run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
+
+  test:
+    name: test
+    runs-on: orange-local
+
+    steps:
+    - name: test
+      run : echo "running test"
