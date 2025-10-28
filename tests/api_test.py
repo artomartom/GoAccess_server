@@ -1,12 +1,6 @@
 
 
 
-import requests
-import json
-import typing
-
-import allure
-
 import httpx
 import pytest
 import uuid
@@ -40,17 +34,17 @@ class TestGoAccessAPI:
         """Create HTTPX client for testing"""
         with httpx.Client(base_url=self.BASE_URL, timeout=30.0) as client:
             yield client
-            
+
     @pytest.fixture
     def sample_log_data(self):
         """Sample log data for testing upload"""
         with open(f"/opt/goAccess_server/tests/logs/test.combined.log" ,'r',encoding='utf-8') as file:
             return file.read()
-        
-    
+
+
     def test_upload_log_file(self, client, sample_log_data):
         """Test uploading a log file"""
-        __test__ = False 
+        __test__ = False
         response = client.post(
             "/upload",
             content=sample_log_data,
@@ -67,7 +61,7 @@ class TestGoAccessAPI:
         # Extract file_id from the report URL for use in other tests
         report_url = data["report"]
         file_id = report_url.split("/")[-1]
-        
+
         return file_id
 
 
