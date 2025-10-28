@@ -7,7 +7,7 @@ services:
     volumes:
       - redis-cache:/data
     networks:
-      - nginx_nginx_goaccess
+      - goaccess
 
   goaccess:
     image: goaccess_server
@@ -17,7 +17,7 @@ services:
       /app/app.py --external-url=https://goaccess.suschkov.ru
        --geoip-db=/app/geodb/dbip-lite-latest.mmdb --cache
     networks:
-      - nginx_nginx_goaccess
+      - goaccess
     volumes:
       - data:/app/data
       - /var/geodb/:/app/geodb
@@ -36,5 +36,6 @@ volumes:
     driver: local
 
 networks:
-  nginx_nginx_goaccess:
-    external: true
+  goaccess:
+    driver: bridge
+
