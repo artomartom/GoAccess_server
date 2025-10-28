@@ -4,7 +4,7 @@
 import httpx
 import pytest
 import uuid
-
+import os
 
 
 
@@ -38,7 +38,8 @@ class TestGoAccessAPI:
     @pytest.fixture
     def sample_log_data(self):
         """Sample log data for testing upload"""
-        with open(f"/opt/goAccess_server/tests/logs/test.combined.log" ,'r',encoding='utf-8') as file:
+        log_file = f"{os.path.dirname(os.path.realpath(__file__))}/logs/test.combined.log"
+        with open(log_file ,'r',encoding='utf-8') as file:
             return file.read()
 
 
