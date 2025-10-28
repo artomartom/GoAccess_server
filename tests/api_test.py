@@ -27,12 +27,12 @@ headers = {
 
 
 class TestGoAccessAPI:
-    BASE_URL = "https://goaccess.suschkov.ru/"
+    BASE_URL = "https://goaccess.orange.local/"
 
     @pytest.fixture
     def client(self):
         """Create HTTPX client for testing"""
-        with httpx.Client(base_url=self.BASE_URL, timeout=30.0) as client:
+        with httpx.Client(base_url=self.BASE_URL,verify=False, timeout=30.0) as client:
             yield client
 
     @pytest.fixture

@@ -132,7 +132,7 @@ async def upload( request: Request):
             'message': str(e)
         }
 
-
+app.include_router(routes)
 
 if __name__ == '__main__':
     uvicorn.run(
