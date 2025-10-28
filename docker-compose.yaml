@@ -16,7 +16,6 @@ services:
     volumes:
       - data:/app/data
       - /var/geodb/:/app/geodb
-
 volumes:
   data:
     driver: local
