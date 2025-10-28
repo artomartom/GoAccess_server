@@ -19,11 +19,6 @@ jobs:
     - name: run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
 
-  test:
-    name: test
-    runs-on: orange-local
-
-    steps:
     - name: test_modules
       run : docker run --rm -it  -v ./:/app py_tester:latest  /app/tests/test.py
 
