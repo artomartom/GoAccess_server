@@ -36,5 +36,6 @@ volumes:
     driver: local
 
 networks:
-  nginx_nginx_goaccess:
-    external: true
+  goaccess:
+    driver: bridge
+
