@@ -43,13 +43,13 @@ class Database:
             os.makedirs(self.dir)
 
     async def add_logfile_async(self,filename:str,request:Request)-> None:
-        async with aiofiles.open(f"{self.dir}/{filename}", 'wb',encoding='utf-8') as file:
+        async with aiofiles.open(f"{self.dir}/{filename}", 'wb' ) as file:
             async for chunk in request.stream():
                 await file.write(chunk)
 
 
     def add_logfile(self,filename:str,data:bytes)-> None:
-        with open(f"{self.dir}/{filename}" , 'wb',encoding='utf-8') as file:
+        with open(f"{self.dir}/{filename}" , 'wb' ) as file:
             file.write(data)
 
     def id_exists(self,file_id:str )-> str:
