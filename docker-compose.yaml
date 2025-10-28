@@ -3,10 +3,10 @@ services:
     container_name: goaccess
     command: >
       /app/app.py --external-url=https://goaccess.papaya.local
-       --geoip-db=/app/geodb/dbip-city-lite-latest.mmdb
+       --geoip-db=/app/geodb/dbip-lite-latest.mmdb
     build:
       context: .
-      args: 
+      args:
         debbuger: true
     image: goaccess-debug
     restart: always
@@ -16,7 +16,6 @@ services:
     volumes:
       - data:/app/data
       - /var/geodb/:/app/geodb
-    
 volumes:
   data:
     driver: local
