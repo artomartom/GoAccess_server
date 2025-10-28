@@ -12,5 +12,4 @@ test-job:
   stage: test
   script:
     - docker compose -f ./docker-compose.yaml up -d
-    - echo "test"
 
