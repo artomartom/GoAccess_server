@@ -1,0 +1,20 @@
+name: Build and Stage
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  build:
+    name: Build
+    runs-on: orange-local
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build project
+      run: docker build --no-cache -t goaccess_server:latest .
+
+    - name: run stage server
+      run: docker compose -f ./docker-compose.prod.yaml up -d
+      
