@@ -129,7 +129,7 @@ async def upload( request: Request):
         log.error(repr(e))
         return  {
             'status': 'error',
-            'message': str(e)
+            'message': "Something went wrong"
         }
 
 app.include_router(routes)
