@@ -10,7 +10,7 @@ jobs:
   build:
     name: Build
     runs-on: orange-local
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -20,4 +20,3 @@ jobs:
 
     - name: run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
-      
