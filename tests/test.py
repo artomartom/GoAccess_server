@@ -9,7 +9,7 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 sys.path.append(parent_dir)
 
-from format_parser import    Fields as f
+from format_parser import  Fields as f
 
  
 

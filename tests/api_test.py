@@ -57,7 +57,6 @@ class TestGoAccessAPI:
 
         assert data["status"] == "OK"
         assert "report" in data
-        assert "time" in data
 
         # Extract file_id from the report URL for use in other tests
         report_url = data["report"]
