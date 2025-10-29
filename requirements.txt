@@ -3,7 +3,4 @@ uvicorn           == 0.37.0
 fastapi           == 0.118.0
 aiofiles          == 24.1.0
 redis             == 6.4.0
-pydantic          == 2.11.9
-pydantic_core     == 2.33.2
-PyYAML
 

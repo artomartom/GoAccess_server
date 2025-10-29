@@ -2,13 +2,7 @@
 
 import re
 from utility import  Logger as log
-"""
-[0] regex
-[1] log format
-[2] date format
-[3] time format
-[4] name
-"""
+
 
 class Fields:
     a_v4 = r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}"
@@ -31,9 +25,9 @@ class Fields:
     combined_x_for = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"\n?'''
     hestia = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] {mthd} {url} {http} \"{sts}\" {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"\n?'''
     litespeed = fr'''\"({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\"\"\n?'''
- 
+
 format_list =  [
-    (Fields.combined, 
+    (Fields.combined,
     "%h %e[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"",  "%d/%b/%Y",  "%T" , "combined" ),
     (Fields.bitrixvm_main,
     "%h - %e [%d:%t - %T] %s \"%r\" %b \"%R\" \"%u\" \"%^\"","%d/%b/%Y",'%H:%M:%S',"bitrixvm_main"),
@@ -46,37 +40,45 @@ format_list =  [
     ]
 
 class Format():
-    
+    """
+    [0] regex
+    [1] log format
+    [2] date format
+    [3] time format
+    [4] name
+    """
+
     class  Exception(Exception):
-            pass 
-    
+        pass
+
     def __init__(self,sample_line:str=None,name:str="combined"):
         if sample_line:
             log.verbose("Format with sample_line")
             _, self.log_format,self.date_format,self.time_format,self.name = Format.match_line(sample_line)
-            return 
+            return
         if name:
             log.verbose("Format with name")
-            for format in format_list:
-                if format[4] == name :
-                    _, self.log_format,self.date_format,self.time_format,self.name = format
-                    return 
+            for  format_type in format_list:
+                if format_type[4] == name :
+                    _, self.log_format,self.date_format,self.time_format,self.name = format_type
+                    return
             raise Format.Exception(f"unknown format name: {name}")
-        
+    @staticmethod
     def match_line(sample_line:str):
-        
-        for format in format_list:
-            pattern = re.compile(format[0])
-            
+
+        for format_type in format_list:
+            pattern = re.compile(format_type[0])
+
             match = pattern.fullmatch(sample_line)
-            
+
             if match:
-                return format
-               
+                return format_type
+
         raise Format.Exception(f"unknown format line: {sample_line}")
-    
+
+    @staticmethod
     def get_format(log_strings:list[str],name:str ):
-        
+
         if name != "":
             log.verbose(f"trying {name} log format")
             return Format(name=name)
@@ -84,9 +86,9 @@ class Format():
         log.verbose("trying to deduce log format")
         best_sample_line: str = ""
         best_sample_line_num: int = 0
-        count = len(log_strings) 
+        count = len(log_strings)
         best_sample_count: int  = 500
-        for line_num in range(count):    
+        for line_num in range(count):
             line = log_strings[line_num]
             count = line.count('"-"')
             if best_sample_count > count:
