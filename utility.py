@@ -1,5 +1,3 @@
-import string
-import secrets
 
 from settings import  Settings
 
@@ -9,7 +7,7 @@ class Logger():
     def verbose(text:str):
         if  Settings.loglevel == 'verbose' :
             print (f"               {text}")
-            
+
     @staticmethod
     def info(text:str):
         if Settings.loglevel in ['info','verbose','warn']:

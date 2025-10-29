@@ -1,38 +1,40 @@
-from subprocess import PIPE, Popen, CompletedProcess
-import subprocess
- 
-from settings import  Settings
-
-
-from  format_parser import Format
-
-from utility import Logger as log
-import os
 import uuid
-import tempfile
+import subprocess
+import os.path
+
+from settings import  Settings
+from  format_parser import Format
+from utility import Logger as log
 
 def get_report_url(filename:str):
     return f"{ Settings.external_url}/{filename}"
- 
+
 def new_report_id():
     return  uuid.uuid4().hex
 
-def run_goaccess( filename:str, format:Format ) -> str: 
-     
-    log.verbose(f"trying format {format.name }")
-    args=  ["goaccess",filename,    "-a", 
-            "--log-format", f'{format.log_format}',
-            f"--date-format={format.date_format}",  
-            f"--time-format={format.time_format }"] 
+def run_goaccess( filename:str, format_t:Format ) -> str:
+
+    log.verbose(f"trying format {format_t.name }")
+    args=  ["goaccess",filename,    "-a",
+            "--log-format", f'{format_t.log_format}',
+            f"--date-format={format_t.date_format}",
+            f"--time-format={format_t.time_format }"]
+
+    if Settings.geoip_db and os.path.isfile(Settings.geoip_db):
+        args.extend([ "--geoip-database",Settings.geoip_db ])
+    else:
+        log.warn(f"Cant find mmdb file {Settings.geoip_db}. Option geoip_db disabled")
+
     result = subprocess.run(
-        args, 
-        capture_output=True 
+        args,
+        capture_output=True,
+        check=False
     )
-    
+
     if result.returncode != 0:
         err = result.stderr.decode()
         log.error(err)
         raise Format.Exception('')
-    return result.stdout   
-    
- 
+    return result.stdout
+
+
