@@ -1,5 +1,6 @@
 import uuid
 import subprocess
+import os.path
 
 from settings import  Settings
 from  format_parser import Format
@@ -19,9 +20,10 @@ def run_goaccess( filename:str, format_t:Format ) -> str:
             f"--date-format={format_t.date_format}",
             f"--time-format={format_t.time_format }"]
 
-    if Settings.geoip_db:
+    if Settings.geoip_db and os.path.isfile(Settings.geoip_db):
         args.extend([ "--geoip-database",Settings.geoip_db ])
-
+    else:
+        log.warn(f"Cant find mmdb file {Settings.geoip_db}. Option geoip_db disabled")
 
     result = subprocess.run(
         args,
