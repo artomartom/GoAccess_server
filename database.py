@@ -33,6 +33,8 @@ def filter_file_in_batches(input_file_handle:file_handle , output_file_handle:fi
 
         if batch_empty:
             break
+        
+    output_file_handle.flush()
 
 class Database:
 
