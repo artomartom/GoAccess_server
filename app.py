@@ -9,7 +9,6 @@ from utility import Logger as log
 from report_generator import run_goaccess,   new_report_id
 from database import Database, filter_file_in_batches
 from format_parser import  Format
-
 from cache import Cache_Server
 
 app = FastAPI(debug=Settings.debug, docs_url=None, redoc_url=None)

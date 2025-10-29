@@ -19,6 +19,9 @@ jobs:
     - name: run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
 
+    - name: wait for start
+      run: sleep 5 
+
     - name: test_modules
       run: docker run --rm -it --dns=192.168.1.7 -v ./:/app py_tester:latest  /app/tests/test.py
 
