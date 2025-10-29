@@ -1,4 +1,3 @@
-import time
 import tempfile
 import jinja2
 from fastapi import FastAPI, APIRouter, Request, Query
@@ -102,7 +101,6 @@ async def get_report( request: Request):
 @routes.post("/upload")
 async def upload( request: Request):
     try:
-        start = time.time()
         file_id = new_report_id()
 
 
@@ -121,10 +119,15 @@ async def upload( request: Request):
 
         return  {
             'report': url ,
-            'status': 'OK',
-            'time' :  time.time() - start
+            'status': 'OK' 
         }
 
+    except EOFError as e:
+        log.error(repr(e))
+        return  {
+            'status': 'error',
+            'message': "The file is empty"
+        }
     except Exception as e:
         log.error(repr(e))
         return  {
