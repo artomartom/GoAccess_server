@@ -1,12 +1,12 @@
-name: Build and deploy
+name: Build and Stage
 on:
   push:
-    branches: [main]
+    branches: [dev] 
 
 
 jobs:
   build:
-    name: Build and deploy
+    name: Build
     runs-on: orange-local
 
     steps:
@@ -16,21 +16,15 @@ jobs:
     - name: Build project
       run: docker build --no-cache -t goaccess_server:latest .
 
-    - name: save image to archive
-      run:  docker save goaccess_server:latest > ./goaccess_server.tar
-        
-    - name: copy archive to remote 
-      run: rsync -azvhP  --info=progress2 ./goaccess_server.tar  orange:/home/orange/
+    - name: run stage server
+      run: docker compose -f ./docker-compose.prod.yaml up -d
 
-    - name: copy to remote   
-      run: rsync -azvhP  --info=progress2 ./{assets,docker-compose.prod.yaml} orange:/opt/goAccess_server
+    - name: wait for start
+      run: sleep 5 
 
-    - name:  load image to remote 
-      run: ssh orange -t docker image load -i goaccess_server.tar
+    - name: test_modules
+      run: docker run --rm -it --dns=192.168.1.7 -v ./:/app py_tester:latest  /app/tests/test.py
 
-    - name: restart app  
-      run: ssh orange -t docker compose -f  /opt/goAccess_server/docker-compose.prod.yaml  up -d --no-deps
-
-    - name: cleanup
-      run: ssh orange -t rm /home/orange/goaccess_server.tar
-
+    - name: test_api
+      run: docker run --rm -it --dns=192.168.1.7 -v ./:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py
+      
