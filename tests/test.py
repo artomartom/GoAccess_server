@@ -1,4 +1,3 @@
-
 import re
 import os
 import sys
@@ -6,9 +5,7 @@ import sys
 from argparse import ArgumentParser
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-
 sys.path.append(parent_dir)
-
 from format_parser import  Fields as f
 
  
@@ -294,4 +291,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
     AUTOMATED = args.automated
     run_all()
-    

@@ -1,9 +1,8 @@
 import tempfile
 from fastapi import FastAPI, APIRouter, Request, Query
 from fastapi.responses import FileResponse, HTMLResponse,  RedirectResponse
-from fastapi.exceptions import RequestValidationError, HTTPException
+from fastapi.exceptions import  HTTPException
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 import uvicorn
 
 from settings import Settings
@@ -134,9 +133,10 @@ async def upload( request: Request):
 
         db = Database()
 
-        _, contentlength = request._headers._list[5]
+        contentlength = request.headers.get("content-length")
+        
 
-        if contentlength.decode() ==  '0':
+        if contentlength ==  '0':
             raise EOFError("Empty file")
 
         log.verbose("writing data")
