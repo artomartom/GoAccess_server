@@ -15,6 +15,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
  
 
 #RUN if [[ -z "$debbuger" ]] ; then echo "debugpy" >> $WORKDIR/requirements.txt ; fi
+#RUN  echo "debugpy" >> $WORKDIR/requirements.txt  
 
 RUN python3 -m venv $VIRTUAL_ENV && python3 -m pip install -r $WORKDIR/requirements.txt
 
