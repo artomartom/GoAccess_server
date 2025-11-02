@@ -14,6 +14,16 @@ from cache import Cache_Server
 app = FastAPI(debug=Settings.debug, docs_url=None, redoc_url=None)
 routes = APIRouter()
 
+@app.middleware("http")
+async def redirect_multiple_slashes(request: Request, call_next):
+    path = request.url.path
+    if path.startswith("//"):
+        normalized_path = "/" + path.lstrip("/")
+        return RedirectResponse(url=normalized_path)
+    
+    response = await call_next(request)
+    return response
+
 @routes.get("/download/{file_id}", response_class=FileResponse)
 async def download(file_id: str,
                     mth: str = Query(""),
