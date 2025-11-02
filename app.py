@@ -2,6 +2,7 @@ import tempfile
 import jinja2
 from fastapi import FastAPI, APIRouter, Request, Query
 from fastapi.responses import FileResponse, HTMLResponse,  RedirectResponse
+from fastapi.exceptions import RequestValidationError, HTTPException
 import uvicorn
 
 from settings import Settings
@@ -33,6 +34,19 @@ async def download(file_id: str,
         headers = {"Content-disposition": "attachment" }
         return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
     return res
+
+
+@routes.exception_handler(404)
+async def not_found_handler(request: Request, exc: HTTPException):
+    with open("assets/message_page.html", 'r',encoding='utf-8') as file:
+        html_page = file.read()
+        heading ='''404'''
+        error_text = "Not Found"
+        html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading, text = error_text)
+        return HTMLResponse(
+            content=html_page,
+            status_code=404
+        )
 
 @routes.get("/")
 async def redirect_home():
