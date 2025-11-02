@@ -40,8 +40,8 @@ async def download(file_id: str,
 async def not_found_handler(request: Request, exc: HTTPException):
     with open("assets/message_page.html", 'r',encoding='utf-8') as file:
         html_page = file.read()
-        heading ='''404'''
-        error_text = "Not Found"
+        heading ='''404\nNot Found'''
+        error_text = "Page not found"
         html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading, text = error_text)
         return HTMLResponse(
             content=html_page,
