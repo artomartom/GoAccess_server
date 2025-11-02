@@ -36,7 +36,7 @@ async def download(file_id: str,
     return res
 
 
-@routes.exception_handler(404)
+@app.exception_handler(404)
 async def not_found_handler(request: Request, exc: HTTPException):
     with open("assets/message_page.html", 'r',encoding='utf-8') as file:
         html_page = file.read()
