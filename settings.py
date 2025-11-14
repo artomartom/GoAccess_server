@@ -42,7 +42,7 @@ def parse_args():
 Settings = parse_args()
 
 def check_settings():
-    if not (Settings.geoip_db and os.path.isfile(Settings.geoip_db)):
+    if Settings.geoip_db and not os.path.isfile(Settings.geoip_db):
         raise FileNotFoundError(f"mmdb file {Settings.geoip_db} not found")
     
 check_settings()
