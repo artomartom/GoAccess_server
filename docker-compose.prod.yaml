@@ -15,7 +15,7 @@ services:
     restart: always
     command: >
       /app/app.py --external-url=${GOACCESS_URL} ${GOACCESS_OPTIONS}
-    env_file: ".config"
+    env_file: ".env"
     networks:
       - goaccess
     volumes:

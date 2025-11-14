@@ -26,10 +26,10 @@ jobs:
       run: rsync -azvhP  --info=progress2 ./{assets,docker-compose.prod.yaml} orange:/opt/goAccess_server
     
     - name: Add config
-      run: ssh orange -t "echo "GOACCESS_URL=${{vars.ORANGE_GOACCESS_URL}}" > /opt/goAccess_server/.config"
+      run: ssh orange -t "echo "GOACCESS_URL=${{vars.ORANGE_GOACCESS_URL}}" > /opt/goAccess_server/.env"
 
     - name: Add config
-      run: ssh orange -t "echo "GOACCESS_OPTIONS=${{vars.ORANGE_GOACCESS_OPTIONS}}" >> /opt/goAccess_server/.config"
+      run: ssh orange -t "echo "GOACCESS_OPTIONS=${{vars.ORANGE_GOACCESS_OPTIONS}}" >> /opt/goAccess_server/.env"
 
     - name:  load image to remote 
       run: ssh orange -t docker image load -i goaccess_server.tar
