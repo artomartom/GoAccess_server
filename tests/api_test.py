@@ -8,7 +8,6 @@ import pytest
 
 
 
-url = 'https://goaccess.suschkov.ru/upload'
 
 log_file = [
 'test.combined.log',

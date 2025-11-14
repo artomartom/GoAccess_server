@@ -28,9 +28,9 @@ def run_goaccess( filename:str, format_t:Format ) -> str:
     threshold:int = 314572800
 
     if os.path.getsize(filename) > threshold: # if log file is bigger then 300 mebibyte spawn multiple jobs 
-        args.extend([ "--jobs",Settings.jobs ])
+        args.extend([ "--jobs",str(Settings.jobs) ])
     else:
-        args.extend([ "--jobs", 1 ])
+        args.extend([ "--jobs", str(1) ])
         
     result = subprocess.run(
         args,
