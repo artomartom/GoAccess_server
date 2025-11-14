@@ -25,6 +25,13 @@ def run_goaccess( filename:str, format_t:Format ) -> str:
     else:
         log.warn(f"Cant find mmdb file {Settings.geoip_db}. Option geoip_db disabled")
 
+    threshold:int = 314572800
+
+    if os.path.getsize(filename) > threshold: # if log file is bigger then 300 mebibyte spawn multiple jobs 
+        args.extend([ "--jobs",Settings.jobs ])
+    else:
+        args.extend([ "--jobs", 1 ])
+        
     result = subprocess.run(
         args,
         capture_output=True,
