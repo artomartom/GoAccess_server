@@ -22,14 +22,14 @@ jobs:
     - name: Add config
       run: echo "GOACCESS_OPTIONS=${{vars.ORANGE_GOACCESS_OPTIONS}}" >> .config
 
-    - name: run stage server
+    - name: Run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
 
-    - name: wait for start
+    - name: Wait for start
       run: sleep 5
 
-    - name: test_modules
+    - name: Test modules
       run: docker run --rm -it -v ./:/app py_tester:latest  /app/tests/test.py
 
-    - name: test_api
+    - name: Test API
       run: docker run --rm -it -v ./:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py
