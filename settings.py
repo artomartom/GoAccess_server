@@ -19,7 +19,7 @@ def parse_args():
 
     parser.add_argument( '-w', '--worker', type=int, default=4,help='Number of worker processes')
 
-    parser.add_argument( '-j', '--jobs', type=int, default=4,help='Goaccess job count')
+    parser.add_argument( '-j', '--jobs', type=int, default=2,help='Goaccess job count')
 
     parser.add_argument( '--loglevel', type=str, default='warn',choices=['debug', 'info', 'warn', 'verbose'],
         help='Logging level')
