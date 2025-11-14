@@ -1,9 +1,9 @@
 import tempfile
-from fastapi import FastAPI, APIRouter, Request, Query
-from fastapi.responses import FileResponse, HTMLResponse,  RedirectResponse
-from fastapi.exceptions import  HTTPException
-from fastapi.templating import Jinja2Templates
-import uvicorn
+from fastapi import FastAPI, APIRouter, Request, Query # type: ignore
+from fastapi.responses import FileResponse, HTMLResponse,  RedirectResponse # type: ignore
+from fastapi.exceptions import  HTTPException # type: ignore
+from fastapi.templating import Jinja2Templates # type: ignore
+import uvicorn # type: ignore
 
 from settings import Settings
 from utility import Logger as log
