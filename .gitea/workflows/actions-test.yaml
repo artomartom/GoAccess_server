@@ -1,0 +1,20 @@
+name: test
+on:
+  push:
+    branches: [actions-test] 
+
+jobs:
+  build:
+    name: Build
+    runs-on: orange-local 
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+ 
+    - name: Build project
+      run: echo ${VAR_1} >> /home/orange/source.txt
+
+
+
+
