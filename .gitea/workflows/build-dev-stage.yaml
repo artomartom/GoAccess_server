@@ -17,10 +17,10 @@ jobs:
       run: docker build --no-cache -t goaccess_server:latest .
 
     - name: Add config
-      run: echo "GOACCESS_URL=${{vars.ORANGE_GOACCESS_URL}}" > .config
+      run: echo "GOACCESS_URL=${{vars.STAGE_GOACCESS_URL}}" > .config
 
     - name: Add config
-      run: echo "GOACCESS_OPTIONS=${{vars.ORANGE_GOACCESS_OPTIONS}}" >> .config
+      run: echo "GOACCESS_OPTIONS=${{vars.STAGE_GOACCESS_OPTIONS}}" >> .config
 
     - name: Run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
