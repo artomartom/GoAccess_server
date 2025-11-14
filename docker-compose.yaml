@@ -15,7 +15,7 @@ services:
       - "5678:5678"
     volumes:
       - data:/app/data
-      - /var/geodb/:/app/geodb
+      - /var/geodb/:/app/geodb:ro
 volumes:
   data:
     driver: local

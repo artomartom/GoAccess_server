@@ -15,12 +15,12 @@ services:
     restart: always
     command: >
       /app/app.py --external-url=https://goaccess.suschkov.ru
-       --geoip-db=/app/geodb/dbip-lite-latest.mmdb --cache
+       --geoip-db=/app/geodb/dbip-lite-latest.mmdb --cache --worker 12 --jobs 2
     networks:
       - goaccess
     volumes:
       - data:/app/data
-      - /var/geodb/:/app/geodb
+      - /var/geodb/:/app/geodb:ro
     deploy:
       restart_policy:
         condition: on-failure
