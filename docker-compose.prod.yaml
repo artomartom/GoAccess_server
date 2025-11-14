@@ -14,19 +14,13 @@ services:
     container_name: goaccess
     restart: always
     command: >
-      /app/app.py --external-url=https://goaccess.suschkov.ru
-       --geoip-db=/app/geodb/dbip-lite-latest.mmdb --cache --worker 12 --jobs 2
+      /app/app.py --external-url=${GOACCESS_URL} ${GOACCESS_OPTIONS}
+    env_file: ".config"
     networks:
       - goaccess
     volumes:
       - data:/app/data
       - /var/geodb/:/app/geodb:ro
-    deploy:
-      restart_policy:
-        condition: on-failure
-      resources:
-        limits:
-          memory: 1000M
 volumes:
   redis-cache:
     driver: local
