@@ -60,6 +60,9 @@ class TestGoAccessAPI:
         # Extract file_id from the report URL for use in other tests
         report_url = data["report"]
         file_id = report_url.split("/")[-1]
+        
+        
+        assert False, "check report for validity"
 
         return file_id
 
