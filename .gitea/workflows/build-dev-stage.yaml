@@ -16,6 +16,12 @@ jobs:
     - name: Build project
       run: docker build --no-cache -t goaccess_server:latest .
 
+    - name: Add config
+      run: echo "ORANGE_GOACCESS_URL=${{vars.ORANGE_GOACCESS_URL}}" > .config
+
+    - name: Add config
+      run: echo "ORANGE_GOACCESS_OPTIONS=${{vars.ORANGE_GOACCESS_OPTIONS}}" >> .config
+
     - name: run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
 
