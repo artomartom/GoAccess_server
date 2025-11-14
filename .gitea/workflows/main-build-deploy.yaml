@@ -37,6 +37,9 @@ jobs:
     - name: restart app  
       run: ssh orange -t docker compose -f  /opt/goAccess_server/docker-compose.prod.yaml  up -d --no-deps
 
+    - name: restart app  
+      run: ssh orange -t docker compose -f  /opt/nginx/docker-compose.yaml restart
+
     - name: cleanup
       run: ssh orange -t rm /home/orange/goaccess_server.tar
 
