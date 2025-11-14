@@ -51,6 +51,10 @@ async def not_found_handler(request: Request, exc: HTTPException):
                                     "text": str(error_text),
                                     "icon": "⚠️",
                                     }, status_code=404)
+    
+@app.exception_handler(405)
+async def method_not_allowed(request: Request, exc: HTTPException):
+    return RedirectResponse(f"{Settings.external_url}/help")
 
 @routes.get("/")
 async def redirect_home():
