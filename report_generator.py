@@ -31,7 +31,6 @@ def run_goaccess( filename:str, format_t:Format ) -> str:
         args.extend([ "--jobs",str(Settings.jobs) ])
     else:
         args.extend([ "--jobs", str(1) ])
-        
     result = subprocess.run(
         args,
         capture_output=True,

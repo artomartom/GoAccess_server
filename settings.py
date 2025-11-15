@@ -1,5 +1,3 @@
-
-
 from  argparse import ArgumentParser,ArgumentDefaultsHelpFormatter
 import os.path
 
@@ -35,7 +33,6 @@ def parse_args():
     parser.add_argument( '--debug', action='store_true', help='Enable or disable debug mode')
 
     parser.add_argument( '--hunter', action='store_true', help='Enable or disable hunter mode')
-    
 
     return parser.parse_args()
 
@@ -44,5 +41,5 @@ Settings = parse_args()
 def check_settings():
     if Settings.geoip_db and not os.path.isfile(Settings.geoip_db):
         raise FileNotFoundError(f"mmdb file {Settings.geoip_db} not found")
-    
+
 check_settings()
