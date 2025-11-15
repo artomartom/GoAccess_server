@@ -1,7 +1,11 @@
 name: Build and Stage
 on:
   push:
+<<<<<<< HEAD
     branches: [dev]
+=======
+    branches: [dev] 
+>>>>>>> 5fe042fe7dd224aacb26a920099456104cbb56e5
 
 
 jobs:
@@ -16,6 +20,7 @@ jobs:
     - name: Build project
       run: docker build --no-cache -t goaccess_server:latest .
 
+<<<<<<< HEAD
     - name: Add config url
       run: echo "GOACCESS_URL=${{vars.STAGE_GOACCESS_URL}}" > ./.env
 
@@ -30,3 +35,17 @@ jobs:
 
     - name: Test API
       run: docker run --rm -it -v ./:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py
+=======
+    - name: run stage server
+      run: docker compose -f ./docker-compose.prod.yaml up -d
+
+    - name: wait for start
+      run: sleep 5 
+
+    - name: test_modules
+      run: docker run --rm -it --dns=192.168.1.7 -v ./:/app py_tester:latest  /app/tests/test.py
+
+    - name: test_api
+      run: docker run --rm -it --dns=192.168.1.7 -v ./:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py
+      
+>>>>>>> 5fe042fe7dd224aacb26a920099456104cbb56e5
