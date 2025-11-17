@@ -1,20 +1,35 @@
-name: test
+name: Build and deploy
 on:
   push:
-    branches: [actions-test] 
+    branches: [dev]
+
 
 jobs:
   build:
-    name: Build
-    runs-on: orange-local 
+    name: test actions
+    runs-on: orange-local
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
- 
-    - name: Build project
-      run: echo ${VAR_1} >> /home/orange/source.txt
+    - name: save image to archive
+      run:  docker save goaccess_server:latest > ./goaccess_server.tar
 
-
-
+    - name: rsync deployments
+      uses: burnett01/rsync-deployments@7.1.0
+      with:
+        switches: -avzr --delete
+        path: ./goaccess_server.tar
+        remote_path: /home/orange/
+        remote_host: 147.45.111.168
+        remote_port: 22
+        remote_user: orange
+        remote_key: ${{ secrets.SSH_KEY }}
+        
+#    - name: Execute remote SSH commands using password
+#      uses: appleboy/ssh-action@v1
+#      with:
+#        host: 147.45.111.168
+#        username: orange
+#        key: ${{ secrets.SSH_KEY }}
+#        port: 22
+#        script: whoami
 
