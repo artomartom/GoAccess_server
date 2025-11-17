@@ -51,7 +51,7 @@ async def redirect_home():
 @routes.get("/help", response_class=HTMLResponse)
 async def get_help(request: Request):
     return await from_template(request,context = { "heading": '''Help''',
-                                    "text": "This is a help page",
+                                    "text": "Когда-нибудь тут будет документация",
                                     "icon": "❔❔❔",
                                     }, status_code=200)
 
@@ -111,8 +111,8 @@ async def _generate(request: Request,
 
     except Format.Exception as error_text:
         heading ='''Unknown Format Error'''
-        description = '''The server encountered an unknown or unsupported format in your request.
-                    Please check the format specification and try again.'''
+        description = '''Неизвестный или неподдерживаемый формат в вашем запросе.
+                                Проверьте спецификацию формата и повторите попытку.'''
         return await from_template(request,context = { "heading": heading,
                                             "description": description,
                                             "text": str(error_text),
