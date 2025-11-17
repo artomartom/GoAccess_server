@@ -24,4 +24,6 @@ jobs:
       run: echo ${{matrix.goaccess_url}}
     - name: test matrix.options
       run: echo ${{matrix.options}}
+    - name: uptime
+      run: ssh ${{matrix.environment}} -t uptime
  
