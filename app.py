@@ -1,16 +1,9 @@
 import tempfile
-<<<<<<< HEAD
 from fastapi import FastAPI, APIRouter, Request, Query # type: ignore
 from fastapi.responses import FileResponse, HTMLResponse,  RedirectResponse # type: ignore
 from fastapi.exceptions import  HTTPException # type: ignore
 from fastapi.templating import Jinja2Templates # type: ignore
 import uvicorn # type: ignore
-=======
-import jinja2
-from fastapi import FastAPI, APIRouter, Request, Query
-from fastapi.responses import FileResponse, HTMLResponse,  RedirectResponse
-import uvicorn
->>>>>>> 5fe042fe7dd224aacb26a920099456104cbb56e5
 
 from settings import Settings
 from utility import Logger as log
@@ -22,7 +15,6 @@ from cache import Cache_Server
 app = FastAPI(debug=Settings.debug, docs_url=None, redoc_url=None)
 routes = APIRouter()
 
-<<<<<<< HEAD
 templates = Jinja2Templates(directory="assets")
 
 async def from_template(request: Request, context: dict,status_code:int):
@@ -45,19 +37,11 @@ async def download(request: Request,
                     mth: str = Query(""),
                     fmt: str = Query("")):
     res = await generate(request,file_id,mth,fmt)
-=======
-@routes.get("/download/{file_id}", response_class=FileResponse)
-async def download(file_id: str,
-                    mth: str = Query(""),
-                    fmt: str = Query("")):
-    res = await generate(file_id,mth,fmt)
->>>>>>> 5fe042fe7dd224aacb26a920099456104cbb56e5
     if res.status_code == 200:
         headers = {"Content-disposition": "attachment" }
         return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
     return res
 
-<<<<<<< HEAD
 
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc: HTTPException):
@@ -72,14 +56,11 @@ async def not_found_handler(request: Request, exc: HTTPException):
 async def method_not_allowed(request: Request, exc: HTTPException):
     return RedirectResponse(f"{Settings.external_url}/help")
 
-=======
->>>>>>> 5fe042fe7dd224aacb26a920099456104cbb56e5
 @routes.get("/")
 async def redirect_home():
     return RedirectResponse(f"{Settings.external_url}/help")
 
 @routes.get("/help", response_class=HTMLResponse)
-<<<<<<< HEAD
 async def get_help(request: Request):
     return await from_template(request,context = { "heading": '''Help''',
                                     "text": "This is a help page",
@@ -89,17 +70,15 @@ async def get_help(request: Request):
 @routes.get("/generate/{file_id}", response_class=HTMLResponse)
 async def generate(request: Request,
                     file_id: str,
-=======
-async def get_help():
-    with open("assets/message_page.html", 'r',encoding='utf-8') as file:
-        html_page = file.read()
-        heading ='''Help'''
-        html_page = jinja2.Template(html_page).render(icon = "❔❔❔",heading=heading, text = "This is a help page")
-        return HTMLResponse(html_page, status_code=200)
-
-@routes.get("/generate/{file_id}", response_class=HTMLResponse)
-async def generate(file_id: str,
->>>>>>> 5fe042fe7dd224aacb26a920099456104cbb56e5
+                    mth: str = Query(""),
+                    fmt: str = Query("")
+                    ):
+    return templates.TemplateResponse(
+        request=request, name="loading.html",context = { "file_id": file_id}, status_code=200)
+    
+@routes.get("/api/generate/{file_id}", response_class=HTMLResponse)
+async def _generate(request: Request,
+                    file_id: str,
                     mth: str = Query(""),
                     fmt: str = Query("")
                     ):
@@ -135,7 +114,6 @@ async def generate(file_id: str,
             ca.set(cache_key,result)
             return HTMLResponse(content=result , status_code=200)
 
-<<<<<<< HEAD
     except FileNotFoundError as error_text:
         heading ='''File Not Found'''
         return await from_template(request,context = { "heading": heading,
@@ -152,27 +130,6 @@ async def generate(file_id: str,
                                             "text": str(error_text),
                                             "icon": "⚠️",
                                             }, status_code=400)
-=======
-    except FileNotFoundError as e:
-        with open("assets/message_page.html", 'r',encoding='utf-8') as file:
-            html_page = file.read()
-            heading ='''File Not Found'''
-            error_text = str(e)
-            html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading, text = error_text)
-            return HTMLResponse(html_page, status_code=404)
-
-    except Format.Exception as e:
-        with open("assets/message_page.html", 'r',encoding='utf-8') as file:
-            html_page = file.read()
-            heading ='''Unknown Format Error'''
-            description = '''The server encountered an unknown or unsupported format in your request.
-                        Please check the format specification and try again.'''
-            error_text = str(e)
-
-            html_page = jinja2.Template(html_page).render(icon = "⚠️", heading=heading,description=description,text = error_text)
-            return HTMLResponse(html_page, status_code=400)
-
->>>>>>> 5fe042fe7dd224aacb26a920099456104cbb56e5
 
 @routes.post("/report")
 async def get_report( request: Request):
@@ -189,16 +146,10 @@ async def upload( request: Request):
 
         db = Database()
 
-<<<<<<< HEAD
         contentlength = request.headers.get("content-length")
         
 
         if contentlength ==  '0':
-=======
-        _, contentlength = request._headers._list[5]
-
-        if contentlength.decode() ==  '0':
->>>>>>> 5fe042fe7dd224aacb26a920099456104cbb56e5
             raise EOFError("Empty file")
 
         log.verbose("writing data")
@@ -206,11 +157,7 @@ async def upload( request: Request):
 
         return  {
             'report': url ,
-<<<<<<< HEAD
             'status': 'OK'
-=======
-            'status': 'OK' 
->>>>>>> 5fe042fe7dd224aacb26a920099456104cbb56e5
         }
 
     except EOFError as e:
