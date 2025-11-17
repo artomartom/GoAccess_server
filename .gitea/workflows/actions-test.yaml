@@ -10,6 +10,9 @@ jobs:
     runs-on: orange-local
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
     - name: save image to archive
       run:  docker save goaccess_server:latest > ./goaccess_server.tar
 
