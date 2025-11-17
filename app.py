@@ -30,19 +30,7 @@ async def redirect_multiple_slashes(request: Request, call_next):
 
     response = await call_next(request)
     return response
-
-@routes.get("/download/{file_id}", response_class=FileResponse)
-async def download(request: Request,
-                    file_id: str,
-                    mth: str = Query(""),
-                    fmt: str = Query("")):
-    res = await generate(request,file_id,mth,fmt)
-    if res.status_code == 200:
-        headers = {"Content-disposition": "attachment" }
-        return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
-    return res
-
-
+ 
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc: HTTPException):
     heading ='''Page not found'''
@@ -63,12 +51,21 @@ async def redirect_home():
 @routes.get("/help", response_class=HTMLResponse)
 async def get_help(request: Request):
     return await from_template(request,context = { "heading": '''Help''',
-                                    "text": "This is a help page",
+                                    "text": "Когда-нибудь тут будет документация",
                                     "icon": "❔❔❔",
                                     }, status_code=200)
 
 @routes.get("/generate/{file_id}", response_class=HTMLResponse)
 async def generate(request: Request,
+                    file_id: str,
+                    mth: str = Query(""),
+                    fmt: str = Query("")
+                    ):
+    return templates.TemplateResponse(
+        request=request, name="loading.html",context = { "file_id": file_id}, status_code=200)
+    
+@routes.get("/api/generate/{file_id}", response_class=HTMLResponse)
+async def _generate(request: Request,
                     file_id: str,
                     mth: str = Query(""),
                     fmt: str = Query("")
@@ -114,8 +111,8 @@ async def generate(request: Request,
 
     except Format.Exception as error_text:
         heading ='''Unknown Format Error'''
-        description = '''The server encountered an unknown or unsupported format in your request.
-                    Please check the format specification and try again.'''
+        description = '''Неизвестный или неподдерживаемый формат в вашем запросе.
+                                Проверьте спецификацию формата и повторите попытку.'''
         return await from_template(request,context = { "heading": heading,
                                             "description": description,
                                             "text": str(error_text),

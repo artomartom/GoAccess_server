@@ -1,5 +1,3 @@
-
-
 from  argparse import ArgumentParser,ArgumentDefaultsHelpFormatter
 import os.path
 
@@ -44,5 +42,5 @@ Settings = parse_args()
 def check_settings():
     if Settings.geoip_db and not os.path.isfile(Settings.geoip_db):
         raise FileNotFoundError(f"mmdb file {Settings.geoip_db} not found")
-    
+
 check_settings()
