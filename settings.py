@@ -33,6 +33,7 @@ def parse_args():
     parser.add_argument( '--debug', action='store_true', help='Enable or disable debug mode')
 
     parser.add_argument( '--hunter', action='store_true', help='Enable or disable hunter mode')
+    
 
     return parser.parse_args()
 
