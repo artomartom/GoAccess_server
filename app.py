@@ -30,19 +30,7 @@ async def redirect_multiple_slashes(request: Request, call_next):
 
     response = await call_next(request)
     return response
-
-@routes.get("/download/{file_id}", response_class=FileResponse)
-async def download(request: Request,
-                    file_id: str,
-                    mth: str = Query(""),
-                    fmt: str = Query("")):
-    res = await generate(request,file_id,mth,fmt)
-    if res.status_code == 200:
-        headers = {"Content-disposition": "attachment" }
-        return HTMLResponse(content=res.body, status_code = res.status_code,headers=headers )
-    return res
-
-
+ 
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc: HTTPException):
     heading ='''Page not found'''

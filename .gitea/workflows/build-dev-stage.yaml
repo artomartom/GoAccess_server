@@ -28,5 +28,5 @@ jobs:
     - name: Test modules
       run: docker run --rm -it -v ./:/app py_tester:latest  /app/tests/test.py
 
-#    - name: Test API
-#      run: docker run --rm -it -v ./:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py
+    - name: Test API
+      run: docker run --rm -it -v ./:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py

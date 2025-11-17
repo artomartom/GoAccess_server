@@ -91,26 +91,11 @@ class TestGoAccessAPI:
         }
 
         response = client.get(
-            f"/generate/{file_id}?mth={params['mth']}&fmt={params['fmt']}"
+            f"/api/generate/{file_id}?mth={params['mth']}&fmt={params['fmt']}"
         )
 
         assert response.status_code == 200
         assert response.headers["content-type"] == "text/html; charset=utf-8"
-
-    def test_download_report(self, client, sample_log_data):
-        """Test downloading a report file"""
-
-        file_id = self.test_upload_log_file(client, sample_log_data)
-
-        response = client.get(f"/download/{file_id}")
-
-        assert response.status_code == 200
-        assert response.headers["content-type"] == "text/html; charset=utf-8"
-        assert "content-disposition" in response.headers
-        assert "attachment" in response.headers["content-disposition"]
-
-        # Verify we get actual content
-        assert len(response.content) > 0
 
     def test_generate_report_invalid_file_id(self, client):
 
@@ -118,16 +103,6 @@ class TestGoAccessAPI:
         invalid_file_id = str(uuid.uuid4())  # Random UUID that shouldn't exist
 
         response = client.get(f"/api/generate/{invalid_file_id}")
-
-        # The API might return 404 or 400 for invalid file IDs
-        assert response.status_code in [400, 404, 500]
-
-    def test_download_report_invalid_file_id(self, client):
-
-        """Test downloading report with invalid file ID"""
-        invalid_file_id = str(uuid.uuid4())
-
-        response = client.get(f"/download/{invalid_file_id}")
 
         # The API might return 404 or 400 for invalid file IDs
         assert response.status_code in [400, 404, 500]
