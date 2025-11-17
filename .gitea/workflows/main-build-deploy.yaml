@@ -5,11 +5,32 @@ on:
 
 jobs:
   build:
-    name: Build and deploy on ${{ matrix.environment }}
+    name: Build 
+    runs-on: orange-local
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build project
+      run: docker build --no-cache -t goaccess_server:latest .
+
+    - name: save image to archive
+      run:  docker save goaccess_server:latest > ./goaccess_server.tar
+
+    - name: Upload artifact
+      uses: christopherhx/gitea-upload-artifact@v4
+      with:
+        name: deploy-files
+        path: |
+          ./goaccess_server.tar  
+          ./docker-compose.prod.yaml 
+
+  deploy:   
+    name: Deploy on ${{ matrix.environment }}
     runs-on: orange-local
     strategy:
       matrix:
-        environment: [orange, goaccess-otp]
+        environment: [orange , goaccess-otp]
         include:
         - environment: "orange"
           goaccess_url: ${{vars.ORANGE_GOACCESS_URL}}
@@ -18,12 +39,30 @@ jobs:
           goaccess_url: ${{vars.OTP_GOACCESS_URL}}
           options: ${{vars.OTP_GOACCESS_OPTIONS}}
 
-
     steps:
-    - name: test matrix.goaccess_url
-      run: echo ${{matrix.goaccess_url}}
-    - name: test matrix.options
-      run: echo ${{matrix.options}}
-    - name: uptime
-      run: ssh ${{matrix.environment}} -t uptime
+    - name: Download artifact
+      uses: christopherhx/gitea-download-artifact@v4
+      with:
+        name: deploy-files
+      
+    - name: Display structure of downloaded files
+      run: ls -Rlt
+    
+    - name: copy to remote
+      run: rsync -azvhP  --info=progress2 ./*  ${{ matrix.environment }}:/opt/goAccess_server
+
+    - name: Add config
+      run: ssh ${{matrix.environment}} -t "echo "GOACCESS_URL=${{matrix.goaccess_url}}" > /opt/goAccess_server/.env"
+
+    - name: Add config
+      run: ssh ${{matrix.environment}} -t "echo "GOACCESS_OPTIONS=${{matrix.options}}" >> /opt/goAccess_server/.env"
+
+    - name:  load image to remote
+      run: ssh ${{matrix.environment}} -t docker image load -i /opt/goAccess_server/goaccess_server.tar
+
+    - name: restart app
+      run: ssh ${{matrix.environment}} -t docker compose -f  /opt/goAccess_server/docker-compose.prod.yaml  up -d --no-deps
+
+    - name: cleanup
+      run: ssh ${{matrix.environment}} -t rm /opt/goAccess_server/goaccess_server.tar
  
