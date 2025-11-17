@@ -71,7 +71,7 @@ class TestGoAccessAPI:
         file_id = self.test_upload_log_file(client, sample_log_data)
 
         # Then generate report
-        response = client.get(f"/generate/{file_id}")
+        response = client.get(f"/api/generate/{file_id}")
 
         assert response.status_code == 200
         assert response.headers["content-type"] == "text/html; charset=utf-8"
@@ -117,7 +117,7 @@ class TestGoAccessAPI:
         """Test generating report with invalid file ID"""
         invalid_file_id = str(uuid.uuid4())  # Random UUID that shouldn't exist
 
-        response = client.get(f"/generate/{invalid_file_id}")
+        response = client.get(f"/api/generate/{invalid_file_id}")
 
         # The API might return 404 or 400 for invalid file IDs
         assert response.status_code in [400, 404, 500]
