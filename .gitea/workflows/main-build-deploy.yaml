@@ -23,7 +23,7 @@ jobs:
       run: rsync -azvhP  --info=progress2 ./goaccess_server.tar  orange:/home/orange/
 
     - name: copy to remote   
-      run: rsync -azvhP  --info=progress2 ./{assets,docker-compose.prod.yaml} orange:/opt/goAccess_server
+      run: rsync -azvhP  --info=progress2 ./docker-compose.prod.yaml orange:/opt/goAccess_server
     
     - name: Add config
       run: ssh orange -t "echo "GOACCESS_URL=${{vars.ORANGE_GOACCESS_URL}}" > /opt/goAccess_server/.env"
