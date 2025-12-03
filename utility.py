@@ -4,17 +4,17 @@ from settings import  Settings
 
 class Logger():
     @staticmethod
-    def verbose(text:str):
-        if  Settings.loglevel == 'verbose' :
+    def debug(text:str):
+        if  Settings.loglevel == 'debug' :
             print (f"               {text}")
 
     @staticmethod
     def info(text:str):
-        if Settings.loglevel in ['info','verbose','warn']:
+        if Settings.loglevel in ['info','debug','warn']:
             print (f"               {text}")
     @staticmethod
     def warn(text:str):
-        if Settings.loglevel in ['info','verbose','warn']:
+        if Settings.loglevel in ['info','debug','warn']:
             print (f"               {text}")
     @staticmethod
     def error(text:str):

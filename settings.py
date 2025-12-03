@@ -19,7 +19,7 @@ def parse_args():
 
     parser.add_argument( '-j', '--jobs', type=int, default=2,help='Goaccess job count')
 
-    parser.add_argument( '--loglevel', type=str, default='warn',choices=['debug', 'info', 'warn', 'verbose'],
+    parser.add_argument( '--loglevel', type=str, default='warn',choices=['debug', 'info', 'warn'],
         help='Logging level')
 
     parser.add_argument( '--geoip-db', type=str, default=None,help='Path to GeoIP database file')

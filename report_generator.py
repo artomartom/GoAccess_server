@@ -14,7 +14,7 @@ def new_report_id():
 
 def run_goaccess( filename:str, format_t:Format ) -> str:
 
-    log.verbose(f"trying format {format_t.name }")
+    log.debug(f"trying format {format_t.name }")
     args=  ["goaccess",filename,    "-a",
             "--num-test=0",
             "--log-format", f'{format_t.log_format}',

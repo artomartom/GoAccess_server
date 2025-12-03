@@ -53,11 +53,11 @@ class Format():
 
     def __init__(self,sample_line:str=None,name:str="combined"):
         if sample_line:
-            log.verbose("Format with sample_line")
+            log.debug("Format with sample_line")
             _, self.log_format,self.date_format,self.time_format,self.name = Format.match_line(sample_line)
             return
         if name:
-            log.verbose("Format with name")
+            log.debug("Format with name")
             for  format_type in format_list:
                 if format_type[4] == name :
                     _, self.log_format,self.date_format,self.time_format,self.name = format_type
@@ -80,10 +80,10 @@ class Format():
     def get_format(log_strings:list[str],name:str ):
 
         if name != "":
-            log.verbose(f"trying {name} log format")
+            log.debug(f"trying {name} log format")
             return Format(name=name)
 
-        log.verbose("trying to deduce log format")
+        log.debug("trying to deduce log format")
         best_sample_line: str = ""
         best_sample_line_num: int = 0
         count = len(log_strings)
@@ -95,5 +95,5 @@ class Format():
                 best_sample_line_num = line_num
                 best_sample_line = line
                 best_sample_count = count
-        log.verbose(f"best sample line {best_sample_line_num+1} {best_sample_line}")
+        log.debug(f"best sample line {best_sample_line_num+1} {best_sample_line}")
         return  Format(sample_line=best_sample_line)
