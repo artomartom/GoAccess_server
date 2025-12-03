@@ -2,19 +2,20 @@
 
 import re
 from utility import  Logger as log
+import sys
 
 
 class Fields:
     a_v4 = r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}"
     a_v6 = r"([0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4}){7}|::|:(?::[0-9a-fA-F]{1,4}){1,6}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,5}|(?:[0-9a-fA-F]{1,4}:){2}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){3}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){4}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){5}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,6}:)"
-    mthd = r"(GET|HEAD|PUT|POST|DELETE|PATCH)"
-    url = r"\/([a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\\;\/\,\?\:\@\=\&\%]+)?"
+    mthd = r"(GET|HEAD|PUT|POST|DELETE|PATCH|OPTIONS)"
+    url = r"(\/([a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\\;\/\,\?\:\@\=\&\%]+)?|\*)"
     rfr = r"(?:http[s]?:\/\/.)((?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)(|:\d)|((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}|([0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4}){7}|::|:(?::[0-9a-fA-F]{1,4}){1,6}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,5}|(?:[0-9a-fA-F]{1,4}:){2}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){3}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){4}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){5}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,6}:))(:(\d+\/?))?" + fr"({url})?"
     http = r"HTTP\/[0123].[012689]"
     ip = rf"({a_v4}|{a_v6})"
     x_for = rf"{ip}(, {ip})?"
     sts = r"[1-5][0-9][0-9]"
-    byt = r"\d+"
+    byt = r"(\d+|-)"
     agnt = r'''(?:(?!\").)*'''
     datim = r"[0-9][0-9]\/[A-Z][a-z][a-z]\/202[0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]"
     timzn = r"(\+|\-)0[0-9]00"
@@ -53,11 +54,11 @@ class Format():
 
     def __init__(self,sample_line:str=None,name:str="combined"):
         if sample_line:
-            log.verbose("Format with sample_line")
+            log.debug("Format with sample_line")
             _, self.log_format,self.date_format,self.time_format,self.name = Format.match_line(sample_line)
             return
         if name:
-            log.verbose("Format with name")
+            log.debug("Format with name")
             for  format_type in format_list:
                 if format_type[4] == name :
                     _, self.log_format,self.date_format,self.time_format,self.name = format_type
@@ -80,14 +81,14 @@ class Format():
     def get_format(log_strings:list[str],name:str ):
 
         if name != "":
-            log.verbose(f"trying {name} log format")
+            log.debug(f"trying {name} log format")
             return Format(name=name)
 
-        log.verbose("trying to deduce log format")
+        log.debug("trying to deduce log format")
         best_sample_line: str = ""
         best_sample_line_num: int = 0
         count = len(log_strings)
-        best_sample_count: int  = 500
+        best_sample_count: int  = sys.maxsize
         for line_num in range(count):
             line = log_strings[line_num]
             count = line.count('"-"')
@@ -95,5 +96,5 @@ class Format():
                 best_sample_line_num = line_num
                 best_sample_line = line
                 best_sample_count = count
-        log.verbose(f"best sample line {best_sample_line_num+1} {best_sample_line}")
+        log.debug(f"best sample line {best_sample_line_num+1} {best_sample_line}")
         return  Format(sample_line=best_sample_line)

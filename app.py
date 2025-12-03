@@ -71,7 +71,7 @@ async def _generate(request: Request,
                     fmt: str = Query("")
                     ):
     try:
-        log.verbose(f"received args \n\t\tmth: {mth}\n\t\tfmt: {fmt}")
+        log.debug(f"received args \n\t\tmth: {mth}\n\t\tfmt: {fmt}")
 
         ca = Cache_Server()
         cache_key = f"{file_id}/{mth}/{fmt}"
@@ -80,7 +80,7 @@ async def _generate(request: Request,
             log.info(f"cache found for {cache_key}")
             return HTMLResponse(content=cache , status_code=200)
         db = Database()
-        log.verbose(f"found match argument: {mth}")
+        log.debug(f"found match argument: {mth}")
         if db.id_exists(file_id) is False:
             raise FileNotFoundError(f"file '{file_id}' not found")
 
@@ -129,7 +129,7 @@ async def upload( request: Request):
         file_id = new_report_id()
 
 
-        log.verbose (f"report file name {file_id}")
+        log.debug (f"report file name {file_id}")
         url = f"{Settings.external_url}/generate/{file_id}"
 
         db = Database()
@@ -140,7 +140,7 @@ async def upload( request: Request):
         if contentlength ==  '0':
             raise EOFError("Empty file")
 
-        log.verbose("writing data")
+        log.debug("writing data")
         await db.add_logfile_async(file_id,request)
 
         return  {
