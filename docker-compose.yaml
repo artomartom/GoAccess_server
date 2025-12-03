@@ -2,8 +2,7 @@ services:
   goaccess-debug:
     container_name: goaccess
     command: >
-      -m debugpy --listen 0.0.0.0:5678 /app/app.py --external-url=https://goaccess.papaya.local
-       --geoip-db=/app/geodb/dbip-lite-latest.mmdb --debug
+      -m debugpy --listen 0.0.0.0:5678 /app/app.py --external-url=https://goaccess.papaya.local  --debug --loglevel debug
     build:
       context: .
       args:
