@@ -2,6 +2,7 @@
 
 import re
 from utility import  Logger as log
+import sys
 
 
 class Fields:
@@ -87,7 +88,7 @@ class Format():
         best_sample_line: str = ""
         best_sample_line_num: int = 0
         count = len(log_strings)
-        best_sample_count: int  = 500
+        best_sample_count: int  = sys.maxsize
         for line_num in range(count):
             line = log_strings[line_num]
             count = line.count('"-"')
