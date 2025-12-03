@@ -7,8 +7,6 @@ import httpx
 import pytest
 
 
-
-
 log_file = [
 'test.combined.log',
 'test.combined_x_for.log',
