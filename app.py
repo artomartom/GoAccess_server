@@ -1,13 +1,13 @@
 import tempfile
-from fastapi import FastAPI, APIRouter, Request, Query # type: ignore
-from fastapi.responses import FileResponse, HTMLResponse,  RedirectResponse # type: ignore
-from fastapi.exceptions import  HTTPException # type: ignore
+from fastapi import FastAPI, APIRouter, Request, Query, status # type: ignore
+from fastapi.responses import HTMLResponse,  RedirectResponse, JSONResponse # type: ignore
+from fastapi.exceptions import HTTPException # type: ignore
 from fastapi.templating import Jinja2Templates # type: ignore
 import uvicorn # type: ignore
 
 from settings import Settings
 from utility import Logger as log
-from report_generator import run_goaccess,   new_report_id
+from report_generator import run_goaccess,new_report_id
 from database import Database, filter_file_in_batches
 from format_parser import  Format
 from cache import Cache_Server
@@ -42,7 +42,14 @@ async def not_found_handler(request: Request, exc: HTTPException):
     
 @app.exception_handler(405)
 async def method_not_allowed(request: Request, exc: HTTPException):
-    return RedirectResponse(f"{Settings.external_url}/help")
+    headers = {}
+    headers["Allow"] = 'GET POST'
+    
+    return JSONResponse(
+        status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+        content={},
+        headers=headers
+    )
 
 @routes.get("/")
 async def redirect_home():
@@ -143,23 +150,27 @@ async def upload( request: Request):
         log.debug("writing data")
         await db.add_logfile_async(file_id,request)
 
-        return  {
-            'report': url ,
-            'status': 'OK'
-        }
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={'report': url, 'status': 'OK'}
+        )
 
     except EOFError as e:
         log.error(repr(e))
-        return  {
-            'status': 'error',
-            'message': "The file is empty"
-        }
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'status': 'error',
+                'message': "The file is empty"}
+        )
     except Exception as e:
         log.error(repr(e))
-        return  {
-            'status': 'error',
-            'message': "Something went wrong"
-        }
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'status': 'error',
+                'message': "Something went wrong"}
+        )
 
 app.include_router(routes)
 
@@ -168,7 +179,7 @@ if __name__ == '__main__':
         app="app:app",
         port=Settings.port,
         workers= 1 if Settings.debug  else Settings.worker ,
-        log_level="info",
+        log_level=Settings.loglevel,
         access_log=True,
         timeout_keep_alive=5,
         host=Settings.listen)
