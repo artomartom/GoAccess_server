@@ -60,27 +60,3 @@ class Database:
     def get_logfile(self,file_id:str ) -> str:
         return  open(f"{self.dir}/{file_id}" , 'r',encoding='utf-8')
 
-
-if __name__ == '__main__':
-
-    pass
-
-    #with open("/home/kiwi/logs/nasha-set_access.log-20250718", 'r') as f:
-    #with open("/home/kiwi/logs/test.log", 'r') as f:
-    #    db = Database()
-    #    id = "sxgsdgdfgsdg"[0:20]
-    #    assert db.id_exists(id) == False
-    #    data = f.read()
-    #    db.add_logfile(id,data)
-    #    assert db.id_exists(id) == True
-    #    data_res = db.get_logfile(id)
-    #
-    #    if data_res  == data and db.id_exists(id):
-    #        print("OK")
-    #
-    #    os.remove(f"{os.getcwd()}/data/sxgsdgdfgsdg")
-
-    #inpt = open("/opt/goAccess_server/log", 'r',encoding='utf-8')
-    #outpt = open("/opt/goAccess_server/filter", 'w',encoding='utf-8')
-
-    #filter_file_in_batches(inpt, outpt,'8.217.208.28',100 )
