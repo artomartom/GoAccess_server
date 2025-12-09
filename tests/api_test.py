@@ -7,17 +7,6 @@ import httpx
 import pytest
 
 
-
-
-log_file = [
-'test.combined.log',
-'test.combined_x_for.log',
-'test.hestia.log',
-'test.bitrix.log',
-'test.badformat.log'
-'test.empty.log',
-]
-
 log_dir = './'
 
 headers = {
@@ -124,7 +113,7 @@ class TestGoAccessAPI:
 if __name__ == "__main__":
     # This is a simple way to run the tests without pytest
     api_test = TestGoAccessAPI()
-    
+
 
 #    with httpx.Client(base_url=api_test.BASE_URL, timeout=30.0) as client:
         # Test upload

@@ -20,7 +20,7 @@ class Cache_Server:
             self.set('test','testtest')
             _:str = self.get('test')
         except Exception as _:
-            log.warn(f"unable to connect to ${Settings.cache_srv}:${Settings.cache_port}.\nCaching diabled")
+            log.warning(f"unable to connect to ${Settings.cache_srv}:${Settings.cache_port}.\nCaching diabled")
             self.active = False
 
     def get(self,key: str):
