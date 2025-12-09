@@ -31,22 +31,3 @@ class Cache_Server:
         if not self.active:
             return None
         return self.redis.set(key,html)
-
-if __name__ == '__main__':
-
-    ca = Cache_Server()
-
-    assert ca.get("test") is None
-
-    ca.set("test","""<!DOCTYPE html>
-    <html>
-    <body>
-
-    <h1>My First Heading</h1>
-    <p>My first paragraph.</p>
-
-    </body>
-    </html>""")
-    print(ca.get("test"))
-
-    assert ca.get("test") == b'<!DOCTYPE html>\n    <html>\n    <body>\n\n    <h1>My First Heading</h1>\n    <p>My first paragraph.</p>\n\n    </body>\n    </html>'
