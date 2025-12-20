@@ -3,12 +3,10 @@ on:
   push:
     branches: [main]
 
-
 jobs:
   build:
-    name: Build and deploy
+    name: Build 
     runs-on: orange-local
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -18,28 +16,53 @@ jobs:
 
     - name: save image to archive
       run:  docker save goaccess_server:latest > ./goaccess_server.tar
-        
-    - name: copy archive to remote 
-      run: rsync -azvhP  --info=progress2 ./goaccess_server.tar  orange:/home/orange/
 
-    - name: copy to remote   
-      run: rsync -azvhP  --info=progress2 ./docker-compose.prod.yaml orange:/opt/goAccess_server
+    - name: Upload artifact
+      uses: christopherhx/gitea-upload-artifact@v4
+      with:
+        name: deploy-files
+        path: |
+          ./goaccess_server.tar  
+          ./docker-compose.prod.yaml 
+
+  deploy:   
+    name: Deploy on ${{ matrix.environment }}
+    runs-on: orange-local
+    strategy:
+      matrix:
+        environment: [orange , goaccess-otp]
+        include:
+        - environment: "orange"
+          goaccess_url: ${{vars.ORANGE_GOACCESS_URL}}
+          options: ${{vars.ORANGE_GOACCESS_OPTIONS}}
+        - environment: "goaccess-otp"
+          goaccess_url: ${{vars.OTP_GOACCESS_URL}}
+          options: ${{vars.OTP_GOACCESS_OPTIONS}}
+
+    steps:
+    - name: Download artifact
+      uses: christopherhx/gitea-download-artifact@v4
+      with:
+        name: deploy-files
+      
+    - name: Display structure of downloaded files
+      run: ls -Rlt
     
-    - name: Add config
-      run: ssh orange -t "echo "GOACCESS_URL=${{vars.ORANGE_GOACCESS_URL}}" > /opt/goAccess_server/.env"
+    - name: copy to remote
+      run: rsync -azvhP  --info=progress2 ./*  ${{ matrix.environment }}:/opt/goAccess_server
 
     - name: Add config
-      run: ssh orange -t "echo "GOACCESS_OPTIONS=${{vars.ORANGE_GOACCESS_OPTIONS}}" >> /opt/goAccess_server/.env"
+      run: ssh ${{matrix.environment}} -t "echo "GOACCESS_URL=${{matrix.goaccess_url}}" > /opt/goAccess_server/.env"
 
-    - name:  load image to remote 
-      run: ssh orange -t docker image load -i goaccess_server.tar
+    - name: Add config
+      run: ssh ${{matrix.environment}} -t "echo "GOACCESS_OPTIONS=${{matrix.options}}" >> /opt/goAccess_server/.env"
 
-    - name: restart app  
-      run: ssh orange -t docker compose -f  /opt/goAccess_server/docker-compose.prod.yaml  up -d --no-deps
+    - name:  load image to remote
+      run: ssh ${{matrix.environment}} -t docker image load -i /opt/goAccess_server/goaccess_server.tar
 
-    - name: restart app  
-      run: ssh orange -t docker compose -f  /opt/nginx/docker-compose.yaml restart
+    - name: restart app
+      run: ssh ${{matrix.environment}} -t docker compose -f  /opt/goAccess_server/docker-compose.prod.yaml  up -d --no-deps
 
     - name: cleanup
-      run: ssh orange -t rm /home/orange/goaccess_server.tar
-
+      run: ssh ${{matrix.environment}} -t rm /opt/goAccess_server/goaccess_server.tar
+ 
