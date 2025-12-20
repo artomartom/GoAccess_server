@@ -47,7 +47,7 @@ async def method_not_allowed(request: Request, exc: HTTPException):
     
     return JSONResponse(
         status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-        content={},
+        content={"error": "Method not allowed", "allowed methods": 'GET POST'},
         headers=headers
     )
 
@@ -126,10 +126,6 @@ async def _generate(request: Request,
                                             "icon": "⚠️",
                                             }, status_code=400)
 
-@routes.post("/report")
-async def get_report( request: Request):
-    return await  upload(request)
-
 @routes.post("/upload")
 async def upload( request: Request):
     try:
@@ -170,6 +166,19 @@ async def upload( request: Request):
             content={
                 'status': 'error',
                 'message': "Something went wrong"}
+        )
+
+@routes.get("/{path_name:path}") 
+async def redirect_get(request: Request, path_name: str):
+    return await not_found_handler(request,HTTPException(status_code=404, detail="page not found"))
+
+@routes.post("/{path_name:path}")
+async def redirect_upload(request: Request, path_name: str):
+    full_url = str(request.url.path)
+    return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND ,
+            content = { "Error 404": f"Page {full_url} not found ⚠️",
+                        "redirect to": f"{Settings.external_url}/upload"}
         )
 
 app.include_router(routes)

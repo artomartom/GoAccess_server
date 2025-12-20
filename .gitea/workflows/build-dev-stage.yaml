@@ -17,10 +17,10 @@ jobs:
       run: docker build --no-cache -t goaccess_server:latest .
 
     - name: Add config url
-      run: echo "GOACCESS_URL=https://goaccess.orange.local" > ./.env
+      run: echo "GOACCESS_URL=${{vars.STAGE_GOACCESS_URL}}" > ./.env
 
     - name: Add config options
-      run: echo "GOACCESS_OPTIONS=--geoip-db=/app/geodb/dbip-lite-latest.mmdb --cache --worker 2 --jobs 1" >> ./.env
+      run: echo "GOACCESS_OPTIONS=${{vars.STAGE_GOACCESS_OPTIONS}}" >> ./.env
 
     - name: Run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
