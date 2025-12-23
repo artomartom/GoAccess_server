@@ -98,7 +98,7 @@ async def _generate(request: Request,
 
             fmt = Format.get_format(test_chunk, name=fmt)
             data.seek(0)
-            if mth != "":
+            if mth:
                 with tempfile.NamedTemporaryFile('w') as parsed_log:
                     filter_file_in_batches(data,parsed_log,mth)
                     result =  run_goaccess(parsed_log.name,fmt )

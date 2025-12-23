@@ -1,5 +1,5 @@
 import os
-import re
+import regex as re
 
 from io import TextIOWrapper as file_handle
 

@@ -1,6 +1,6 @@
 
 
-import re
+import regex as re
 from utility import  Logger as log
 import sys
 
@@ -8,12 +8,13 @@ import sys
 class Fields:
     a_v4 = r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}"
     a_v6 = r"([0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4}){7}|::|:(?::[0-9a-fA-F]{1,4}){1,6}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,5}|(?:[0-9a-fA-F]{1,4}:){2}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){3}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){4}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){5}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,6}:)"
+    
     mthd = r"(GET|HEAD|PUT|POST|DELETE|PATCH|OPTIONS)"
     url = r"(\/([a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\\;\/\,\?\:\@\=\&\%]+)?|\*)"
-    rfr = r"(?:http[s]?:\/\/.)((?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)(|:\d)|((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}|([0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4}){7}|::|:(?::[0-9a-fA-F]{1,4}){1,6}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,5}|(?:[0-9a-fA-F]{1,4}:){2}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){3}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){4}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){5}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,6}:))(:(\d+\/?))?" + fr"({url})?"
+    rfr = r"((?:http[s]?:\/\/.)((?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)(|:\d)|((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}|" + a_v6 + r")(:(\d+\/?))?" + fr"({url})?|-)"
     http = r"HTTP\/[0123].[012689]"
     ip = rf"({a_v4}|{a_v6})"
-    x_for = rf"{ip}(, {ip})?"
+    x_for = rf"(-|{ip}(, {ip})?)"
     sts = r"[1-5][0-9][0-9]"
     byt = r"(\d+|-)"
     agnt = r'''(?:(?!\").)*'''
@@ -21,11 +22,26 @@ class Fields:
     timzn = r"(\+|\-)0[0-9]00"
     upstrm = r"(\d+.\d+|\-)"
     usr = r"(-|\w+)"
-    combined = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\"\n?'''
-    bitrixvm_main = fr'''({ip}|{ip}) - {usr} \[{datim} {timzn} - ({upstrm}|-)\] {sts} \"{mthd} {url} {http}\" {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"\n?'''
-    combined_x_for = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"\n?'''
-    hestia = fr'''({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] {mthd} {url} {http} \"{sts}\" {byt} \"({rfr}|-)\" \"{agnt}\" \"({x_for}|-)\"\n?'''
-    litespeed = fr'''\"({a_v4}|{a_v6}) - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"({rfr}|-)\" \"{agnt}\"\"\n?'''
+    
+    mthd = fr"(?P<mthd>{mthd})"
+    url = fr"(?P<url>{url})"
+    rfr = fr"(?P<rfr>{rfr})"
+    http = fr"(?P<http>{http})"
+    ip = fr"(?P<ip>{ip})"
+    x_for = fr"(?P<x_for>{x_for})"
+    sts = fr"(?P<sts>{sts})"
+    byt = fr"(?P<byt>{byt})"
+    agnt = fr"(?P<agnt>{agnt})"
+    datim = fr"(?P<datim>{datim})"
+    timzn = fr"(?P<timzn>{timzn})"
+    upstrm = fr"(?P<upstrm>{upstrm})"
+    usr = fr"(?P<usr>{usr})"
+    
+    combined = fr'''{ip} - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"{rfr}\" \"{agnt}\"\n?'''
+    bitrixvm_main = fr'''{ip} - {usr} \[{datim} {timzn} - {upstrm}\] {sts} \"{mthd} {url} {http}\" {byt} \"{rfr}\" \"{agnt}\" \"{x_for}\"\n?'''
+    combined_x_for = fr'''{ip} - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"{rfr}\" \"{agnt}\" \"{x_for}\"\n?'''
+    hestia = fr'''{ip} - {usr} \[{datim} {timzn}\] {mthd} {url} {http} \"{sts}\" {byt} \"{rfr}\" \"{agnt}\" \"{x_for}\"\n?'''
+    litespeed = fr'''\"{ip} - {usr} \[{datim} {timzn}\] \"{mthd} {url} {http}\" {sts} {byt} \"{rfr}\" \"{agnt}\"\"\n?'''
 
 format_list =  [
     (Fields.combined,
