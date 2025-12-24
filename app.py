@@ -8,7 +8,7 @@ import uvicorn # type: ignore
 from settings import Settings
 from utility import Logger as log
 from report_generator import run_goaccess,new_report_id
-from database import Database, filter_file_in_batches
+from database import Database, preprocess_file
 from format_parser import  Format
 from cache import Cache_Server
 
@@ -30,7 +30,7 @@ async def redirect_multiple_slashes(request: Request, call_next):
 
     response = await call_next(request)
     return response
- 
+
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc: HTTPException):
     heading ='''Page not found'''
@@ -39,12 +39,12 @@ async def not_found_handler(request: Request, exc: HTTPException):
                                     "text": str(error_text),
                                     "icon": "⚠️",
                                     }, status_code=404)
-    
+
 @app.exception_handler(405)
 async def method_not_allowed(request: Request, exc: HTTPException):
     headers = {}
     headers["Allow"] = 'GET POST'
-    
+
     return JSONResponse(
         status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
         content={"error": "Method not allowed", "allowed methods": 'GET POST'},
@@ -64,30 +64,28 @@ async def get_help(request: Request):
 
 @routes.get("/generate/{file_id}", response_class=HTMLResponse)
 async def generate(request: Request,
-                    file_id: str,
-                    mth: str = Query(""),
-                    fmt: str = Query("")
-                    ):
+                    file_id: str ):
     return templates.TemplateResponse(
         request=request, name="loading.html",context = { "file_id": file_id}, status_code=200)
-    
+
 @routes.get("/api/generate/{file_id}", response_class=HTMLResponse)
 async def _generate(request: Request,
-                    file_id: str,
-                    mth: str = Query(""),
-                    fmt: str = Query("")
+                    file_id: str
                     ):
     try:
-        log.debug(f"received args \n\t\tmth: {mth}\n\t\tfmt: {fmt}")
+        allowed_args = ["mth", "fmt","trnslt"]
+        args = dict.fromkeys(allowed_args)
+        args.update({key: value for key, value in dict(request.query_params).items() if key in allowed_args})
+
+        log.debug(f"received args \n\t\t: {args}")
 
         ca = Cache_Server()
-        cache_key = f"{file_id}/{mth}/{fmt}"
+        cache_key = f"{file_id}/{args['mth']}/{args['fmt']}/{args['trnslt']}"
         cache = ca.get(cache_key)
         if cache is not  None:
             log.info(f"cache found for {cache_key}")
             return HTMLResponse(content=cache , status_code=200)
         db = Database()
-        log.debug(f"found match argument: {mth}")
         if db.id_exists(file_id) is False:
             raise FileNotFoundError(f"file '{file_id}' not found")
 
@@ -96,18 +94,19 @@ async def _generate(request: Request,
             test_chunk = data.readlines(200)# reads chars. CHANGE TO 200 LINES
             data.seek(0)
 
-            fmt = Format.get_format(test_chunk, name=fmt)
-            data.seek(0)
-            if mth != "":
-                with tempfile.NamedTemporaryFile('w') as parsed_log:
-                    filter_file_in_batches(data,parsed_log,mth)
-                    result =  run_goaccess(parsed_log.name,fmt )
-                    ca.set(cache_key,result)
-                    return HTMLResponse(content=result , status_code=200)
+            fmt = Format.get_format(test_chunk, args=args)
+            args['fmt'] = fmt.name
 
-            result =  run_goaccess(data.name ,fmt )
-            ca.set(cache_key,result)
-            return HTMLResponse(content=result , status_code=200)
+            with tempfile.NamedTemporaryFile('w') as preprocessed_log:
+                result:str=None
+                if args['mth']:
+                    preprocess_file(data,preprocessed_log,args)
+                    result = run_goaccess(preprocessed_log.name, fmt)
+                else:
+                    result = run_goaccess(data.name, fmt)
+
+                ca.set(cache_key,result)
+                return HTMLResponse(content=result, status_code=200)
 
     except FileNotFoundError as error_text:
         heading ='''File Not Found'''
@@ -138,7 +137,7 @@ async def upload( request: Request):
         db = Database()
 
         contentlength = request.headers.get("content-length")
-        
+
 
         if contentlength ==  '0':
             raise EOFError("Empty file")
@@ -159,6 +158,14 @@ async def upload( request: Request):
                 'status': 'error',
                 'message': "The file is empty"}
         )
+    except UnicodeDecodeError as e:
+        log.error(repr(e))
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'status': 'error',
+                'message': "Failed to decode log file"}
+        )
     except Exception as e:
         log.error(repr(e))
         return JSONResponse(
@@ -168,7 +175,7 @@ async def upload( request: Request):
                 'message': "Something went wrong"}
         )
 
-@routes.get("/{path_name:path}") 
+@routes.get("/{path_name:path}")
 async def redirect_get(request: Request, path_name: str):
     return await not_found_handler(request,HTTPException(status_code=404, detail="page not found"))
 

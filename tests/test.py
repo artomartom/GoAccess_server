@@ -1,4 +1,5 @@
-import re
+
+import regex as re
 import os
 import sys
 
@@ -56,7 +57,7 @@ url= [
     ('''/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1&dfs3="''',False),
     ('''/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1&dfs3=%2234%22''',True),
     ("/.env",True),
-    ("/*",False),
+    #("/*",False),
     ("*",True),
     ("/?availability=in_stock&filter_automatic-winding=no-power-reserve-38-hours&filter_movement=2414a%2C2403%2C2431-01%2C2415%2C2431&orderby=price-desc&query_type_automatic-winding=or",True),
     ("/заз",False),

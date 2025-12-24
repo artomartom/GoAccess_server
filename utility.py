@@ -1,7 +1,7 @@
 
 from settings import  Settings
 
-
+#TODO  def debug(**args):
 class Logger():
     @staticmethod
     def debug(text:str):

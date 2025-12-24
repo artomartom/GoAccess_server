@@ -25,6 +25,9 @@ jobs:
     - name: Run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
 
+    - name: healthcheck 
+      run: sleep 10
+      
     - name: Test modules
       run: docker run --rm -it -v ./:/app py_tester:latest  /app/tests/test.py
 
