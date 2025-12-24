@@ -56,6 +56,12 @@ format_list =  [
     "\"%h %e[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"\"",  "%d/%b/%Y",  "%T" , "litespeed" ),
     ]
 
+format_translated_real_ip = {
+    "bitrixvm_main": "%^ - %e [%d:%t - %T] %s \"%r\" %b \"%R\" \"%u\" \"%h\"",
+    "combined_x_for": "%^ %e[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"  \"%h\"",
+    "hestia": "%^ - %e [%d:%t - %^] %m %U %H \"%s\" %b \"%R\" \"%u\" \"%h\"",
+}
+
 class Format():
     """
     [0] regex
@@ -94,23 +100,29 @@ class Format():
         raise Format.Exception(f"unknown format line: {sample_line}")
 
     @staticmethod
-    def get_format(log_strings:list[str],name:str ):
-
+    def get_format(log_strings:list[str],args:dict ):
+        name = args['fmt']
+        res_format:Format=None
         if name:
             log.debug(f"trying {name} log format")
-            return Format(name=name)
-
-        log.debug("trying to deduce log format")
-        best_sample_line: str = ""
-        best_sample_line_num: int = 0
-        count = len(log_strings)
-        best_sample_count: int  = sys.maxsize
-        for line_num in range(count):
-            line = log_strings[line_num]
-            count = line.count('"-"')
-            if best_sample_count > count:
-                best_sample_line_num = line_num
-                best_sample_line = line
-                best_sample_count = count
-        log.debug(f"best sample line {best_sample_line_num+1} {best_sample_line}")
-        return  Format(sample_line=best_sample_line)
+            res_format = Format(name=name)
+        else:
+            log.debug("trying to deduce log format")
+            best_sample_line: str = ""
+            best_sample_line_num: int = 0
+            count = len(log_strings)
+            best_sample_count: int  = sys.maxsize
+            for line_num in range(count):
+                line = log_strings[line_num]
+                count = line.count('"-"')
+                if best_sample_count > count:
+                    best_sample_line_num = line_num
+                    best_sample_line = line
+                    best_sample_count = count
+            log.debug(f"best sample line {best_sample_line_num+1} {best_sample_line}")
+            res_format =   Format(sample_line=best_sample_line)
+        
+        if args['trnslt']:
+            res_format.log_format = format_translated_real_ip.get(res_format.name,res_format.log_format)
+        
+        return res_format

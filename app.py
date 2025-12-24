@@ -94,7 +94,7 @@ async def _generate(request: Request,
             test_chunk = data.readlines(200)# reads chars. CHANGE TO 200 LINES
             data.seek(0)
 
-            fmt = Format.get_format(test_chunk, name=args['fmt'])
+            fmt = Format.get_format(test_chunk, args=args)
             args['fmt'] = fmt.name
 
             with tempfile.NamedTemporaryFile('w') as preprocessed_log:
