@@ -158,6 +158,14 @@ async def upload( request: Request):
                 'status': 'error',
                 'message': "The file is empty"}
         )
+    except UnicodeDecodeError as e:
+        log.error(repr(e))
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'status': 'error',
+                'message': "Failed to decode log file"}
+        )
     except Exception as e:
         log.error(repr(e))
         return JSONResponse(

@@ -46,9 +46,21 @@ class Database:
             os.makedirs(self.dir)
 
     async def add_logfile_async(self,filename:str,request:Request)-> None:
+        log.debug(f"writing log file {filename}")
         async with aiofiles.open(f"{self.dir}/{filename}", 'wb' ) as file:
             async for chunk in request.stream():
                 await file.write(chunk)
+        
+        try:            
+            filename = f"{self.dir}/{filename}" 
+            with open(filename, 'rb' ) as file:
+                test = file.read(1000)
+                test.decode('utf-8')
+                
+        except UnicodeDecodeError as e:
+            if os.path.exists(filename):
+                os.remove(filename)
+            raise
 
 
     def add_logfile(self,filename:str,data:bytes)-> None:
