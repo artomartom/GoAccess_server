@@ -128,12 +128,11 @@ async def _generate(request: Request,
                                             }, status_code=400)
 
     except UnicodeDecodeError as e:
-        log.error(repr(e))
         heading ='''Failed to decode log file'''
         description = '''Log file contains invalid sequence of characters. Failed to decode file to UNICODE'''
         return await from_template(request,context = { "heading": heading,
                                             "description": description,
-                                            "text": str(error_text),
+                                            "text": str(e),
                                             "icon": "⚠️",
                                             }, status_code=400)
     
