@@ -109,6 +109,7 @@ async def _generate(request: Request,
                 return HTMLResponse(content=result, status_code=200)
 
     except FileNotFoundError as error_text:
+        log.error(repr(error_text))
         heading ='''File Not Found'''
         return await from_template(request,context = { "heading": heading,
                                             "text": str(error_text),
@@ -116,6 +117,7 @@ async def _generate(request: Request,
                                             }, status_code=404)
 
     except Format.Exception as error_text:
+        log.error(repr(error_text))
         heading ='''Unknown Format Error'''
         description = '''Неизвестный или неподдерживаемый формат в вашем запросе.
                                 Проверьте спецификацию формата и повторите попытку.'''
@@ -125,6 +127,16 @@ async def _generate(request: Request,
                                             "icon": "⚠️",
                                             }, status_code=400)
 
+    except UnicodeDecodeError as e:
+        log.error(repr(e))
+        heading ='''Failed to decode log file'''
+        description = '''Log file contains invalid sequence of characters. Failed to decode file to UNICODE'''
+        return await from_template(request,context = { "heading": heading,
+                                            "description": description,
+                                            "text": str(error_text),
+                                            "icon": "⚠️",
+                                            }, status_code=400)
+    
 @routes.post("/upload")
 async def upload( request: Request):
     try:
