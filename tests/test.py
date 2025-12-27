@@ -15,7 +15,9 @@ addresses_v4 = [
 ("77.88.9.142",True),
 ("78.178.85.171",True),
 ("156.234.180.92",True),
+("1.195.198.16",True),
 ("91.122.53.173",True),
+("212.232.55.10",True),
 ("156.234.180.912",False),
 ]
 
@@ -38,8 +40,10 @@ time=[
 ("08/Jul/2025:13:2s8:59", False),
 ("022/Jfl/2023:13:28:59", False),
 ("22/Jfl/2023:13:28:59", True),
+("25/Dec/2025:03:35:06", True),
 ("13/Aug/2025:01:05:02", True),
 ("13/Aug/2025:00:56:18", True),
+("24/Dec/2025:03:11:56", True),
 ]
 
 http= [
@@ -57,8 +61,10 @@ url= [
     ('''/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1&dfs3="''',False),
     ('''/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1&dfs3=%2234%22''',True),
     ("/.env",True),
+    ("/restore.php",True),
     #("/*",False),
     ("*",True),
+    ("/ajax/get_local_notifications.php",True),
     ("/?availability=in_stock&filter_automatic-winding=no-power-reserve-38-hours&filter_movement=2414a%2C2403%2C2431-01%2C2415%2C2431&orderby=price-desc&query_type_automatic-winding=or",True),
     ("/заз",False),
     ("/",True),
@@ -87,7 +93,9 @@ timezone =[
 ("+0300", True),
 ("-0300", True),
 ("+0000", True),
+("+1000", True),
 ("+0500", True),
+("-0500", True),
 ("-0s500", False),
 ("+0s00", False),
 ("+0601", False),
@@ -95,32 +103,36 @@ timezone =[
 
 refferer =[
     ("https://baikalovostrog.ru/",True),
-    ("http://baikalovostrogCom:80/",False),
     ("https://baikalovostrog.ru/",True),
+    ("https://5.129.240.78/restore.php",True),
+    ("https://5.129.240.78",True),
+    ("https://5.129.240.78/",True),
     ("https://dev.megacvet24.ru/rozy/sirenevye/",True),
     ("https://baikalovostrog.ru:443/",True),
-    ("//baikalovostrog.ru/",False),
     ("http://62.113.44.234",True),
+    ("https://maknot.com/",True),
     ("http://185.42.14.195:80/apply.cgi",True),
     ("http://xn--80aatrux.xn--p1ai",True),
-    ("xn--80aatrux.xn--p1ai",False),
-    ("http://s",False    ),
     ("http://62.113.44.234:443",True),
     ("http://fd48:9bda:1f2e:8:0:1234:5678:9abc",True),
     ("http://fd48:9bda:1f2e:8:0:1234:5678:9abc:443",True),
     ("http://fd48:9bda:1f2e:8:0:1234:5678:9abc:443/",True),
     ("http://fd48:9bda:1f2e:8:0:1234:5678:9abc:80",True),
-    ("fd48:9bda:1f2e:8:0:1234:5678:9abc:443",False),
     ("https://fd12:3456:789a::1:443",True),
+    ("fd48:9bda:1f2e:8:0:1234:5678:9abc:443",False),
     ("https://fd12:3456:789a::1:4sd43",False),
+    ("http://s",False    ),
+    ("http://baikalovostrogCom:80/",False),
+    ("//baikalovostrog.ru/",False),
     ("http://62.113.44.234:44sd3",False),
-    ("http://62.113.44.234:443",True),
+    ("xn--80aatrux.xn--p1ai",False),
 
 ]
 
 x_for = [
 
     ("156.234.180.92",True),
+    ("81.195.198.16",True),
     ("fd87:d2e5:2834::feed:1",True),
     ("2a03:2880:f800:8::, 172.71.194.251",True),
     ("156.234.180.92, 172.71.194.251",True),
@@ -131,9 +143,11 @@ x_for = [
 agent= [
 ("AliyunSecBot/Aliyun(AliyunSecBot@service.alibaba.com)",True),
 ("-sd",True),
+("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",True),
 ("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0",True),
 ("Mozilla/5.0AppleWebKit/537.36(KHTML,likeGecko;compatible",True),
 ("Opera/8.79.(X11;Linuxx86_64;et-EE)Presto/2.9.172Version/12.00",True),
+('''Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0''',True),
 ('''Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.132.248''',False),
 ('''Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.132.248"''',False),
 ('''Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0" "154.209.125.63"''',False),
@@ -155,7 +169,6 @@ log_combined_x_for =[
 ('''114.119.149.92 - - [25/Apr/2023:13:55:31 +0300] "GET /piony-na-vypisku/ HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/5-kust-pion-roz-miks-50-sm.html" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "fd48:9bda:1f2e:8:0:1234:5678:9abc"''',True      ),
 
 ]
-
 log_combined =[
 ('''66.249.73.233 - - [08/Jul/2025:13:28:59 +0300] "GET /product/vostok-dial-030934/ HTTP/1.1" 500 2443 "-" "Mozilla/5.0 Safari/537.36 (compatible; Googlebot/2.1; )"''',True      ),
 ('''114.119.132.248 - - [25/Apr/2023:04:09:10 +0300] "GET /image/cache/catalog/7-sirenevyh-roz-60-sm-1-277x277.jpg HTTP/1.1" 401 195 "https://dev.megacvet24.ru/rozy/sirenevye/" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)" "114.119.132.248"''',False      ),
@@ -251,21 +264,10 @@ def run_test(regex :str, samples :list):
                 print(f"❌ {value}")
 
 
-bitrixvm_main = fr'''({f.ip}|{f.ip}) - {f.usr} \[{f.datim} {f.timzn} - ({f.upstrm}|-)\] {f.sts} \"{f.mthd} {f.url} {f.http}\" {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\" \"({f.x_for}|-)\"'''
-combined = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\"'''
-combined_x_for = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] \"{f.mthd} {f.url} {f.http}\" {f.sts} {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\" \"({f.x_for}|-)\"'''
-hestia = fr'''({f.a_v4}|{f.a_v6}) - {f.usr} \[{f.datim} {f.timzn}\] {f.mthd} {f.url} {f.http} \"{f.sts}\" {f.byt} \"({f.rfr}|-)\" \"({f.agnt}|-)\" \"({f.x_for}|-)\"'''
-
-format_list =  [
-    ( combined  , "combined" ),
-    (bitrixvm_main,"bitrixvm_main"),
-    (combined_x_for,"combined_x_for"),
-    (hestia,"hestia"),
-    ]
 
 
 def run_all():
-    # tokens
+    ## tokens
     run_test(regex=f.mthd, samples=method)
     run_test(regex=f.a_v4, samples=addresses_v4)
     run_test(regex=f.a_v6, samples=addresses_v6)
@@ -278,19 +280,18 @@ def run_all():
     run_test(regex=f.agnt, samples=agent)
     run_test(regex=f.datim, samples=time)
     run_test(regex=f.x_for, samples=x_for)
-    #formats
-    run_test(regex=combined, samples=log_combined)
-    run_test(regex=bitrixvm_main, samples=log_bitrixvm_main)
-    run_test(regex=combined_x_for, samples=log_combined_x_for)
-    run_test(regex=hestia, samples=log_hestia)
+    ## formats
+    run_test(regex=f.combined, samples=log_combined)
+    run_test(regex=f.bitrixvm_main, samples=log_bitrixvm_main)
+    run_test(regex=f.combined_x_for, samples=log_combined_x_for)
+    run_test(regex=f.hestia, samples=log_hestia)
 
 
-AUTOMATED=True
 
 if __name__ == '__main__':
-
+    
     parser = ArgumentParser("test_args")
-    parser.add_argument("-a","--automated",action="store_true",help="use asserts instead of console logs")
+    parser.add_argument("-a","--automated",default=False,action="store_true",help="use asserts instead of console logs")
     args = parser.parse_args()
     AUTOMATED = args.automated
     run_all()

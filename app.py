@@ -91,12 +91,19 @@ async def _generate(request: Request,
 
 
         with db.get_logfile(file_id) as data:
-            test_chunk = data.readlines(200)# reads chars. CHANGE TO 200 LINES
+            test_chunk:list[str]=[]
+            for _ in range(200):
+                try:
+                    test_chunk.append(next(data))
+                except StopIteration:
+                    pass  
+
             data.seek(0)
-
-            fmt = Format.get_format(test_chunk, args=args)
-            args['fmt'] = fmt.name
-
+            fmt = None
+            if args['fmt']:
+                fmt = Format.get_format_by_name(test_chunk, name=args['fmt'])
+            else:
+                fmt = Format.get_format(test_chunk, translate=args['trnslt'])
             with tempfile.NamedTemporaryFile('w') as preprocessed_log:
                 result:str=None
                 if args['mth']:
