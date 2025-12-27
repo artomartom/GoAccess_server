@@ -5,7 +5,7 @@ WORKDIR $WORKDIR
 
 
 RUN apk upgrade && \
-apk add python3 py3-pip goaccess && \
+apk add python3 py3-pip goaccess curl && \
 rm -rf /var/cache/apk/*
 
 
@@ -23,6 +23,9 @@ RUN echo "$VIRTUAL_ENV/bin/python3 \$@" >> /entrypoint.sh
 
 COPY  ./*py  $WORKDIR
 COPY  ./assets  $WORKDIR/assets
+
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=10s\
+  CMD curl -4f http://localhost:3050/health || exit 1
 
 ENTRYPOINT ["sh","/entrypoint.sh"]
 

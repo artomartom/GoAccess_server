@@ -51,6 +51,10 @@ async def method_not_allowed(request: Request, exc: HTTPException):
         headers=headers
     )
 
+@routes.get("/health")
+async def health_check():
+    return {"status": "healthy"}
+
 @routes.get("/")
 async def redirect_home():
     return RedirectResponse(f"{Settings.external_url}/help")
