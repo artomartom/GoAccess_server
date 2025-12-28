@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse,  RedirectResponse, JSONResponse # ty
 from fastapi.exceptions import HTTPException # type: ignore
 from fastapi.templating import Jinja2Templates # type: ignore
 import uvicorn # type: ignore
+import regex as re
 
 from settings import Settings
 from utility import Logger as log
@@ -50,6 +51,10 @@ async def method_not_allowed(request: Request, exc: HTTPException):
         content={"error": "Method not allowed", "allowed methods": 'GET POST'},
         headers=headers
     )
+
+@routes.get("/health")
+async def health_check():
+    return {"status": "healthy"}
 
 @routes.get("/")
 async def redirect_home():
@@ -134,12 +139,22 @@ async def _generate(request: Request,
                                             "icon": "⚠️",
                                             }, status_code=400)
 
-    except UnicodeDecodeError as e:
+    except UnicodeDecodeError as error_text:
+        log.error(repr(error_text))
         heading ='''Failed to decode log file'''
         description = '''Log file contains invalid sequence of characters. Failed to decode file to UNICODE'''
         return await from_template(request,context = { "heading": heading,
                                             "description": description,
                                             "text": str(e),
+                                            "icon": "⚠️",
+                                            }, status_code=400)
+    except re.error as error_text:
+        log.error(repr(error_text))
+        heading =f"Failed to parse expression"
+        description = f"Error while parsing to parse expression {args['mth']}" 
+        return await from_template(request,context = { "heading": heading,
+                                            "description": description,
+                                            "text": str(error_text),
                                             "icon": "⚠️",
                                             }, status_code=400)
     
