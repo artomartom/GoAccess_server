@@ -26,7 +26,15 @@ jobs:
       run: docker compose -f ./docker-compose.prod.yaml up -d
 
     - name: healthcheck 
-      run: sleep 10
+      run: |
+        for i in {1..5}; do
+          sleep 1.5
+          res=$( docker inspect --format "{{json .State.Health }}" goaccess | jq .Status )
+          if [ '"healthy"' = "$res" ]; then
+            exit 0
+          fi
+        done
+        exit 1 
       
     - name: Test modules
       run: docker run --rm -it -v ./:/app py_tester:latest  /app/tests/test.py
