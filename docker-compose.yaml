@@ -6,7 +6,7 @@ services:
     build:
       context: .
       args:
-        debbuger: true
+        INSTALL_DEBUGPY: true
     image: goaccess-debug
     restart: always
     ports:

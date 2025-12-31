@@ -3,7 +3,6 @@ on:
   push:
     branches: [dev]
 
-
 jobs:
   build:
     name: Build
@@ -26,9 +25,24 @@ jobs:
       run: docker compose -f ./docker-compose.prod.yaml up -d
 
     - name: healthcheck 
-      run: sleep 10
+      run: |
+        for i in {1..5}; do
+          sleep 1.5
+          res=$( docker inspect --format "{{json .State.Health }}" goaccess | jq .Status )
+          if [ '"healthy"' = "$res" ]; then
+            exit 0
+          fi
+        done
+        docker logs goaccess
+        exit 1 
+
+  run-tests:    
+    runs-on: orange-local
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
       
-    - name: Test modules
+    - name: Test regex`es
       run: docker run --rm -it -v ./:/app py_tester:latest  /app/tests/test.py
 
     - name: Test API

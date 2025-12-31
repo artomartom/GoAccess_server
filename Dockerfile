@@ -3,19 +3,19 @@ FROM alpine:3.22.1
 ENV WORKDIR=/app
 WORKDIR $WORKDIR
 
-
 RUN apk upgrade && \
 apk add python3 py3-pip goaccess curl && \
 rm -rf /var/cache/apk/*
-
 
 COPY  ./requirements.txt $WORKDIR
 ENV VIRTUAL_ENV=$WORKDIR/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
  
+ARG INSTALL_DEBUGPY=false
 
-#RUN if [[ -z "$debbuger" ]] ; then echo "debugpy" >> $WORKDIR/requirements.txt ; fi
-#RUN  echo "debugpy" >> $WORKDIR/requirements.txt  
+ENV ENV_INSTALL_DEBUGPY=$INSTALL_DEBUGPY
+
+RUN if [ "${ENV_INSTALL_DEBUGPY}" = "true" ]; then echo "debugpy" >> $WORKDIR/requirements.txt ; fi
 
 RUN python3 -m venv $VIRTUAL_ENV && python3 -m pip install -r $WORKDIR/requirements.txt
 
