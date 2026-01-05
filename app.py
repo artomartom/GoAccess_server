@@ -106,7 +106,7 @@ async def _generate(request: Request,
             data.seek(0)
             fmt = None
             if args['fmt']:
-                fmt = Format.get_format_by_name(test_chunk, name=args['fmt'])
+                fmt = Format.get_format_by_name(test_chunk, name=args['fmt'],translate=args['trnslt'])
             else:
                 fmt = Format.get_format(test_chunk, translate=args['trnslt'])
             with tempfile.NamedTemporaryFile('w') as preprocessed_log:
