@@ -58,7 +58,7 @@ format_list =  [
 
 format_translated_real_ip = {
     "bitrixvm_main": "%^ - %e [%d:%t - %T] %s \"%r\" %b \"%R\" \"%u\" \"%h\"",
-    "combined_x_for": "%^ %e[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"  \"%h\"",
+    "combined_x_for": "%^ %e[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\" \"%h\"",
     "hestia": "%^ - %e [%d:%t - %^] %m %U %H \"%s\" %b \"%R\" \"%u\" \"%h\"",
 }
 
@@ -91,11 +91,13 @@ class Format():
         return [None] * 5
 
     @staticmethod
-    def get_format_by_name(log_strings:list[str],name:str):
+    def get_format_by_name(log_strings:list[str],name:str,translate:bool=False):
         if name:
             log.debug(f"trying {name} log format")
             for  format_type in format_list:
                 if format_type[4] == name :
+                    if translate:
+                        format_type.log_format = format_translated_real_ip.get(format_type.name,format_type.log_format)
                     return Format(format_type)
             raise Format.Exception(f"unknown format name: {name}")
 
@@ -114,11 +116,8 @@ class Format():
             log.debug(line)
             res_format = Format(Format._match_line(line))
             if res_format.name:
+                if translate:
+                    res_format.log_format = format_translated_real_ip.get(res_format.name,res_format.log_format)
                 return res_format
             
         raise Format.Exception(f"unknown format")
-
-        if translate:
-            res_format.log_format = format_translated_real_ip.get(res_format.name,res_format.log_format)
-        
-        return res_format
