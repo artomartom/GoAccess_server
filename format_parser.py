@@ -58,7 +58,7 @@ format_list =  [
 
 format_translated_real_ip = {
     "bitrixvm_main": "%^ - %e [%d:%t - %T] %s \"%r\" %b \"%R\" \"%u\" \"%h\"",
-    "combined_x_for": "%^ %e[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\"  \"%h\"",
+    "combined_x_for": "%^ %e[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\" \"%h\"",
     "hestia": "%^ - %e [%d:%t - %^] %m %U %H \"%s\" %b \"%R\" \"%u\" \"%h\"",
 }
 
