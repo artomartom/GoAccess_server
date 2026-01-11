@@ -1,0 +1,70 @@
+name: Auto Merge Dev into Main
+
+on:
+  workflow_dispatch:
+
+jobs:
+  merge_dev_to_main:
+    runs-on: orange-local
+    env:
+      DIR_M_PFX: "--git-dir=./main.git/.git --work-tree=./main.git"
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          path: main.git
+
+      - name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 1
+          path: dev.git
+
+      - name: checkout main
+        run: git $DIR_M_PFX  checkout main
+
+      - name: add remote dev
+        run: git $DIR_M_PFX remote add dev_remote ./dev.git
+
+      - name: list remotes
+        run: git $DIR_M_PFX remote show
+
+      - name: fetch dev
+        run: git $DIR_M_PFX fetch dev_remote --depth=1
+
+      - name: checkout from dev
+        run: |
+          git $DIR_M_PFX checkout dev_remote/dev  -- .
+
+      - name: commit
+        run: git $DIR_M_PFX add . && git $DIR_M_PFX commit -m "automerge"
+
+      - name: Upload artifact
+        uses: christopherhx/gitea-upload-artifact@v4
+        with:
+          name: merged_main
+          path: |
+            ./main.git/.git
+
+  push_merged:
+    runs-on: orange-local
+    needs: merge_dev_to_main
+    env:
+      DIR_M_PFX: "--git-dir=./main.git/.git --work-tree=./main.git"
+    steps:
+      - name: Download artifact
+        uses: christopherhx/gitea-download-artifact@v4
+        with:
+          name: merged_main
+          path: .git
+
+      - name: checkout
+        run: git --work-tree=./ checkout HEAD -- .
+
+      - name: set remote 
+        run: git remote set-url origin gitea:$GITHUB_REPOSITORY.git
+
+      - name: push
+        run: git push origin main 
