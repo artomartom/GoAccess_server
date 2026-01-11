@@ -6,7 +6,6 @@ __pycache__/
 workspace.code-workspace
 # C extensions
 *.so
-data/
 # Distribution / packaging
 .Python
 build/
@@ -39,6 +38,7 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports
+tests/
 htmlcov/
 .tox/
 .nox/
@@ -320,3 +320,5 @@ dist
 .tern-port
 
 reports/
+docker-compose.yaml
+data/
