@@ -28,6 +28,7 @@ jobs:
   deploy:   
     name: Deploy on ${{ matrix.environment }}
     runs-on: orange-local
+    needs: build
     strategy:
       matrix:
         environment: [orange , goaccess-otp]
