@@ -38,6 +38,7 @@ jobs:
 
   run-tests:    
     runs-on: orange-local
+    needs: build
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
