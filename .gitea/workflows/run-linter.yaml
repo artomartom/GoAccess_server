@@ -1,0 +1,20 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  linter:
+    runs-on: orange-local
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: run linter
+        run: |
+          OUTPUT=$(docker run --rm -it -v ./:/testing py_tester:latest -m pylint --disable=C --output-format=json /testing/*.py)
+          if [[ ! $(echo "$OUTPUT" | jq 'length') -eq 0 ]]; then 
+            for LINE in "${OUTPUT[@]}"; do 
+              echo "$LINE" >&2; 
+            done && exit 1; 
+          else 
+            echo "lint successful"; 
+          fi
