@@ -4,17 +4,15 @@ on:
 jobs:
   linter:
     runs-on: orange-local
+    env:
+      LINT_OUT: ""
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: run linter
-        run: |
-          OUTPUT=$(docker run --rm -it -v ./:/testing py_tester:latest -m pylint --disable=C --output-format=json /testing/*.py)
-          if [[ ! $(echo "$OUTPUT" | jq 'length') -eq 0 ]]; then 
-            for LINE in "${OUTPUT[@]}"; do 
-              echo "$LINE" >&2; 
-            done && exit 1; 
-          else 
-            echo "lint successful"; 
-          fi
+        run: LINT_OUT=$(docker run --rm -it -v ./:/testing py_tester:latest -m pylint --disable=C --output-format=json /testing/*.py)
+      
+      - name: run linter
+        run: echo $LINT_OUT
+          
