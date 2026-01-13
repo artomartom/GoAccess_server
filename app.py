@@ -1,7 +1,6 @@
 import tempfile
-from fastapi import FastAPI, APIRouter, Request, Query, status # type: ignore
+from fastapi import FastAPI, APIRouter, Request, status # type: ignore
 from fastapi.responses import HTMLResponse,  RedirectResponse, JSONResponse # type: ignore
-from fastapi.exceptions import HTTPException # type: ignore
 from fastapi.templating import Jinja2Templates # type: ignore
 import uvicorn # type: ignore
 import regex as re
@@ -33,7 +32,7 @@ async def redirect_multiple_slashes(request: Request, call_next):
     return response
 
 @app.exception_handler(404)
-async def not_found_handler(request: Request, exc: HTTPException):
+async def not_found_handler(request: Request):
     heading ='''Page not found'''
     error_text = "Error 404: Page not found"
     return await from_template(request,context = { "heading": heading,
@@ -42,7 +41,7 @@ async def not_found_handler(request: Request, exc: HTTPException):
                                     }, status_code=404)
 
 @app.exception_handler(405)
-async def method_not_allowed(request: Request, exc: HTTPException):
+async def method_not_allowed():
     headers = {}
     headers["Allow"] = 'GET POST'
 
@@ -94,20 +93,19 @@ async def _generate(request: Request,
         if db.id_exists(file_id) is False:
             raise FileNotFoundError(f"file '{file_id}' not found")
 
-
         with db.get_logfile(file_id) as data:
-            test_chunk:list[str]=[]
-            for _ in range(200):
-                try:
-                    test_chunk.append(next(data))
-                except StopIteration:
-                    pass  
-
+              
             data.seek(0)
             fmt = None
             if args['fmt']:
-                fmt = Format.get_format_by_name(test_chunk, name=args['fmt'],translate=args['trnslt'])
+                fmt = Format.get_format_by_name(name=args['fmt'],translate=args['trnslt'])
             else:
+                test_chunk:list[str]=[]
+                for _ in range(200):
+                    try:
+                        test_chunk.append(next(data))
+                    except StopIteration:
+                        pass
                 fmt = Format.get_format(test_chunk, translate=args['trnslt'])
             with tempfile.NamedTemporaryFile('w') as preprocessed_log:
                 result:str=None
@@ -145,12 +143,12 @@ async def _generate(request: Request,
         description = '''Log file contains invalid sequence of characters. Failed to decode file to UNICODE'''
         return await from_template(request,context = { "heading": heading,
                                             "description": description,
-                                            "text": str(e),
+                                            "text": str(error_text),
                                             "icon": "⚠️",
                                             }, status_code=400)
     except re.error as error_text:
         log.error(repr(error_text))
-        heading =f"Failed to parse expression"
+        heading ="Failed to parse expression"
         description = f"Error while parsing to parse expression {args['mth']}" 
         return await from_template(request,context = { "heading": heading,
                                             "description": description,
@@ -209,11 +207,11 @@ async def upload( request: Request):
         )
 
 @routes.get("/{path_name:path}")
-async def redirect_get(request: Request, path_name: str):
-    return await not_found_handler(request,HTTPException(status_code=404, detail="page not found"))
+async def redirect_get(request: Request):
+    return await not_found_handler(request)
 
 @routes.post("/{path_name:path}")
-async def redirect_upload(request: Request, path_name: str):
+async def redirect_upload(request: Request):
     full_url = str(request.url.path)
     return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND ,

@@ -4,15 +4,10 @@ on:
 jobs:
   linter:
     runs-on: orange-local
-    env:
-      LINT_OUT: ""
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: run linter
-        run: LINT_OUT=$(docker run --rm -it -v ./:/testing py_tester:latest -m pylint --disable=C --output-format=json /testing/*.py)
+        run: docker run --rm -it -v ./:/testing -v ~/.pylintrc:/root/pylintrc py_tester:latest -m pylint --disable=C --output-format=json /testing/*.py
       
-      - name: run linter
-        run: echo $LINT_OUT
-          

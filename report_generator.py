@@ -25,7 +25,7 @@ def run_goaccess( filename:str, format_t:Format ) -> str:
         if os.path.isfile(Settings.geoip_db):
             args.extend([ "--geoip-database",Settings.geoip_db ])
         else:
-            log.warning(f"Cant find mmdb file {Settings.geoip_db}. Option geoip_db disabled")
+            log.warn(f"Cant find mmdb file {Settings.geoip_db}. Option geoip_db disabled")
 
     threshold:int = 314572800
 

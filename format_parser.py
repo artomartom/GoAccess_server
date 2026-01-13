@@ -2,7 +2,6 @@
 
 import regex as re
 from utility import  Logger as log
-import sys
 
 
 class Fields:
@@ -91,15 +90,16 @@ class Format():
         return [None] * 5
 
     @staticmethod
-    def get_format_by_name(log_strings:list[str],name:str,translate:bool=False):
+    def get_format_by_name(name:str,translate:bool=False):
         if name:
             log.debug(f"trying {name} log format")
             for  format_type in format_list:
-                if format_type[4] == name :
+                if format_type[4] == name:
                     if translate:
-                        format_type.log_format = format_translated_real_ip.get(format_type.name,format_type.log_format)
+                        translated = format_translated_real_ip.get(format_type[0],format_type[1])
+                        format_type = format_type[:1] + (translated,) + format_type[2:]
                     return Format(format_type)
-            raise Format.Exception(f"unknown format name: {name}")
+        raise Format.Exception(f"unknown format name: {name}")
 
 
     @staticmethod
@@ -110,7 +110,7 @@ class Format():
         split:int = 8
         step = int(len(log_strings)/split)
         
-        log.debug(f"testing lines:")
+        log.debug("testing lines:")
         for index in range(split):
             line = log_strings[int(index*step)]
             log.debug(line)
@@ -120,4 +120,4 @@ class Format():
                     res_format.log_format = format_translated_real_ip.get(res_format.name,res_format.log_format)
                 return res_format
             
-        raise Format.Exception(f"unknown format")
+        raise Format.Exception("unknown format")
