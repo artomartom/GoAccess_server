@@ -57,7 +57,7 @@ class Database:
                 test = file.read(1000)
                 test.decode('utf-8')
                 
-        except UnicodeDecodeError as e:
+        except UnicodeDecodeError as _:
             if os.path.exists(filename):
                 os.remove(filename)
             raise

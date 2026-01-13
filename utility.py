@@ -15,21 +15,20 @@ class EndpointFilter(logging.Filter):
 uvicorn_logger = logging.getLogger("uvicorn.access")
 uvicorn_logger.addFilter(EndpointFilter())
 
-#TODO  def debug(**args):
 class Logger():
     @staticmethod
-    def debug(text:str):
+    def debug(*args:str):
         if  Settings.loglevel == 'debug' :
-            print (f"               {text}")
+            print (f"               {args}")
 
     @staticmethod
-    def info(text:str):
+    def info(*args:str):
         if Settings.loglevel in ['info','debug','warn']:
-            print (f"               {text}")
+            print (f"               {args}")
     @staticmethod
-    def warn(text:str):
+    def warn(*args:str):
         if Settings.loglevel in ['info','debug','warn']:
-            print (f"               {text}")
+            print (f"               {args}")
     @staticmethod
-    def error(text:str):
-        print (f"               {text}")
+    def error(*args:str):
+        print (f"               {args}")
