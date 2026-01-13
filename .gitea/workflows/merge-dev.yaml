@@ -12,6 +12,7 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 1
           path: main.git
 
@@ -35,18 +36,19 @@ jobs:
         run: git $DIR_M_PFX fetch dev_remote --depth=1
 
       - name: checkout from dev
-        run: |
-          git $DIR_M_PFX checkout dev_remote/dev  -- .
+        run: git $DIR_M_PFX checkout dev_remote/dev  -- .
+
+      - name: remove dev environment
+        run: git restore --staged tests/ docker-compose.yaml
 
       - name: commit
-        run: git $DIR_M_PFX add . && git $DIR_M_PFX commit -m "automerge"
+        run: git $DIR_M_PFX commit -m "automerge"
 
       - name: Upload artifact
         uses: christopherhx/gitea-upload-artifact@v4
         with:
           name: merged_main
-          path: |
-            ./main.git/.git
+          path: ./main.git/.git
 
   push_merged:
     runs-on: orange-local
@@ -67,8 +69,8 @@ jobs:
         run: |
           docker run --rm -it -v ./:/testing -v ~/.pylintrc:/root/.pylintrc py_tester:latest -m pylint --rcfile=/root/.pylintrc --disable=C --output-format=json /testing/*.py
 
-      - name: set remote 
+      - name: set remote
         run: git remote set-url origin gitea:$GITHUB_REPOSITORY.git
 
       - name: push
-        run: git push origin main 
+        run: git push origin main
