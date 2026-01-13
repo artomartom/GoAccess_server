@@ -1,5 +1,14 @@
 on:
   workflow_dispatch:
+    input:
+      branch:
+        description: 'repository branch to run linter on'
+        required: true
+        default: 'main'
+        type: choice
+        options:
+          - main
+          - dev
 
 jobs:
   linter:
@@ -7,7 +16,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 1
 
       - name: run linter
-        run: docker run --rm -it -v ./:/testing -v ~/.pylintrc:/root/pylintrc py_tester:latest -m pylint --disable=C --output-format=json /testing/*.py
-      
+        run: |
+          docker run --rm -it -v ./:/testing -v ~/.pylintrc:/root/.pylintrc py_tester:latest -m \
+          pylint --rcfile=/root/.pylintrc --disable=C --output-format=json /testing/*.py
