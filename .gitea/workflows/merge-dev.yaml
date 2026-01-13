@@ -39,7 +39,7 @@ jobs:
         run: git $DIR_M_PFX checkout dev_remote/dev  -- .
 
       - name: remove dev environment
-        run: git restore --staged tests/ docker-compose.yaml
+        run: git $DIR_M_PFX restore --staged tests/ docker-compose.yaml
 
       - name: commit
         run: git $DIR_M_PFX commit -m "automerge"
