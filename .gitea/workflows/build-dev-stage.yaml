@@ -20,8 +20,16 @@ jobs:
           ref: dev
           fetch-depth: 1
 
+    - name: set commit hash
+      run:  echo "HASH=$(echo ${{env.GITHUB_SHA}} | cut -c1-10)" >> $GITHUB_ENV
+
     - name: Build project
-      run: docker build --no-cache -t goaccess_server:latest .
+      run: |
+        HASH=$(echo ${{env.GITHUB_SHA}} | cut -c1-10)
+        docker build --no-cache -t goaccess_server:$HASH .
+
+    - name: tag new latest
+      run: docker tag goaccess_server:$HASH goaccess_server:latest
 
     - name: Add config url
       run: echo "GOACCESS_URL=${{vars.STAGE_GOACCESS_URL}}" > ./.env
@@ -32,7 +40,7 @@ jobs:
     - name: Run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
 
-    - name: healthcheck 
+    - name: healthcheck
       run: |
         for i in {1..5}; do
           sleep 1.5
@@ -42,9 +50,9 @@ jobs:
           fi
         done
         docker logs goaccess
-        exit 1 
+        exit 1
 
-  run-tests:    
+  run-tests:
     runs-on: orange-local
     needs: build
     steps:
@@ -53,7 +61,7 @@ jobs:
       with:
           ref: dev
           fetch-depth: 1
-      
+
     - name: Test regex`es
       run: docker run --rm -it -v ./:/app py_tester:latest  /app/tests/test.py
 

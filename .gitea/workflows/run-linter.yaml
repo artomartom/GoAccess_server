@@ -1,6 +1,6 @@
 on:
   workflow_dispatch:
-    input:
+    inputs:
       branch:
         description: 'repository branch to run linter on'
         required: true

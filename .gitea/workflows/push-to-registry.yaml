@@ -1,0 +1,21 @@
+on:
+  workflow_dispatch:
+    inputs:
+       
+jobs:
+  tag-n-push:
+    runs-on: orange-local
+    steps:
+      - name: logout 
+        run: docker logout  ghcr.io
+        
+      - name: login 
+        run: echo ${{secrets.GITHUBPAT}} | docker login ghcr.io -u ${{secrets.GITHUBUSER}} --password-stdin
+
+      - name: tag remote image
+        run: docker tag goaccess_server:latest ghcr.io/artomartom/goaccess_server:latest
+
+      - name: push latest
+        run: docker push ghcr.io/artomartom/goaccess_server:latest
+
+
