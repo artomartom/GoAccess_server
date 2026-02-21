@@ -41,7 +41,7 @@ async def not_found_handler(request: Request):
                                     }, status_code=404)
 
 @app.exception_handler(405)
-async def method_not_allowed():
+async def method_not_allowed(request, exc):
     headers = {}
     headers["Allow"] = 'GET POST'
 
