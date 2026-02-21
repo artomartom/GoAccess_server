@@ -1,4 +1,5 @@
 name: Build and Stage
+
 on:
   workflow_dispatch:
   push:
@@ -9,8 +10,7 @@ on:
      - 'README.md'
 
 jobs:
-  build:
-    name: Build
+  build-image:
     runs-on: orange-local
 
     steps:
@@ -20,15 +20,16 @@ jobs:
           ref: dev
           fetch-depth: 1
 
-    - name: set commit hash
-      run:  echo "HASH=$(echo ${{env.GITHUB_SHA}} | cut -c1-10)" >> $GITHUB_ENV
+    - name: Set commit hash
+      run: echo "HASH=$(echo $(git rev-parse HEAD) | cut -c1-10)" >> $GITHUB_ENV
+      
+    - name: This build commit hash
+      run: echo $HASH
 
     - name: Build project
-      run: |
-        HASH=$(echo ${{env.GITHUB_SHA}} | cut -c1-10)
-        docker build --no-cache -t goaccess_server:$HASH .
+      run: docker build --no-cache -t goaccess_server:$HASH .
 
-    - name: tag new latest
+    - name: Tag new latest
       run: docker tag goaccess_server:$HASH goaccess_server:latest
 
     - name: Add config url
@@ -54,7 +55,7 @@ jobs:
 
   run-tests:
     runs-on: orange-local
-    needs: build
+    needs: build-image
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
