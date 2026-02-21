@@ -1,5 +1,6 @@
 name: Build and deploy
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths-ignore:
@@ -56,17 +57,17 @@ jobs:
     - name: Display structure of downloaded files
       run: ls -Rlt
     
-    - name: copy to remote
-      run: rsync -azvhP  --info=progress2 ./*  ${{ matrix.environment }}:/opt/goAccess_server
+    - name: copy compose file 
+      run: rsync -azvhP  --info=progress2 ./docker-compose.prod.yaml ${{ matrix.environment }}:/opt/goAccess_server
+
+    - name: copy image file 
+      run: cat goaccess_server.tar | gzip  | pv | ssh ${{ matrix.environment }} 'zcat | docker image load'
 
     - name: Add config
       run: ssh ${{matrix.environment}} -t "echo "GOACCESS_URL=${{matrix.goaccess_url}}" > /opt/goAccess_server/.env"
 
     - name: Add config
       run: ssh ${{matrix.environment}} -t "echo "GOACCESS_OPTIONS=${{matrix.options}}" >> /opt/goAccess_server/.env"
-
-    - name:  load image to remote
-      run: ssh ${{matrix.environment}} -t docker image load -i /opt/goAccess_server/goaccess_server.tar
 
     - name: restart app
       run: ssh ${{matrix.environment}} -t docker compose -f  /opt/goAccess_server/docker-compose.prod.yaml  up -d --no-deps

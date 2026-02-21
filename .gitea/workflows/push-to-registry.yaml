@@ -1,6 +1,5 @@
 on:
   workflow_dispatch:
-    inputs:
        
 jobs:
   tag-n-push:
