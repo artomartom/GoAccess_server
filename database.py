@@ -13,6 +13,7 @@ def preprocess_file(input_file_handle:file_handle , output_file_handle:file_hand
 
     regex:str = args['mth']
     lines = batchs = matches = 0
+    log.debug(f"filtering file with regex: {regex}")
 
     while True:
         batch_empty:bool=False

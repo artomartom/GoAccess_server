@@ -95,7 +95,6 @@ async def _generate(request: Request,
 
         with db.get_logfile(file_id) as data:
               
-            data.seek(0)
             fmt = None
             if args['fmt']:
                 fmt = Format.get_format_by_name(name=args['fmt'],translate=args['trnslt'])
@@ -107,6 +106,7 @@ async def _generate(request: Request,
                     except StopIteration:
                         pass
                 fmt = Format.get_format(test_chunk, translate=args['trnslt'])
+                data.seek(0)
             with tempfile.NamedTemporaryFile('w') as preprocessed_log:
                 result:str=None
                 if args['mth']:
