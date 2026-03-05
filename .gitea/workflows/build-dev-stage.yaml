@@ -33,7 +33,7 @@ jobs:
       run: docker tag goaccess_server:$HASH goaccess_server:latest
 
     - name: Add config url
-      run: echo "GOACCESS_URL=${{vars.STAGE_GOACCESS_URL}}" > ./.env
+      run: echo "GOACCESS_URL=https://${{vars.STAGE_GOACCESS_URL}}" > ./.env
 
     - name: Add config options
       run: echo "GOACCESS_OPTIONS=${{vars.STAGE_GOACCESS_OPTIONS}}" >> ./.env
