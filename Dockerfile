@@ -24,8 +24,5 @@ RUN echo "$VIRTUAL_ENV/bin/python3 \$@" >> /entrypoint.sh
 COPY  ./*py  $WORKDIR
 COPY  ./assets  $WORKDIR/assets
 
-HEALTHCHECK --interval=60s --timeout=10s --retries=3 --start-period=5s\
-  CMD curl -4sf http://localhost:3050/health || exit 1
-
 ENTRYPOINT ["sh","/entrypoint.sh"]
 
