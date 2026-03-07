@@ -72,5 +72,8 @@ jobs:
       - name: set remote
         run: git remote set-url origin gitea:$GITHUB_REPOSITORY.git
 
-      - name: push
-        run: git push origin main
+      - run: git fetch origin main  
+
+      - run: git diff main origin/main  
+
+      - run: git push origin main  
