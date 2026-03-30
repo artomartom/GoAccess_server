@@ -31,7 +31,7 @@ services:
       - goaccess
     volumes:
       - data:/app/data
-      - /var/geodb/:/app/geodb:ro
+      - maxmind_geodata:/app/geodb:ro
     healthcheck:
       test: ["CMD", "curl", "-4sf", "http://localhost:3050/health"]
       interval: 60s
@@ -43,7 +43,11 @@ volumes:
     driver: local
   data:
     driver: local
+  maxmind_geodata:
+    external: true
 
 networks:
   goaccess:
     driver: bridge
+  maxmind_geodata:
+    external: true

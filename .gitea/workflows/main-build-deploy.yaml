@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build 
+    name: Build
     runs-on: orange-local
     steps:
     - name: Checkout code
@@ -30,10 +30,10 @@ jobs:
       with:
         name: deploy-files
         path: |
-          ./goaccess_server.tar  
-          ./docker-compose.prod.yaml 
+          ./goaccess_server.tar
+          ./docker-compose.prod.yaml
 
-  deploy:   
+  deploy:
     name: Deploy on ${{ matrix.environment }}
     runs-on: orange-local
     needs: build
@@ -53,14 +53,14 @@ jobs:
       uses: christopherhx/gitea-download-artifact@v4
       with:
         name: deploy-files
-      
+
     - name: Display structure of downloaded files
       run: ls -Rlt
-    
-    - name: copy compose file 
-      run: rsync -azvhP --inplace --info=progress2 ./docker-compose.prod.yaml ${{ matrix.environment }}:/opt/goAccess_server
 
-    - name: copy image file 
+    - name: copy compose file
+      run: rsync -azvhP --inplace --info=progress2 ./docker-compose.prod.yaml ${{ matrix.environment }}:/opt/goAccess_server/docker-compose.yaml
+
+    - name: copy image file
       run: cat goaccess_server.tar | gzip  | pv | ssh ${{ matrix.environment }} 'zcat | docker image load'
 
     - name: Add config
@@ -70,4 +70,4 @@ jobs:
       run: ssh ${{matrix.environment}} -t "echo "GOACCESS_OPTIONS=${{matrix.options}}" >> /opt/goAccess_server/.env"
 
     - name: restart app
-      run: ssh ${{matrix.environment}} -t docker compose -f  /opt/goAccess_server/docker-compose.prod.yaml  up -d --no-deps
+      run: ssh ${{matrix.environment}} -t docker compose -f  /opt/goAccess_server/docker-compose.yaml  up -d --no-deps
