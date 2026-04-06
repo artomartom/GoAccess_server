@@ -25,13 +25,15 @@ services:
     container_name: goaccess
     restart: always
     command: >
-      /app/app.py --external-url=${GOACCESS_URL} ${GOACCESS_OPTIONS}
+      /app/app.py
     env_file: ".env"
     networks:
       - goaccess
     volumes:
       - data:/app/data
+      - /etc/goaccess/config.yaml:/etc/goaccess/config.yaml
       - maxmind_geodata:/app/geodb:ro
+      - /var/geodb/:/app/geodb:ro
     healthcheck:
       test: ["CMD", "curl", "-4sf", "http://localhost:3050/health"]
       interval: 60s
@@ -44,10 +46,8 @@ volumes:
   data:
     driver: local
   maxmind_geodata:
-    external: true
+    driver: local
 
 networks:
   goaccess:
     driver: bridge
-  maxmind_geodata:
-    external: true
