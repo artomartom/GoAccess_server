@@ -10,7 +10,7 @@ on:
      - 'README.md'
 
 jobs:
-  build-image:
+  build:
     runs-on: orange-local
 
     steps:
@@ -21,23 +21,44 @@ jobs:
           fetch-depth: 1
 
     - name: Set commit hash
-      run: echo "HASH=$(echo $(git rev-parse HEAD) | cut -c1-10)" >> $GITHUB_ENV
+      run: echo "HASH=$(echo $(git rev-parse HEAD) | cut -c1-10)" >> $GITEA_ENV
       
     - name: This build commit hash
-      run: echo $HASH
+      run: echo $HASH;
 
     - name: Build project
-      run: docker build --no-cache -t goaccess_server:$HASH .
+      run: docker build -t goaccess_server:$HASH .
 
-    - name: Tag new latest
-      run: docker tag goaccess_server:$HASH goaccess_server:latest
+  tag-n-push:
+    runs-on: orange-local
+    needs: build
+    continue-on-error: true
+    env:
+      server: ${{ gitea.server_url }}
+      imagename: goaccess_server
+    steps:
 
-    - name: Add config url
-      run: echo "GOACCESS_URL=https://${{vars.STAGE_GOACCESS_URL}}" > ./.env
+      - run: docker logout "${server#https://}"
 
-    - name: Add config options
-      run: echo "GOACCESS_OPTIONS=${{vars.STAGE_GOACCESS_OPTIONS}}" >> ./.env
+      - name: Login
+        run: echo ${{secrets.ANSIBLE_API}} | docker login "${server#https://}" -u gitea --password-stdin
 
+      - name: Tag remote image
+        run: docker tag $imagename:$HASH "${server#https://}"/$user/$imagename:$HASH
+
+      - name: Push latest
+        run: docker push "${server#https://}"/$user/$imagename:$HASH
+
+  start-container:
+    runs-on: orange-local
+    needs: build-image
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+          ref: dev
+          fetch-depth: 1
+          
     - name: Run stage server
       run: docker compose -f ./docker-compose.prod.yaml up -d
 
@@ -55,7 +76,7 @@ jobs:
 
   run-tests:
     runs-on: orange-local
-    needs: build-image
+    needs: start-container
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -67,4 +88,6 @@ jobs:
       run: docker run --rm -it -v ./:/app py_tester:latest  /app/tests/test.py
 
     - name: Test API
-      run: docker run --rm -it -v ./:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py
+      run: |
+        docker run --add-host obne.goaccess.orange.local:$(ip -br addr show eth0 |awk '{print $3}' | cut -d'/' -f1) \
+        --rm -it -v ./:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py
