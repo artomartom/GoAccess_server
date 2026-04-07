@@ -3,9 +3,11 @@ FROM alpine:3.22.1
 ENV WORKDIR=/app
 WORKDIR $WORKDIR
 
-RUN apk upgrade && \
-apk add python3 py3-pip goaccess curl && \
-rm -rf /var/cache/apk/*
+
+RUN REPO="https://mirror.yandex.ru/mirrors/alpine/v$(egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release)" && \
+OPTIONS="--repositories-file /dev/null -X "$REPO/main" -X "$REPO/community" --no-cache" && \
+apk upgrade $OPTIONS && \
+apk add $OPTIONS  python3 py3-pip goaccess curl
 
 COPY  ./requirements.txt $WORKDIR
 ENV VIRTUAL_ENV=$WORKDIR/venv
