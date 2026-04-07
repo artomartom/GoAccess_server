@@ -26,7 +26,6 @@ services:
     restart: always
     command: >
       /app/app.py
-    env_file: ".env"
     networks:
       - goaccess
     volumes:
@@ -40,6 +39,23 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+    depends_on:
+      initgeodb:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  initgeodb:
+    volumes:
+    - maxmind_geodata:/var/geodb
+    image: alpine:latest
+    command:
+      - /bin/sh
+      - -c
+      - |
+        if [ ! -f "/var/geodb/dbip-lite-latest.mmdb" ]; then wget -O - https://download.db-ip.com/free/dbip-country-lite-20$(date +%y)-$(date +%m).mmdb.gz | zcat > /var/geodb/dbip-lite-latest.mmdb; fi
+        if [ ! -f "/var/geodb/dbip-asn-lite-latest.mmdb" ]; then wget -O - https://download.db-ip.com/free/dbip-asn-lite-20$(date +%y)-$(date +%m).mmdb.gz | zcat > /var/geodb/dbip-asn-lite-latest.mmdb; fi
+
 volumes:
   redis-cache:
     driver: local
