@@ -82,13 +82,14 @@ async def _generate(request: Request,
         args.update({key: value for key, value in dict(request.query_params).items() if key in allowed_args})
 
         log.debug(f"received args \n\t\t: {args}")
-
-        ca = Cache_Server()
-        cache_key = f"{file_id}/{args['mth']}/{args['fmt']}/{args['trnslt']}"
-        cache = ca.get(cache_key)
-        if cache is not  None:
-            log.info(f"cache found for {cache_key}")
-            return HTMLResponse(content=cache , status_code=200)
+        
+        if Settings.cache_server:
+            ca = Cache_Server()
+            cache_key = f"{file_id}/{args['mth']}/{args['fmt']}/{args['trnslt']}"
+            cache = ca.get(cache_key)
+            if cache is not None:
+                log.info(f"cache found for {cache_key}")
+                return HTMLResponse(content=cache , status_code=200)
         db = Database()
         if db.id_exists(file_id) is False:
             raise FileNotFoundError(f"file '{file_id}' not found")
@@ -114,8 +115,9 @@ async def _generate(request: Request,
                     result = run_goaccess(preprocessed_log.name, fmt)
                 else:
                     result = run_goaccess(data.name, fmt)
-
-                ca.set(cache_key,result)
+                if Settings.cache_server:
+                    ca = Cache_Server()
+                    ca.set(cache_key,result)
                 return HTMLResponse(content=result, status_code=200)
 
     except FileNotFoundError as error_text:
@@ -222,6 +224,7 @@ async def redirect_upload(request: Request):
 app.include_router(routes)
 
 if __name__ == '__main__':
+    
     uvicorn.run(
         app="app:app",
         port=Settings.port,
