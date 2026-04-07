@@ -25,12 +25,13 @@ services:
     container_name: goaccess
     restart: always
     command: >
-      /app/app.py --external-url=${GOACCESS_URL} ${GOACCESS_OPTIONS}
-    env_file: ".env"
+      /app/app.py
     networks:
       - goaccess
     volumes:
       - data:/app/data
+      - /etc/goaccess/config.yaml:/etc/goaccess/config.yaml
+      - maxmind_geodata:/app/geodb:ro
       - /var/geodb/:/app/geodb:ro
     healthcheck:
       test: ["CMD", "curl", "-4sf", "http://localhost:3050/health"]
@@ -38,10 +39,29 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+    depends_on:
+      initgeodb:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  initgeodb:
+    volumes:
+    - maxmind_geodata:/var/geodb
+    image: alpine:latest
+    command:
+      - /bin/sh
+      - -c
+      - |
+        if [ ! -f "/var/geodb/dbip-lite-latest.mmdb" ]; then wget -O - https://download.db-ip.com/free/dbip-country-lite-20$(date +%y)-$(date +%m).mmdb.gz | zcat > /var/geodb/dbip-lite-latest.mmdb; fi
+        if [ ! -f "/var/geodb/dbip-asn-lite-latest.mmdb" ]; then wget -O - https://download.db-ip.com/free/dbip-asn-lite-20$(date +%y)-$(date +%m).mmdb.gz | zcat > /var/geodb/dbip-asn-lite-latest.mmdb; fi
+
 volumes:
   redis-cache:
     driver: local
   data:
+    driver: local
+  maxmind_geodata:
     driver: local
 
 networks:
