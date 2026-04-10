@@ -1,69 +1,90 @@
+version: "3.13"
 services:
-  redis:
-    image: redis:6.2-alpine
-    container_name: redis
-    restart: always
-    command: redis-server --save 20 1 --loglevel notice
-    volumes:
-      - redis-cache:/data
-    networks:
-      - goaccess
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 10s
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-
   goaccess:
-    image: goaccess_server
-    container_name: goaccess
-    restart: always
-    command: >
-      /app/app.py
-    networks:
-      - goaccess
-    volumes:
-      - data:/app/data
-      - /etc/goaccess/config.yaml:/etc/goaccess/config.yaml
-      - maxmind_geodata:/app/geodb:ro
-      - /var/geodb/:/app/geodb:ro
+    command:
+      - /app/app.py
+    configs:
+      - source: goaccess_config
+        target: /etc/goaccess/config.yaml
+    depends_on:
+      - initgeodb
+      - redis
     healthcheck:
-      test: ["CMD", "curl", "-4sf", "http://localhost:3050/health"]
-      interval: 60s
+      test:
+        - CMD
+        - curl
+        - -4sf
+        - http://localhost:3050/health
       timeout: 10s
+      interval: 1m0s
       retries: 3
       start_period: 15s
-    depends_on:
-      initgeodb:
-        condition: service_completed_successfully
-      redis:
-        condition: service_healthy
-
-  initgeodb:
+    image: goaccess_server
+    networks:
+      goaccess: null
     volumes:
-    - maxmind_geodata:/var/geodb
-    image: alpine:latest
+      - type: volume
+        source: data
+        target: /app/data
+      - type: volume
+        source: maxmind_geodata
+        target: /app/geodb
+        read_only: true
+  initgeodb:
     command:
       - /bin/sh
       - -c
       - |
-        if [ ! -f "/var/geodb/dbip-lite-latest.mmdb" ]; then wget -O - https://download.db-ip.com/free/dbip-country-lite-20$(date +%y)-$(date +%m).mmdb.gz | zcat > /var/geodb/dbip-lite-latest.mmdb; fi
-        if [ ! -f "/var/geodb/dbip-asn-lite-latest.mmdb" ]; then wget -O - https://download.db-ip.com/free/dbip-asn-lite-20$(date +%y)-$(date +%m).mmdb.gz | zcat > /var/geodb/dbip-asn-lite-latest.mmdb; fi
-
+        if [ ! -f "/var/geodb/dbip-lite-latest.mmdb" ]; then wget -O - https://download.db-ip.com/free/dbip-country-lite-20$$(date +%y)-$$(date +%m).mmdb.gz | zcat > /var/geodb/dbip-lite-latest.mmdb; fi
+        if [ ! -f "/var/geodb/dbip-asn-lite-latest.mmdb" ]; then wget -O - https://download.db-ip.com/free/dbip-asn-lite-20$$(date +%y)-$$(date +%m).mmdb.gz | zcat > /var/geodb/dbip-asn-lite-latest.mmdb; fi
+    deploy:
+      restart_policy:
+        condition: none
+    image: alpine:latest
+    volumes:
+      - type: volume
+        source: maxmind_geodata
+        target: /var/geodb
+  redis:
+    command:
+      - redis-server
+      - --save
+      - "20"
+      - "1"
+      - --loglevel
+      - notice
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "268435456"
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      timeout: 10s
+      interval: 10s
+      retries: 5
+      start_period: 10s
+    image: redis:6.2-alpine
+    networks:
+      goaccess: null
+    volumes:
+      - type: volume
+        source: redis-cache
+        target: /data
+networks:
+  goaccess:
+    driver: overlay
 volumes:
-  redis-cache:
-    driver: local
   data:
     driver: local
   maxmind_geodata:
     driver: local
-
-networks:
-  goaccess:
-    driver: bridge
+  redis-cache:
+    driver: local
+configs:
+  goaccess_config:
+    name: goaccess_config
+    external: true

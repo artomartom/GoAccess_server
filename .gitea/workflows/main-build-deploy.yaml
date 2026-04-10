@@ -36,17 +36,22 @@ jobs:
   deploy:
     name: Deploy on ${{ matrix.environment }}
     runs-on: orange-local
+    env:
+      SSH_AUTH_SOCK: ./ssh.sock
+      KEY: ${{ secrets.REMOTE_KEY }}
     needs: build
     strategy:
       matrix:
-        environment: [orange , goaccess-otp]
+        environment: [orange, goaccess-otp]
         include:
         - environment: "orange"
-          goaccess_url: ${{vars.ORANGE_GOACCESS_URL}}
-          options: ${{vars.ORANGE_GOACCESS_OPTIONS}}
+          fingerprint: ${{ secrets.ORANGE_FINGERPRINT }}
+          context: deploy-orange
+          host: ${{vars.ORANGE_SSH_HOST}}
         - environment: "goaccess-otp"
-          goaccess_url: ${{vars.OTP_GOACCESS_URL}}
-          options: ${{vars.OTP_GOACCESS_OPTIONS}}
+          fingerprint: ${{ secrets.GO_OTP_FINGERPRINT }}
+          host: ${{vars.GO_OTP_SSH_HOST}}
+          context: deploy-goaccess-otp
 
     steps:
     - name: Download artifact
@@ -54,20 +59,28 @@ jobs:
       with:
         name: deploy-files
 
+    - name: crete agent
+      run: ssh-agent -a $SSH_AUTH_SOCK
+
     - name: Display structure of downloaded files
       run: ls -Rlt
 
-    - name: copy compose file
-      run: rsync -azvhP --inplace --info=progress2 ./docker-compose.prod.yaml ${{ matrix.environment }}:/opt/goAccess_server/docker-compose.yaml
+    - name: add ssh key
+      run: echo "$KEY"  | ssh-add -k /dev/stdin
+
+    - name: add fingerprint
+      run: grep ${{ matrix.fingerprint }} ~/.ssh/known_hosts 1>/dev/null || echo "${{ matrix.fingerprint }}" >> ~/.ssh/known_hosts
+
+    - run: eval $X || (eval $Y && eval  $X)
+      env:
+        X: "docker context create --docker host=${{ matrix.host }} ${{ matrix.context }}"
+        Y: "docker context rm ${{ matrix.context }} -f"
+
+    - name: list containers
+      run: docker --context ${{ matrix.context }} ps -a
 
     - name: copy image file
-      run: cat goaccess_server.tar | gzip  | pv | ssh ${{ matrix.environment }} 'zcat | docker image load'
+      run: cat goaccess_server.tar | docker --context ${{ matrix.context }} load
 
-    - name: Add config
-      run: ssh ${{matrix.environment}} -t "echo "GOACCESS_URL=https://${{matrix.goaccess_url}}" > /opt/goAccess_server/.env"
-
-    - name: Add config
-      run: ssh ${{matrix.environment}} -t "echo "GOACCESS_OPTIONS=${{matrix.options}}" >> /opt/goAccess_server/.env"
-
-    - name: restart app
-      run: ssh ${{matrix.environment}} -t docker compose -f  /opt/goAccess_server/docker-compose.yaml  up -d --no-deps
+    - name: deploy
+      run: docker --context ${{ matrix.context }} stack deploy -c ./docker-compose.prod.yaml goaccess

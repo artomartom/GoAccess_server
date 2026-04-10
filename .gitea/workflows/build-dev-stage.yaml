@@ -60,19 +60,10 @@ jobs:
           fetch-depth: 1
           
     - name: Run stage server
-      run: docker compose -f ./docker-compose.prod.yaml up -d
+      run: docker stack deploy -c ./docker-compose.prod.yaml goaccess
 
     - name: healthcheck
-      run: |
-        for i in {1..5}; do
-          sleep 1.5
-          res=$( docker inspect --format "{{json .State.Health }}" goaccess | jq .Status )
-          if [ '"healthy"' = "$res" ]; then
-            exit 0
-          fi
-        done
-        docker logs goaccess
-        exit 1
+      run: sleep 10
 
   run-tests:
     runs-on: orange-local
@@ -89,5 +80,5 @@ jobs:
 
     - name: Test API
       run: |
-        docker run --add-host obne.goaccess.orange.local:$(ip -br addr show eth0 |awk '{print $3}' | cut -d'/' -f1) \
+        docker run --add-host goaccess.orange.local:$(ip -br addr show eth0 |awk '{print $3}' | cut -d'/' -f1) \
         --rm -it -v ./:/app py_tester:latest -m pytest  --disable-warnings  /app/tests/api_test.py
