@@ -77,6 +77,7 @@ services:
 networks:
   goaccess:
     driver: overlay
+    attachable: true
 volumes:
   data:
     driver: local
