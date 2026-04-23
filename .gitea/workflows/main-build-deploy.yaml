@@ -83,4 +83,4 @@ jobs:
       run: cat goaccess_server.tar | docker --context ${{ matrix.context }} load
 
     - name: deploy
-      run: docker --context ${{ matrix.context }} stack deploy -c ./docker-compose.prod.yaml goaccess
+      run: docker --context ${{ matrix.context }} compose -f ./docker-compose.prod.yaml up -d

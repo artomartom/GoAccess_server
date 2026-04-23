@@ -1,11 +1,8 @@
-version: "3.13"
 services:
   goaccess:
     command:
       - /app/app.py
-    configs:
-      - source: goaccess_config
-        target: /etc/goaccess/config.yaml
+    container_name: goaccess
     depends_on:
       - initgeodb
       - redis
@@ -23,29 +20,38 @@ services:
     networks:
       goaccess: null
     volumes:
+      - /etc/goaccess/config.yaml:/etc/goaccess/config.yaml
       - type: volume
-        source: data
+        source: goaccess_data
         target: /app/data
       - type: volume
         source: maxmind_geodata
         target: /app/geodb
         read_only: true
   initgeodb:
+    container_name: initgeodb
     command:
       - /bin/sh
       - -c
       - |
-        if [ ! -f "/var/geodb/dbip-lite-latest.mmdb" ]; then wget -O - https://download.db-ip.com/free/dbip-country-lite-20$$(date +%y)-$$(date +%m).mmdb.gz | zcat > /var/geodb/dbip-lite-latest.mmdb; fi
-        if [ ! -f "/var/geodb/dbip-asn-lite-latest.mmdb" ]; then wget -O - https://download.db-ip.com/free/dbip-asn-lite-20$$(date +%y)-$$(date +%m).mmdb.gz | zcat > /var/geodb/dbip-asn-lite-latest.mmdb; fi
-    deploy:
-      restart_policy:
-        condition: none
-    image: alpine:latest
+        domain='https://download.db-ip.com';
+        deadline=`date -d "1 week ago" +%s`;
+        while IFS= read -r name; do
+        filedate=`date +%s -r dbip-$$name-lite-latest.mmdb 2>/dev/null || echo 0`;
+        if [ "$$filedate" -lt "$$deadline" ]; then \
+            wget -O - "$$domain/free/dbip-$$name-lite-20$$(date +%y)-$$(date +%m).mmdb.gz" | zcat 2>&1 | tee "/var/geodb/dbip-$$name-lite-latest.mmdb";
+        fi;
+        done <<EOF
+        asn
+        country
+        EOF
+    image: gitea.mango.local/gitea/ubuntu-custom:latest
     volumes:
       - type: volume
         source: maxmind_geodata
         target: /var/geodb
   redis:
+    container_name: redis
     command:
       - redis-server
       - --save
@@ -76,16 +82,16 @@ services:
         target: /data
 networks:
   goaccess:
-    driver: overlay
-    attachable: true
+    driver: bridge
+    name: goaccess
 volumes:
-  data:
+  goaccess_data:
     driver: local
+    name: goaccess_data
   maxmind_geodata:
     driver: local
+    name: maxmind_geodata
   redis-cache:
     driver: local
-configs:
-  goaccess_config:
-    name: goaccess_config
-    external: true
+    name: redis-cache
+
