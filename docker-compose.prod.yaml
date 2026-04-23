@@ -2,9 +2,7 @@ services:
   goaccess:
     command:
       - /app/app.py
-    configs:
-      - source: goaccess_config
-        target: /etc/goaccess/config.yaml
+    container_name: goaccess
     depends_on:
       - initgeodb
       - redis
@@ -22,6 +20,7 @@ services:
     networks:
       goaccess: null
     volumes:
+      - /etc/goaccess/config.yaml:/etc/goaccess/config.yaml
       - type: volume
         source: goaccess_data
         target: /app/data
@@ -30,6 +29,7 @@ services:
         target: /app/geodb
         read_only: true
   initgeodb:
+    container_name: initgeodb
     command:
       - /bin/sh
       - -c
@@ -45,15 +45,13 @@ services:
         asn
         country
         EOF
-    deploy:
-      restart_policy:
-        condition: none
-    image: ubuntu-custom:latest
+    image: gitea.mango.local/gitea/ubuntu-custom:latest
     volumes:
       - type: volume
         source: maxmind_geodata
         target: /var/geodb
   redis:
+    container_name: redis
     command:
       - redis-server
       - --save
@@ -84,8 +82,7 @@ services:
         target: /data
 networks:
   goaccess:
-    driver: overlay
-    attachable: true
+    driver: bridge
     name: goaccess
 volumes:
   goaccess_data:
@@ -97,7 +94,4 @@ volumes:
   redis-cache:
     driver: local
     name: redis-cache
-configs:
-  goaccess_config:
-    name: goaccess_config
-    external: true
+
