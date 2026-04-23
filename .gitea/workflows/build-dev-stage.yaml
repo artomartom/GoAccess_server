@@ -22,7 +22,7 @@ jobs:
 
     - name: Set commit hash
       run: echo "HASH=$(echo $(git rev-parse HEAD) | cut -c1-10)" >> $GITEA_ENV
-      
+
     - name: This build commit hash
       run: echo $HASH;
 
@@ -58,12 +58,21 @@ jobs:
       with:
           ref: dev
           fetch-depth: 1
-          
+
     - name: Run stage server
-      run: docker stack deploy -c ./docker-compose.prod.yaml goaccess
+      run: docker compose -f ./docker-compose.prod.yaml up -d
 
     - name: healthcheck
-      run: sleep 10
+      run: |
+        for i in {1..5}; do
+          sleep 1.5
+          res=$( docker inspect --format "{{json .State.Health }}" goaccess | jq .Status )
+          if [ '"healthy"' = "$res" ]; then
+            exit 0
+          fi
+        done
+        docker logs goaccess
+        exit 1  
 
   run-tests:
     runs-on: orange-local
