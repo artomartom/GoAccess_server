@@ -1,3 +1,4 @@
+name: goaccess
 services:
   goaccess-debug:
     container_name: goaccess
