@@ -40,7 +40,7 @@ services:
         while IFS= read -r name; do
         filedate=`date +%s -r /var/geodb/dbip-$$name-lite-latest.mmdb 2>/dev/null || echo 0`;
         if [ "$$filedate" -lt "$$deadline" ]; then \
-            wget -O - "$$domain/free/dbip-$$name-lite-20$$(date +%y)-$$(date +%m).mmdb.gz" | zcat 2>&1 | tee "/var/geodb/dbip-$$name-lite-latest.mmdb";
+            wget -O - "$$domain/free/dbip-$$name-lite-20$$(date +%y)-$$(date +%m).mmdb.gz" | zcat 2>&1 1> "/var/geodb/dbip-$$name-lite-latest.mmdb";
         fi;
         done <<EOF
         asn
