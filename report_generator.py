@@ -17,6 +17,7 @@ def run_goaccess( filename:str, format_t:Format ) -> str:
     log.debug(f"trying format {format_t.name }")
     args=  ["goaccess",filename,    "-a",
             "--num-test=0",
+            "--hour-spec=min",
             "--log-format", f'{format_t.log_format}',
             f"--date-format={format_t.date_format}",
             f"--time-format={format_t.time_format }"]
