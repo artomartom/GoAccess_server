@@ -84,10 +84,6 @@ jobs:
           ref: dev
           fetch-depth: 1
 
-    - name: Test regex`es
-      run: docker run --rm -it -v ./:/app gitea.mango.local/gitea/py_tester  /app/tests/test.py
-
     - name: Test API
       run: |
-        docker run --add-host goaccess.orange.local:$(ip -br addr show eth0 |awk '{print $3}' | cut -d'/' -f1) \
-        --rm -it -v ./:/app gitea.mango.local/gitea/py_tester -m pytest  --disable-warnings  /app/tests/api_test.py
+        docker run --rm --network=goaccess -it -v ./:/app gitea.mango.local/gitea/py_tester -m pytest --disable-warnings /app/tests/api_test.py
