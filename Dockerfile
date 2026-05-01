@@ -4,10 +4,14 @@ ENV WORKDIR=/app
 WORKDIR $WORKDIR
 
 
-RUN REPO="https://mirror.yandex.ru/mirrors/alpine/v$(egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release)" && \
-OPTIONS="--repositories-file /dev/null -X "$REPO/main" -X "$REPO/community" --no-cache" && \
-apk upgrade $OPTIONS && \
-apk add $OPTIONS  python3 py3-pip goaccess curl
+RUN REPO="https://mirror.yandex.ru/mirrors/alpine/v$(egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release)" \
+    && OPTIONS="--repositories-file /dev/null -X "$REPO/main" -X "$REPO/community" --no-cache" \
+    && apk upgrade $OPTIONS \
+    && apk add $OPTIONS  python3 py3-pip curl \
+    && curl -kJO --output-dir /etc/apk/keys/ https://gitea.mango.local/api/packages/gitea/alpine/key \
+    && REPO="https://gitea.mango.local/api/packages/gitea/alpine/$(egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release)" \
+    && OPTIONS="--no-check-certificate -X "$REPO/main" --no-cache" \
+    && apk add $OPTIONS goaccess=1.10.2-r0
 
 COPY  ./requirements.txt $WORKDIR
 ENV VIRTUAL_ENV=$WORKDIR/venv
