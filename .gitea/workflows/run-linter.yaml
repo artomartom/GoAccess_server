@@ -22,5 +22,5 @@ jobs:
 
       - name: run linter
         run: |
-          docker run --rm -it -v ./:/testing -v ~/.pylintrc:/root/.pylintrc py_tester:latest -m \
+          docker run --rm -it -v ./:/testing -v ~/.pylintrc:/root/.pylintrc gitea.mango.local/gitea/py_tester:latest -m \
           pylint --rcfile=/root/.pylintrc --disable=C --output-format=json /testing/*.py
