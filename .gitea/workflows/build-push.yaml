@@ -1,0 +1,65 @@
+name: Build and push
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+     - '.gitea/**'
+     - 'LICENSE'
+     - 'README.md'
+
+jobs:
+  facts:
+    runs-on: orange-local
+    outputs:
+      hash: ${{ steps.fact1.outputs.hash }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          
+      - id: fact1
+        run: echo "hash=$(echo $(git rev-parse HEAD) | cut -c1-10)" >> "$GITHUB_OUTPUT"
+
+  build:
+    runs-on: orange-local
+    needs: facts
+    env:
+      HASH: ${{needs.facts.outputs.hash}}
+    steps:
+      - run: echo "$HASH"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+  
+      - name: Build project
+        run: docker build -t goaccess_server:$HASH .
+
+  tag-n-push:
+    runs-on: orange-local
+    needs: facts
+    continue-on-error: true
+    env:
+      HASH: ${{needs.facts.outputs.hash}}
+      server: ${{ gitea.server_url }}
+      user: gitea
+      imagename: goaccess_server
+    steps:
+
+      - run: echo $HASH
+      - run: docker logout "${server#https://}"
+
+      - name: Login
+        run: echo ${{secrets.ANSIBLE_API}} | docker login "${server#https://}" -u gitea --password-stdin
+
+      - name: Tag remote image
+        run: docker tag $imagename:$HASH "${server#https://}"/$user/$imagename:$HASH
+
+      - name: Push latest
+        run: docker push "${server#https://}"/$user/$imagename:$HASH
