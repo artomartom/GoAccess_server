@@ -4,6 +4,7 @@ services:
     command:
       - /app/app.py
     container_name: goaccess
+    restart: always
     depends_on:
       - initgeodb
       - redis
@@ -53,6 +54,7 @@ services:
         target: /var/geodb
   redis:
     container_name: redis
+    restart: always
     command:
       - redis-server
       - --save
